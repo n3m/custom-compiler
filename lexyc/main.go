@@ -9,12 +9,12 @@ import (
 
 //LexicalAnalyzer ...
 type LexicalAnalyzer struct {
-	File *bufio.Reader
+	File *bufio.Scanner
 	R    *regex.CustomRegex
 }
 
 //NewLexicalAnalyzer ...
-func NewLexicalAnalyzer(file *bufio.Reader) (*LexicalAnalyzer, error) {
+func NewLexicalAnalyzer(file *bufio.Scanner) (*LexicalAnalyzer, error) {
 	if file == nil {
 		return nil, fmt.Errorf("[ERROR] file is not present")
 	}
@@ -31,13 +31,21 @@ func NewLexicalAnalyzer(file *bufio.Reader) (*LexicalAnalyzer, error) {
 
 //Analyze ...
 func (l *LexicalAnalyzer) Analyze() error {
-	for range []int{1, 2, 3} {
-		str, err := l.File.ReadString('\n')
-		if err != nil {
-			return err
+	for l.File.Scan() {
+		currentLine := l.File.Text()
+		if l.R.RegexConstante.StartsWithConstante(currentLine) {
+			log.Printf("Inicia con constante! > %+v", currentLine)
+
+			continue
 		}
 
-		log.Printf("%+v", str)
+		if l.R.RegexVariable.StartsWithVariable(currentLine) {
+			log.Printf("Inicia con constante! > %+v", currentLine)
+
+			continue
+		}
+
 	}
+
 	return nil
 }

@@ -2,12 +2,26 @@ package regex
 
 import (
 	"fmt"
+	"go-custom-compiler/regex/constante"
+	"go-custom-compiler/regex/variable"
 	"regexp"
 )
 
 //CustomRegex ...
 type CustomRegex struct {
-	ConstantComplex *regexp.Regexp
+	RegexConstante *constante.RegexConstante
+	RegexVariable  *variable.RegexVariable
+}
+
+//NewRegex ...
+func NewRegex() (*CustomRegex, error) {
+	constanteBuilder, _ := constante.NewRegexConstante()
+	variableBuilder, _ := variable.NewRegexVariable()
+
+	return &CustomRegex{
+		RegexConstante: constanteBuilder,
+		RegexVariable:  variableBuilder,
+	}, nil
 }
 
 //StartsWith ...
@@ -28,8 +42,4 @@ func (r CustomRegex) EndsWith(suffix, strToTest string) (bool, error) {
 	}
 
 	return compiled.MatchString(strToTest), nil
-}
-
-func NewRegex() (*CustomRegex, error) {
-	return &CustomRegex{}, nil
 }

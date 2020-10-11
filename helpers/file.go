@@ -20,7 +20,8 @@ func CheckIfFileExists(path string) error {
 	return nil
 }
 
-//GetReaderFromFile ...
-func GetReaderFromFile(file *os.File) *bufio.Reader {
-	return bufio.NewReader(file)
+//GetScannerFromFile ...
+func GetScannerFromFile(file *os.File) *bufio.Scanner {
+	scanner := bufio.NewScanner(file)
+	return scanner
 }

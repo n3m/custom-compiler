@@ -28,7 +28,7 @@ func main() {
 	}
 	defer file.Close()
 
-	reader := helpers.GetReaderFromFile(file)
+	reader := helpers.GetScannerFromFile(file)
 	lex, err := lexyc.NewLexicalAnalyzer(reader)
 	if err != nil {
 		panic(err)
