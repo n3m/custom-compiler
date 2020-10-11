@@ -22,12 +22,19 @@ func main() {
 		panic(err)
 	}
 
-	reader, err := helpers.OpenFile(path)
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := helpers.GetReaderFromFile(file)
+	lex, err := lexyc.NewLexicalAnalyzer(reader)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = lexyc.NewLexicalAnalyzer(reader)
+	err = lex.Analyze()
 	if err != nil {
 		panic(err)
 	}

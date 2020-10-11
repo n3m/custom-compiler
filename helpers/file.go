@@ -16,15 +16,11 @@ func CheckIfFileExists(path string) error {
 	if info.IsDir() {
 		return fmt.Errorf("[ERROR] Path is directory")
 	}
+
 	return nil
 }
 
-//OpenFile ...
-func OpenFile(path string) (*bufio.Reader, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("[ERROR] %+v", err)
-	}
-
-	return bufio.NewReader(file), nil
+//GetReaderFromFile ...
+func GetReaderFromFile(file *os.File) *bufio.Reader {
+	return bufio.NewReader(file)
 }
