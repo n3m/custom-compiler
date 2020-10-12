@@ -20,5 +20,7 @@ func CreateLogger(filename string) (*log.Logger, *os.File, error) {
 
 	logger := log.New(f, "", log.LstdFlags)
 
+	logger.SetFlags(0)
+
 	return logger, f, nil
 }
