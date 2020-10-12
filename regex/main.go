@@ -2,25 +2,33 @@ package regex
 
 import (
 	"fmt"
-	"go-custom-compiler/regex/constante"
-	"go-custom-compiler/regex/variable"
+	"go-custom-compiler/regex/regexconstante"
+	"go-custom-compiler/regex/regexfloat"
+	"go-custom-compiler/regex/regexint"
+	"go-custom-compiler/regex/regexvariable"
 	"regexp"
 )
 
 //CustomRegex ...
 type CustomRegex struct {
-	RegexConstante *constante.RegexConstante
-	RegexVariable  *variable.RegexVariable
+	RegexConstante *regexconstante.RegexConstante
+	RegexVariable  *regexvariable.RegexVariable
+	RegexFloat     *regexfloat.RegexFloat
+	RegexInt       *regexint.RegexInt
 }
 
 //NewRegex ...
 func NewRegex() (*CustomRegex, error) {
-	constanteBuilder, _ := constante.NewRegexConstante()
-	variableBuilder, _ := variable.NewRegexVariable()
+	constanteBuilder, _ := regexconstante.NewRegexConstante()
+	variableBuilder, _ := regexvariable.NewRegexVariable()
+	floatBuilder, _ := regexfloat.NewRegexFloat()
+	intBuilder, _ := regexint.NewRegexInt()
 
 	return &CustomRegex{
 		RegexConstante: constanteBuilder,
 		RegexVariable:  variableBuilder,
+		RegexFloat:     floatBuilder,
+		RegexInt:       intBuilder,
 	}, nil
 }
 

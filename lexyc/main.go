@@ -5,6 +5,19 @@ import (
 	"fmt"
 	"go-custom-compiler/regex"
 	"log"
+	"strings"
+)
+
+//BlockType ...
+type BlockType int
+
+const (
+	//DEFAULTBLOCK ...
+	DEFAULTBLOCK BlockType = iota
+	//CONSTANTBLOCK ...
+	CONSTANTBLOCK
+	//VARIABLEBLOCK ...
+	VARIABLEBLOCK
 )
 
 //LexicalAnalyzer ...
@@ -13,6 +26,11 @@ type LexicalAnalyzer struct {
 	R    *regex.CustomRegex
 	EL   *log.Logger
 	LL   *log.Logger
+
+	//TEST
+	CurrentBlockType BlockType
+	Constants        map[string]interface{}
+	Variables        map[string]interface{}
 }
 
 //NewLexicalAnalyzer ...
@@ -33,6 +51,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger)
 		R:    R,
 		EL:   ErrorLogger,
 		LL:   LexLogger,
+
+		CurrentBlockType: DEFAULTBLOCK,
+		Constants:        make(map[string]interface{}),
+		Variables:        make(map[string]interface{}),
 	}, nil
 }
 
@@ -40,19 +62,56 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger)
 func (l *LexicalAnalyzer) Analyze() error {
 	for l.File.Scan() {
 		currentLine := l.File.Text()
-		if l.R.RegexConstante.StartsWithConstante(currentLine) {
-			log.Printf("Inicia con constante! > %+v", currentLine)
 
-			continue
+		if l.CurrentBlockType == DEFAULTBLOCK {
+			if l.R.RegexConstante.StartsWithConstante(currentLine) {
+				// log.Printf("Inicia con constante! > %+v", currentLine)
+				l.CurrentBlockType = CONSTANTBLOCK
+			}
+
+			if l.R.RegexVariable.StartsWithVariable(currentLine) {
+				// log.Printf("Inicia con Variable! > %+v", currentLine)
+				l.CurrentBlockType = VARIABLEBLOCK
+			}
 		}
 
-		if l.R.RegexVariable.StartsWithVariable(currentLine) {
-			log.Printf("Inicia con Variable! > %+v", currentLine)
+		if l.CurrentBlockType == CONSTANTBLOCK {
+			if l.R.RegexConstante.StartsWithConstante(currentLine) {
+				data := strings.Split(currentLine, " ")
+				currentLine = ""
+				for _, str := range data[1:] {
+					currentLine += str + " "
+				}
+			}
+			currentLine = strings.TrimSpace(currentLine)
 
-			continue
+			if l.R.RegexVariable.StartsWithVariable(currentLine) {
+				l.CurrentBlockType = VARIABLEBLOCK
+			}
+
+			if l.CurrentBlockType == CONSTANTBLOCK && l.R.RegexFloat.MatchFloatConstantDeclaration(currentLine) {
+				log.Printf("[CONSTANT] Float Found %+v", currentLine)
+				continue
+				//ADD TO FLOAT CONSTANTS
+			}
+			if l.CurrentBlockType == CONSTANTBLOCK && l.R.RegexInt.MatchIntConstantDeclaration(currentLine) {
+				log.Printf("[CONSTANT] Int Found %+v", currentLine)
+				continue
+				//ADD TO INT CONSTANTS
+			}
+
+		}
+
+		if l.CurrentBlockType == VARIABLEBLOCK {
+
 		}
 
 	}
 
 	return nil
+}
+
+//NextConstant ...
+func (l *LexicalAnalyzer) NextConstant() {
+
 }

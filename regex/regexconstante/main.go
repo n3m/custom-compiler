@@ -1,30 +1,34 @@
-package constante
+package regexconstante
 
 import "regexp"
 
 //RegexConstante ...
 type RegexConstante struct {
+	V1 *regexp.Regexp
+	V2 *regexp.Regexp
+	V3 *regexp.Regexp
 }
 
 //NewRegexConstante ...
 func NewRegexConstante() (*RegexConstante, error) {
-	return &RegexConstante{}, nil
+	return &RegexConstante{
+		V1: regexp.MustCompile("^constantes"),
+		V2: regexp.MustCompile("^const"),
+		V3: regexp.MustCompile("^co"),
+	}, nil
 }
 
 //StartsWithConstante ...
 func (r *RegexConstante) StartsWithConstante(str string) bool {
-	compiledV1 := regexp.MustCompile("^constantes")
-	if compiledV1.MatchString(str) {
+	if r.V1.MatchString(str) {
 		return true
 	}
 
-	compiledV2 := regexp.MustCompile("^const")
-	if compiledV2.MatchString(str) {
+	if r.V2.MatchString(str) {
 		return true
 	}
 
-	compiledV3 := regexp.MustCompile("^co")
-	if compiledV3.MatchString(str) {
+	if r.V3.MatchString(str) {
 		return true
 	}
 
