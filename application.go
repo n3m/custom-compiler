@@ -12,12 +12,13 @@ func main() {
 		Runtime Params: app.exe pathToSourceCodeFile
 	*/
 
+	/* Get parameters*/
 	if len(os.Args) < 2 {
 		panic("Not enough arguments!\nUsage: 'app.exe pathToSourceCodeFile'")
 	}
-
 	path := os.Args[1]
 
+	/* Validation V1 and Creator*/
 	if err := helpers.CheckIfFileExists(path); err != nil {
 		panic(err)
 	}
@@ -28,8 +29,16 @@ func main() {
 	}
 	defer file.Close()
 
+	/* Create Loggers */
+	errLogger, errFile, err := helpers.CreateLogger("error_data.err")
+	defer errFile.Close()
+
+	lexLogger, lexFile, err := helpers.CreateLogger("lex_data.lex")
+	defer lexFile.Close()
+
+	/*Analyzers*/
 	reader := helpers.GetScannerFromFile(file)
-	lex, err := lexyc.NewLexicalAnalyzer(reader)
+	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger)
 	if err != nil {
 		panic(err)
 	}
