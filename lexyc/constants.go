@@ -8,7 +8,7 @@ import (
 //NextConstant ...
 func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 	if l.CurrentBlockType == CONSTANTBLOCK {
-		if l.R.RegexConstante.StartsWithConstante(currentLine) {
+		if l.R.RegexConstante.StartsWithConstanteNoCheck(currentLine) {
 			data := strings.Split(currentLine, " ")
 			currentLine = ""
 			for _, str := range data[1:] {

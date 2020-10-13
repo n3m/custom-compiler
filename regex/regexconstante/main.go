@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 )
 
 //RegexConstante ...
 type RegexConstante struct {
-	V1 *regexp.Regexp
-	V2 *regexp.Regexp
-	V3 *regexp.Regexp
+	keyword string
+	V1      *regexp.Regexp
+	V2      *regexp.Regexp
+	V3      *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -22,14 +24,57 @@ func NewRegexConstante(EL *log.Logger, LL *log.Logger) (*RegexConstante, error) 
 		return nil, fmt.Errorf("EL or LL loggers came empty")
 	}
 	return &RegexConstante{
-		V1: regexp.MustCompile("^constantes"),
-		V2: regexp.MustCompile("^const"),
-		V3: regexp.MustCompile("^co"),
+		keyword: "constantes",
+		V1:      regexp.MustCompile("^constantes"),
+		V2:      regexp.MustCompile("^consta"),
+		V3:      regexp.MustCompile("^con"),
 	}, nil
 }
 
 //StartsWithConstante ...
 func (r *RegexConstante) StartsWithConstante(str string) bool {
+	if r.V1.MatchString(str) {
+		return true
+	}
+
+	if r.V2.MatchString(str) {
+		strData := strings.Split(str, " ")
+		wrongWord := strData[0]
+		keyword := strings.Split(r.keyword, "")
+
+		foundTypo := false
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != keyword[i] {
+					foundTypo = true
+					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.keyword)
+				}
+			}
+		}
+		return true
+	}
+
+	if r.V3.MatchString(str) {
+		strData := strings.Split(str, " ")
+		wrongWord := strData[0]
+		keyword := strings.Split(r.keyword, "")
+		foundTypo := false
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != keyword[i] {
+					foundTypo = true
+					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.keyword)
+				}
+			}
+		}
+		return true
+	}
+
+	return false
+}
+
+//StartsWithConstanteNoCheck ...
+func (r *RegexConstante) StartsWithConstanteNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -43,5 +88,4 @@ func (r *RegexConstante) StartsWithConstante(str string) bool {
 	}
 
 	return false
-
 }
