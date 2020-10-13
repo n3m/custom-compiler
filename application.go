@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var version string = "0.0.11"
+
 func main() {
 
 	/*
@@ -18,17 +20,6 @@ func main() {
 	}
 	path := os.Args[1]
 
-	/* Validation V1 and Creator*/
-	if err := helpers.CheckIfFileExists(path); err != nil {
-		panic(err)
-	}
-
-	file, err := os.Open(path)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
 	/* Create Loggers */
 	errLogger, errFile, err := helpers.CreateLogger("error_data.err", false)
 	defer errFile.Close()
@@ -38,21 +29,48 @@ func main() {
 
 	generalLogger, logFile, err := helpers.CreateLogger("process.log", true)
 	defer logFile.Close()
+	generalLogger.Printf("<=== Compiler has started on V%+v ===>", version)
+
+	/* Validation V1 and Creator*/
+	if err := helpers.CheckIfFileExists(path); err != nil {
+		panic(err)
+	} else {
+		generalLogger.Printf("File exists")
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		generalLogger.Printf("Error while opening file! (%+v)", err.Error())
+		panic(err)
+	} else {
+		generalLogger.Printf("File opened")
+	}
+	defer file.Close()
 
 	/*Analyzers*/
 	reader := helpers.GetScannerFromFile(file)
+	generalLogger.Printf("Created Scanner from to File")
+
 	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger)
 	if err != nil {
+		generalLogger.Printf("Error while creating a new Lexical Analyzer! (%+v)", err.Error())
 		panic(err)
+	} else {
+		generalLogger.Printf("Created Lexical Analyzer")
 	}
 
 	debugMode := false
 	err = lex.Analyze(debugMode)
 	if err != nil {
+		generalLogger.Printf("Error while analyzing! (%+v)", err.Error())
 		panic(err)
+	} else {
+		generalLogger.Printf("File analyzed correctly")
 	}
 
 	lex.Print()
+
+	generalLogger.Printf("Compiler has finished with Status [0]")
 
 	/*
 		= Expresion Regular para Asignacion a Strings (sin variables): ^\w[^\s]*\s*:=\s*\"[^"]*\"(\s*\+\s*\"[^"]*\")*;
