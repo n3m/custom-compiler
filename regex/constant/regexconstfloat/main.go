@@ -1,4 +1,4 @@
-package regexfloat
+package regexconstfloat
 
 import (
 	"regexp"

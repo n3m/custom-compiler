@@ -2,20 +2,30 @@ package regex
 
 import (
 	"fmt"
-	"go-custom-compiler/regex/constant/regexfloat"
-	"go-custom-compiler/regex/constant/regexint"
+	"go-custom-compiler/regex/constant/regexconstfloat"
+	"go-custom-compiler/regex/constant/regexconstint"
 	"go-custom-compiler/regex/reserved/regexconstante"
 	"go-custom-compiler/regex/reserved/regexvariable"
+	"go-custom-compiler/regex/variable/regexvaralfabetico"
+	"go-custom-compiler/regex/variable/regexvarentero"
+	"go-custom-compiler/regex/variable/regexvarflotante"
+	"go-custom-compiler/regex/variable/regexvarlogico"
+	"go-custom-compiler/regex/variable/regexvarreal"
 	"log"
 	"regexp"
 )
 
 //CustomRegex ...
 type CustomRegex struct {
-	RegexConstante *regexconstante.RegexConstante
-	RegexVariable  *regexvariable.RegexVariable
-	RegexFloat     *regexfloat.RegexFloat
-	RegexInt       *regexint.RegexInt
+	RegexConstante          *regexconstante.RegexConstante
+	RegexVariable           *regexvariable.RegexVariable
+	RegexConstanteFloat     *regexconstfloat.RegexFloat
+	RegexConstanteInt       *regexconstint.RegexInt
+	RegexVariableAlfabetico *regexvaralfabetico.RegexVarAlfabetico
+	RegexVariableEntero     *regexvarentero.RegexVarEntero
+	RegexVariableFlotante   *regexvarflotante.RegexVarFlotante
+	RegexVariableLogico     *regexvarlogico.RegexVarLogico
+	RegexVariableReal       *regexvarreal.RegexVarReal
 
 	EL *log.Logger
 	LL *log.Logger
@@ -31,17 +41,27 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	}
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL)
 	variableBuilder, _ := regexvariable.NewRegexVariable()
-	floatBuilder, _ := regexfloat.NewRegexFloat()
-	intBuilder, _ := regexint.NewRegexInt()
+	constfloatBuilder, _ := regexconstfloat.NewRegexFloat()
+	constintBuilder, _ := regexconstint.NewRegexInt()
+	varalfabeticoBuilder, _ := regexvaralfabetico.NewRegexVariableAlfabetico()
+	varenteroBuilder, _ := regexvarentero.NewRegexVariableEntero()
+	varflotanteBuilder, _ := regexvarflotante.NewRegexVariableFlotante()
+	varlogicoBuilder, _ := regexvarlogico.NewRegexVariableLogico()
+	varrealBuilder, _ := regexvarreal.NewRegexVariableReal()
 
 	return &CustomRegex{
-		RegexConstante: constanteBuilder,
-		RegexVariable:  variableBuilder,
-		RegexFloat:     floatBuilder,
-		RegexInt:       intBuilder,
-		EL:             EL,
-		LL:             LL,
-		GL:             GL,
+		RegexConstante:          constanteBuilder,
+		RegexVariable:           variableBuilder,
+		RegexConstanteFloat:     constfloatBuilder,
+		RegexConstanteInt:       constintBuilder,
+		RegexVariableAlfabetico: varalfabeticoBuilder,
+		RegexVariableEntero:     varenteroBuilder,
+		RegexVariableFlotante:   varflotanteBuilder,
+		RegexVariableLogico:     varlogicoBuilder,
+		RegexVariableReal:       varrealBuilder,
+		EL:                      EL,
+		LL:                      LL,
+		GL:                      GL,
 	}, nil
 }
 

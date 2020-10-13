@@ -1,4 +1,4 @@
-package regexint
+package regexconstint
 
 import (
 	"regexp"

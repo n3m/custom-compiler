@@ -30,7 +30,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 			return
 		}
 
-		if l.R.RegexFloat.MatchFloatConstantDeclaration(currentLine) {
+		if l.R.RegexConstanteFloat.MatchFloatConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
 			l.FloatConstants[floatData[0]] = floatData[1]
@@ -40,7 +40,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 			}
 			return
 		}
-		if l.R.RegexInt.MatchIntConstantDeclaration(currentLine) {
+		if l.R.RegexConstanteInt.MatchIntConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
 			l.IntConstants[floatData[0]] = floatData[1]
