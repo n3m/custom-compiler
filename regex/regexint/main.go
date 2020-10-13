@@ -11,6 +11,8 @@ type RegexInt struct {
 
 //NewRegexInt ...
 func NewRegexInt() (*RegexInt, error) {
+	// var moduleName string = "[regexint][NewRegexInt()]"
+
 	return &RegexInt{
 		V1: regexp.MustCompile(`^\w[^\s]*\s*:=\s*\d+\s*(\s*\+\s*\d+)*`),
 	}, nil

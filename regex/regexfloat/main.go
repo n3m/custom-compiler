@@ -11,6 +11,8 @@ type RegexFloat struct {
 
 //NewRegexFloat ...
 func NewRegexFloat() (*RegexFloat, error) {
+	// var moduleName string = "[regexfloat][NewRegexFloat()]"
+
 	return &RegexFloat{
 		V1: regexp.MustCompile(`^\w[^\s]*\s*:=\s*\d+\.\d+\s*(\s*\+\s*\d+\.\d+)*`),
 	}, nil

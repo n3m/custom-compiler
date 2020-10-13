@@ -7,7 +7,7 @@ import (
 )
 
 //CreateLogger ...
-func CreateLogger(filename string) (*log.Logger, *os.File, error) {
+func CreateLogger(filename string, flags bool) (*log.Logger, *os.File, error) {
 	if filename == "" {
 		return nil, nil, fmt.Errorf("[ERROR][CREATELOGGER]: Filename is empty")
 	}
@@ -20,7 +20,9 @@ func CreateLogger(filename string) (*log.Logger, *os.File, error) {
 
 	logger := log.New(f, "", log.LstdFlags)
 
-	logger.SetFlags(0)
+	if !flags {
+		logger.SetFlags(0)
+	}
 
 	return logger, f, nil
 }

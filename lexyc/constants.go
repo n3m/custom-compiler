@@ -7,6 +7,8 @@ import (
 
 //NextConstant ...
 func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
+	// var moduleName string = "[constants.go][NextConstant()]"
+
 	if l.CurrentBlockType == CONSTANTBLOCK {
 		if l.R.RegexConstante.StartsWithConstanteNoCheck(currentLine) {
 			data := strings.Split(currentLine, " ")

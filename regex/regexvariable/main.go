@@ -16,6 +16,8 @@ type RegexVariable struct {
 
 //NewRegexVariable ...
 func NewRegexVariable() (*RegexVariable, error) {
+	// var moduleName string = "[regexvariable][NewRegexVariable()]"
+
 	compiledV1 := regexp.MustCompile("^variables")
 	compiledV2 := regexp.MustCompile("^varia")
 	compiledV3 := regexp.MustCompile("^var")

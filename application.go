@@ -30,15 +30,18 @@ func main() {
 	defer file.Close()
 
 	/* Create Loggers */
-	errLogger, errFile, err := helpers.CreateLogger("error_data.err")
+	errLogger, errFile, err := helpers.CreateLogger("error_data.err", false)
 	defer errFile.Close()
 
-	lexLogger, lexFile, err := helpers.CreateLogger("lex_data.lex")
+	lexLogger, lexFile, err := helpers.CreateLogger("lex_data.lex", false)
 	defer lexFile.Close()
+
+	generalLogger, logFile, err := helpers.CreateLogger("process.log", true)
+	defer logFile.Close()
 
 	/*Analyzers*/
 	reader := helpers.GetScannerFromFile(file)
-	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger)
+	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger)
 	if err != nil {
 		panic(err)
 	}

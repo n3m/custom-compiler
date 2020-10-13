@@ -27,6 +27,7 @@ type LexicalAnalyzer struct {
 	R    *regex.CustomRegex //Regex Handler
 	EL   *log.Logger        //Error Logger
 	LL   *log.Logger        //Lex Logger
+	GL   *log.Logger        //General Logger
 
 	//TEST
 	CurrentBlockType BlockType
@@ -39,16 +40,18 @@ type LexicalAnalyzer struct {
 }
 
 //NewLexicalAnalyzer ...
-func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger) (*LexicalAnalyzer, error) {
+func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger *log.Logger) (*LexicalAnalyzer, error) {
+	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
+
 	if file == nil {
-		return nil, fmt.Errorf("[ERROR] file is not present")
+		return nil, fmt.Errorf("[ERROR]%+v file is not present", moduleName)
 	}
-	R, err := regex.NewRegex(ErrorLogger, LexLogger)
+	if ErrorLogger == nil || LexLogger == nil || GeneralLogger == nil {
+		return nil, fmt.Errorf("[ERROR]%+v Loggers are not present", moduleName)
+	}
+	R, err := regex.NewRegex(ErrorLogger, LexLogger, GeneralLogger)
 	if err != nil {
-		return nil, fmt.Errorf("[ERROR] %+v", err)
-	}
-	if ErrorLogger == nil || LexLogger == nil {
-		return nil, fmt.Errorf("[ERROR] Loggers are not present")
+		return nil, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
 	}
 
 	return &LexicalAnalyzer{
@@ -56,6 +59,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger)
 		R:    R,
 		EL:   ErrorLogger,
 		LL:   LexLogger,
+		GL:   GeneralLogger,
 
 		CurrentBlockType: DEFAULTBLOCK,
 		FloatConstants:   make(map[string]interface{}),

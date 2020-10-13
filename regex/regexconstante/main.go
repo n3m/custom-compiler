@@ -20,8 +20,10 @@ type RegexConstante struct {
 
 //NewRegexConstante ...
 func NewRegexConstante(EL *log.Logger, LL *log.Logger) (*RegexConstante, error) {
+	var moduleName string = "[regexconstante][NewRegexConstante()]"
+
 	if EL == nil || LL == nil {
-		return nil, fmt.Errorf("EL or LL loggers came empty")
+		return nil, fmt.Errorf("[ERROR]%+v EL or LL loggers came empty", moduleName)
 	}
 	return &RegexConstante{
 		keyword: "constantes",
@@ -33,6 +35,7 @@ func NewRegexConstante(EL *log.Logger, LL *log.Logger) (*RegexConstante, error) 
 
 //StartsWithConstante ...
 func (r *RegexConstante) StartsWithConstante(str string) bool {
+
 	if r.V1.MatchString(str) {
 		return true
 	}

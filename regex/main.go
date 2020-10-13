@@ -19,12 +19,15 @@ type CustomRegex struct {
 
 	EL *log.Logger
 	LL *log.Logger
+	GL *log.Logger
 }
 
 //NewRegex ...
-func NewRegex(EL *log.Logger, LL *log.Logger) (*CustomRegex, error) {
-	if EL == nil || LL == nil {
-		return nil, fmt.Errorf("EL or LL loggers came empty")
+func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, error) {
+	var moduleName string = "[regex][NewRegex()]"
+
+	if EL == nil || LL == nil || GL == nil {
+		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL)
 	variableBuilder, _ := regexvariable.NewRegexVariable()
@@ -38,14 +41,17 @@ func NewRegex(EL *log.Logger, LL *log.Logger) (*CustomRegex, error) {
 		RegexInt:       intBuilder,
 		EL:             EL,
 		LL:             LL,
+		GL:             GL,
 	}, nil
 }
 
 //StartsWith ...
 func (r CustomRegex) StartsWith(prefix, strToTest string) (bool, error) {
+	var moduleName string = "[regex][StartsWith()]"
+
 	compiled, err := regexp.Compile("^" + prefix)
 	if err != nil {
-		return false, fmt.Errorf("[ERROR] %+v", err)
+		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
 	}
 
 	return compiled.MatchString(strToTest), nil
@@ -53,9 +59,11 @@ func (r CustomRegex) StartsWith(prefix, strToTest string) (bool, error) {
 
 //EndsWith ...
 func (r CustomRegex) EndsWith(suffix, strToTest string) (bool, error) {
+	var moduleName string = "[regex][EndsWith()]"
+
 	compiled, err := regexp.Compile(suffix + "$")
 	if err != nil {
-		return false, fmt.Errorf("[ERROR] %+v", err)
+		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
 	}
 
 	return compiled.MatchString(strToTest), nil
