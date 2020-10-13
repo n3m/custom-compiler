@@ -104,9 +104,9 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			// 	l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
 			// }
 
-			l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
+			l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[VARIABLE] Real Found > %+v", currentLine)
+				log.Printf("[VARIABLE] Default Found > %+v", currentLine)
 			}
 			return
 		}
