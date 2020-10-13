@@ -23,7 +23,5 @@ func (r *RegexVarDefault) MatchVariableDefault(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
-
 	return false
-
 }

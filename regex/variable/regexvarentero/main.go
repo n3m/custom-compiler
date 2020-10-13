@@ -6,7 +6,9 @@ import (
 
 //RegexVarEntero ...
 type RegexVarEntero struct {
-	V1 *regexp.Regexp
+	keyword string
+	V1      *regexp.Regexp
+	V2i     *regexp.Regexp
 }
 
 //NewRegexVariableEntero ...
@@ -14,7 +16,9 @@ func NewRegexVariableEntero() (*RegexVarEntero, error) {
 	// var moduleName string = "[regexint][NewRegexVariableEntero()]"
 
 	return &RegexVarEntero{
-		V1: regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Entero;$`),
+		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Entero;$`),
+		V2i:     regexp.MustCompile(`(?i)entero`),
+		keyword: "Entero",
 	}, nil
 }
 
@@ -23,7 +27,13 @@ func (r *RegexVarEntero) MatchVariableEntero(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
-
 	return false
+}
 
+//MatchVariableEnteroCaseless ...
+func (r *RegexVarEntero) MatchVariableEnteroCaseless(str string) bool {
+	if r.V2i.MatchString(str) {
+		return true
+	}
+	return false
 }

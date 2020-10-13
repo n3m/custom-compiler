@@ -99,7 +99,38 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 		}
 
 		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
-			// type, variableData := getVariablesFromString(currentLine)
+			typeOfData, variableData := getVariablesFromString(currentLine)
+
+			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
+				for _, name := range variableData {
+					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+				}
+			}
+
+			if l.R.RegexVariableEntero.MatchVariableEnteroCaseless(typeOfData) {
+				for _, name := range variableData {
+					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
+				}
+			}
+
+			if l.R.RegexVariableFlotante.MatchVariableFlotanteCaseless(typeOfData) {
+				for _, name := range variableData {
+					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
+				}
+			}
+
+			if l.R.RegexVariableLogico.MatchVariableLogicoCaseless(typeOfData) {
+				for _, name := range variableData {
+					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
+				}
+			}
+
+			if l.R.RegexVariableReal.MatchVariableRealCaseless(typeOfData) {
+				for _, name := range variableData {
+					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+				}
+			}
+
 			// for _, name := range variableData {
 			// 	l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
 			// }
