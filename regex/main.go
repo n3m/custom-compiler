@@ -7,6 +7,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexconstante"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
+	"go-custom-compiler/regex/variable/regexvardefault"
 	"go-custom-compiler/regex/variable/regexvarentero"
 	"go-custom-compiler/regex/variable/regexvarflotante"
 	"go-custom-compiler/regex/variable/regexvarlogico"
@@ -26,6 +27,7 @@ type CustomRegex struct {
 	RegexVariableFlotante   *regexvarflotante.RegexVarFlotante
 	RegexVariableLogico     *regexvarlogico.RegexVarLogico
 	RegexVariableReal       *regexvarreal.RegexVarReal
+	RegexVariableDefault    *regexvardefault.RegexVarDefault
 
 	EL *log.Logger
 	LL *log.Logger
@@ -48,6 +50,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	varflotanteBuilder, _ := regexvarflotante.NewRegexVariableFlotante()
 	varlogicoBuilder, _ := regexvarlogico.NewRegexVariableLogico()
 	varrealBuilder, _ := regexvarreal.NewRegexVariableReal()
+	vardefaultBuilder, _ := regexvardefault.NewRegexVariableDefault()
 
 	return &CustomRegex{
 		RegexConstante:          constanteBuilder,
@@ -59,6 +62,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexVariableFlotante:   varflotanteBuilder,
 		RegexVariableLogico:     varlogicoBuilder,
 		RegexVariableReal:       varrealBuilder,
+		RegexVariableDefault:    vardefaultBuilder,
 		EL:                      EL,
 		LL:                      LL,
 		GL:                      GL,

@@ -38,11 +38,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			for _, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
 			}
+
 			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
 			if debug {
 				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
 			}
-
 			return
 		}
 
@@ -50,10 +50,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			_, variableData := getVariablesFromString(currentLine)
 			for _, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
-			}
-			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
 			}
 
 			l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
@@ -68,10 +64,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			for _, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
 			}
-			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
-			}
 
 			l.GL.Printf("%+v[VARIABLE] Flotante Found > %+v", funcName, currentLine)
 			if debug {
@@ -84,10 +76,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			_, variableData := getVariablesFromString(currentLine)
 			for _, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
-			}
-			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
 			}
 
 			l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
@@ -102,10 +90,19 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			for _, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
 			}
-			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
+
+			l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
+				log.Printf("[VARIABLE] Real Found > %+v", currentLine)
 			}
+			return
+		}
+
+		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
+			// type, variableData := getVariablesFromString(currentLine)
+			// for _, name := range variableData {
+			// 	l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+			// }
 
 			l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
 			if debug {
