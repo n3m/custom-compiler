@@ -6,6 +6,7 @@ import (
 	"go-custom-compiler/regex/regexfloat"
 	"go-custom-compiler/regex/regexint"
 	"go-custom-compiler/regex/regexvariable"
+	"log"
 	"regexp"
 )
 
@@ -15,11 +16,17 @@ type CustomRegex struct {
 	RegexVariable  *regexvariable.RegexVariable
 	RegexFloat     *regexfloat.RegexFloat
 	RegexInt       *regexint.RegexInt
+
+	EL *log.Logger
+	LL *log.Logger
 }
 
 //NewRegex ...
-func NewRegex() (*CustomRegex, error) {
-	constanteBuilder, _ := regexconstante.NewRegexConstante()
+func NewRegex(EL *log.Logger, LL *log.Logger) (*CustomRegex, error) {
+	if EL == nil || LL == nil {
+		return nil, fmt.Errorf("EL or LL loggers came empty")
+	}
+	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL)
 	variableBuilder, _ := regexvariable.NewRegexVariable()
 	floatBuilder, _ := regexfloat.NewRegexFloat()
 	intBuilder, _ := regexint.NewRegexInt()
@@ -29,6 +36,8 @@ func NewRegex() (*CustomRegex, error) {
 		RegexVariable:  variableBuilder,
 		RegexFloat:     floatBuilder,
 		RegexInt:       intBuilder,
+		EL:             EL,
+		LL:             LL,
 	}, nil
 }
 

@@ -1,16 +1,26 @@
 package regexconstante
 
-import "regexp"
+import (
+	"fmt"
+	"log"
+	"regexp"
+)
 
 //RegexConstante ...
 type RegexConstante struct {
 	V1 *regexp.Regexp
 	V2 *regexp.Regexp
 	V3 *regexp.Regexp
+
+	EL *log.Logger
+	LL *log.Logger
 }
 
 //NewRegexConstante ...
-func NewRegexConstante() (*RegexConstante, error) {
+func NewRegexConstante(EL *log.Logger, LL *log.Logger) (*RegexConstante, error) {
+	if EL == nil || LL == nil {
+		return nil, fmt.Errorf("EL or LL loggers came empty")
+	}
 	return &RegexConstante{
 		V1: regexp.MustCompile("^constantes"),
 		V2: regexp.MustCompile("^const"),

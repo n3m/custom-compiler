@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"go-custom-compiler/regex"
 	"log"
-	"strings"
+
+	"github.com/DrN3MESiS/pprnt"
 )
 
 //BlockType ...
@@ -22,15 +23,19 @@ const (
 
 //LexicalAnalyzer ...
 type LexicalAnalyzer struct {
-	File *bufio.Scanner
-	R    *regex.CustomRegex
-	EL   *log.Logger
-	LL   *log.Logger
+	File *bufio.Scanner     //File
+	R    *regex.CustomRegex //Regex Handler
+	EL   *log.Logger        //Error Logger
+	LL   *log.Logger        //Lex Logger
 
 	//TEST
 	CurrentBlockType BlockType
-	Constants        map[string]interface{}
-	Variables        map[string]interface{}
+	FloatConstants   map[string]interface{}
+	IntConstants     map[string]interface{}
+	StringConstants  map[string]interface{}
+	FloatVariables   map[string]interface{}
+	IntVariables     map[string]interface{}
+	StringVariables  map[string]interface{}
 }
 
 //NewLexicalAnalyzer ...
@@ -38,7 +43,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger)
 	if file == nil {
 		return nil, fmt.Errorf("[ERROR] file is not present")
 	}
-	R, err := regex.NewRegex()
+	R, err := regex.NewRegex(ErrorLogger, LexLogger)
 	if err != nil {
 		return nil, fmt.Errorf("[ERROR] %+v", err)
 	}
@@ -53,53 +58,40 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger *log.Logger)
 		LL:   LexLogger,
 
 		CurrentBlockType: DEFAULTBLOCK,
-		Constants:        make(map[string]interface{}),
-		Variables:        make(map[string]interface{}),
+		FloatConstants:   make(map[string]interface{}),
+		IntConstants:     make(map[string]interface{}),
+		StringConstants:  make(map[string]interface{}),
+		FloatVariables:   make(map[string]interface{}),
+		IntVariables:     make(map[string]interface{}),
+		StringVariables:  make(map[string]interface{}),
 	}, nil
 }
 
 //Analyze ...
-func (l *LexicalAnalyzer) Analyze() error {
+func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	for l.File.Scan() {
 		currentLine := l.File.Text()
 
-		if l.CurrentBlockType == DEFAULTBLOCK {
-			if l.R.RegexConstante.StartsWithConstante(currentLine) {
-				// log.Printf("Inicia con constante! > %+v", currentLine)
-				l.CurrentBlockType = CONSTANTBLOCK
-			}
+		/* Type Validation */
 
-			if l.R.RegexVariable.StartsWithVariable(currentLine) {
-				// log.Printf("Inicia con Variable! > %+v", currentLine)
-				l.CurrentBlockType = VARIABLEBLOCK
+		if l.R.RegexConstante.StartsWithConstante(currentLine) {
+			l.CurrentBlockType = CONSTANTBLOCK
+			if debug {
+				log.Printf("Switched to CONSTANTBLOCK")
 			}
 		}
 
+		if l.R.RegexVariable.StartsWithVariable(currentLine) {
+			l.CurrentBlockType = VARIABLEBLOCK
+			if debug {
+				log.Printf("Switched to VARIABLEBLOCK")
+			}
+		}
+
+		/* Data Segregator */
+
 		if l.CurrentBlockType == CONSTANTBLOCK {
-			if l.R.RegexConstante.StartsWithConstante(currentLine) {
-				data := strings.Split(currentLine, " ")
-				currentLine = ""
-				for _, str := range data[1:] {
-					currentLine += str + " "
-				}
-			}
-			currentLine = strings.TrimSpace(currentLine)
-
-			if l.R.RegexVariable.StartsWithVariable(currentLine) {
-				l.CurrentBlockType = VARIABLEBLOCK
-			}
-
-			if l.CurrentBlockType == CONSTANTBLOCK && l.R.RegexFloat.MatchFloatConstantDeclaration(currentLine) {
-				log.Printf("[CONSTANT] Float Found %+v", currentLine)
-				continue
-				//ADD TO FLOAT CONSTANTS
-			}
-			if l.CurrentBlockType == CONSTANTBLOCK && l.R.RegexInt.MatchIntConstantDeclaration(currentLine) {
-				log.Printf("[CONSTANT] Int Found %+v", currentLine)
-				continue
-				//ADD TO INT CONSTANTS
-			}
-
+			l.NextConstant(currentLine, debug)
 		}
 
 		if l.CurrentBlockType == VARIABLEBLOCK {
@@ -111,7 +103,50 @@ func (l *LexicalAnalyzer) Analyze() error {
 	return nil
 }
 
-//NextConstant ...
-func (l *LexicalAnalyzer) NextConstant() {
+//Print ...
+func (l *LexicalAnalyzer) Print() {
+	log.SetFlags(0)
+	if len(l.FloatConstants) > 0 {
+		log.Print("Float Constants: ")
+		pprnt.Print(l.FloatConstants)
+	} else {
+		log.Println("Float Constants: 0")
+	}
 
+	if len(l.IntConstants) > 0 {
+		log.Print("Int Constants: ")
+		pprnt.Print(l.IntConstants)
+	} else {
+		log.Println("Int Constants: 0")
+	}
+
+	if len(l.StringConstants) > 0 {
+		log.Print("String Constants: ")
+		pprnt.Print(l.StringConstants)
+	} else {
+		log.Println("String Constants: 0")
+	}
+
+	if len(l.FloatVariables) > 0 {
+		log.Print("Float Variables: ")
+		pprnt.Print(l.FloatVariables)
+	} else {
+		log.Println("Float Variables: 0")
+	}
+
+	if len(l.IntVariables) > 0 {
+		log.Print("Int Variables: ")
+		pprnt.Print(l.IntVariables)
+	} else {
+		log.Println("Int Variables: 0")
+	}
+
+	if len(l.StringVariables) > 0 {
+		log.Print("String Variables: ")
+		pprnt.Print(l.StringVariables)
+	} else {
+		log.Println("String Variables: 0")
+	}
+
+	log.SetFlags(log.LstdFlags)
 }

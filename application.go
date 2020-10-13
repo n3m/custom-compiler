@@ -43,10 +43,13 @@ func main() {
 		panic(err)
 	}
 
-	err = lex.Analyze()
+	debugMode := false
+	err = lex.Analyze(debugMode)
 	if err != nil {
 		panic(err)
 	}
+
+	lex.Print()
 
 	/*
 		= Expresion Regular para Asignacion a Strings (sin variables): ^\w[^\s]*\s*:=\s*\"[^"]*\"(\s*\+\s*\"[^"]*\")*;
