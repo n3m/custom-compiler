@@ -13,7 +13,7 @@ func CreateLogger(filename string, flags bool) (*log.Logger, *os.File, error) {
 	}
 
 	f, err := os.OpenFile(filename,
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, nil, fmt.Errorf("[ERROR] %+v", err)
 	}
