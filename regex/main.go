@@ -2,10 +2,10 @@ package regex
 
 import (
 	"fmt"
-	"go-custom-compiler/regex/regexconstante"
-	"go-custom-compiler/regex/regexfloat"
-	"go-custom-compiler/regex/regexint"
-	"go-custom-compiler/regex/regexvariable"
+	"go-custom-compiler/regex/constant/regexfloat"
+	"go-custom-compiler/regex/constant/regexint"
+	"go-custom-compiler/regex/reserved/regexconstante"
+	"go-custom-compiler/regex/reserved/regexvariable"
 	"log"
 	"regexp"
 )

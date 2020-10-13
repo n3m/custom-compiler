@@ -31,6 +31,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 		}
 
 		log.Printf("%+v > %+v", funcName, currentLine)
+		//^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:[a-zA-Z]+;$
 
 		// if l.R.RegexFloat.MatchFloatConstantDeclaration(currentLine) {
 		// 	currentLine = strings.TrimSuffix(currentLine, ";")
