@@ -33,18 +33,44 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 		}
 
 		if l.R.RegexVariableAlfabetico.MatchVariableAlfabetico(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
+			}
+
 			return
 		}
 		if l.R.RegexVariableEntero.MatchVariableEntero(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Entero Found > %+v", currentLine)
+			}
 			return
 		}
 		if l.R.RegexVariableFlotante.MatchVariableFlotante(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			l.GL.Printf("%+v[VARIABLE] Flotante Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Flotante Found > %+v", currentLine)
+			}
 			return
 		}
 		if l.R.RegexVariableLogico.MatchVariableLogico(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Logico Found > %+v", currentLine)
+			}
 			return
 		}
 		if l.R.RegexVariableReal.MatchVariableReal(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Real Found > %+v", currentLine)
+			}
 			return
 		}
 
