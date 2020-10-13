@@ -10,7 +10,7 @@ import (
 func CheckIfFileExists(path string) error {
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("[ERROR] %+v", err)
+		return fmt.Errorf("[ERROR] %+v", err.Error())
 	}
 
 	if info.IsDir() {

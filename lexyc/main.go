@@ -41,14 +41,17 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
 
 	if file == nil {
+		GeneralLogger.Printf("[ERROR]%+v file is not present", moduleName)
 		return nil, fmt.Errorf("[ERROR]%+v file is not present", moduleName)
 	}
 	if ErrorLogger == nil || LexLogger == nil || GeneralLogger == nil {
+		GeneralLogger.Printf("[ERROR]%+v Loggers are not present", moduleName)
 		return nil, fmt.Errorf("[ERROR]%+v Loggers are not present", moduleName)
 	}
 	R, err := regex.NewRegex(ErrorLogger, LexLogger, GeneralLogger)
 	if err != nil {
-		return nil, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
+		GeneralLogger.Printf("[ERROR]%+v %+v", moduleName, err.Error())
+		return nil, fmt.Errorf("[ERROR]%+v %+v", moduleName, err.Error())
 	}
 
 	return &LexicalAnalyzer{

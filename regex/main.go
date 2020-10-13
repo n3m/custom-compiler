@@ -75,7 +75,7 @@ func (r CustomRegex) StartsWith(prefix, strToTest string) (bool, error) {
 
 	compiled, err := regexp.Compile("^" + prefix)
 	if err != nil {
-		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
+		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err.Error())
 	}
 
 	return compiled.MatchString(strToTest), nil
@@ -87,7 +87,7 @@ func (r CustomRegex) EndsWith(suffix, strToTest string) (bool, error) {
 
 	compiled, err := regexp.Compile(suffix + "$")
 	if err != nil {
-		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err)
+		return false, fmt.Errorf("[ERROR]%+v %+v", moduleName, err.Error())
 	}
 
 	return compiled.MatchString(strToTest), nil
