@@ -32,29 +32,21 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			return
 		}
 
-		log.Printf("%+v > %+v", funcName, currentLine)
-
-		// if l.R.RegexFloat.MatchFloatConstantDeclaration(currentLine) {
-		// 	currentLine = strings.TrimSuffix(currentLine, ";")
-		// 	floatData := strings.Split(currentLine, ":=")
-		// 	l.FloatConstants[floatData[0]] = floatData[1]
-		// 	l.GL.Printf("%+v[CONSTANT] Float Found > %+v", funcName, currentLine)
-		// 	if debug {
-		// 		log.Printf("[CONSTANT] Float Found > %+v", currentLine)
-		// 	}
-		// 	return
-		// }
-		// if l.R.RegexInt.MatchIntConstantDeclaration(currentLine) {
-		// 	currentLine = strings.TrimSuffix(currentLine, ";")
-		// 	floatData := strings.Split(currentLine, ":=")
-		// 	l.IntConstants[floatData[0]] = floatData[1]
-		// 	l.GL.Printf("%+v[CONSTANT] Int Found > %+v", funcName, currentLine)
-
-		// 	if debug {
-		// 		log.Printf("[CONSTANT] Int Found > %+v", currentLine)
-		// 	}
-		// 	return
-		// }
+		if l.R.RegexVariableAlfabetico.MatchVariableAlfabetico(currentLine) {
+			return
+		}
+		if l.R.RegexVariableEntero.MatchVariableEntero(currentLine) {
+			return
+		}
+		if l.R.RegexVariableFlotante.MatchVariableFlotante(currentLine) {
+			return
+		}
+		if l.R.RegexVariableLogico.MatchVariableLogico(currentLine) {
+			return
+		}
+		if l.R.RegexVariableReal.MatchVariableReal(currentLine) {
+			return
+		}
 
 	}
 

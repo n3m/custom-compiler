@@ -1,6 +1,7 @@
 package lexyc
 
 import (
+	"go-custom-compiler/models"
 	"log"
 	"strings"
 )
@@ -33,7 +34,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 		if l.R.RegexConstanteFloat.MatchFloatConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
-			l.FloatConstants[floatData[0]] = floatData[1]
+			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.FLOTANTE, Key: floatData[0], Value: floatData[1]})
 			l.GL.Printf("%+v[CONSTANT] Float Found > %+v", funcName, currentLine)
 			if debug {
 				log.Printf("[CONSTANT] Float Found > %+v", currentLine)
@@ -43,7 +44,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 		if l.R.RegexConstanteInt.MatchIntConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
-			l.IntConstants[floatData[0]] = floatData[1]
+			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.ENTERO, Key: floatData[0], Value: floatData[1]})
 			l.GL.Printf("%+v[CONSTANT] Int Found > %+v", funcName, currentLine)
 
 			if debug {
