@@ -73,6 +73,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 
 //Analyze ...
 func (l *LexicalAnalyzer) Analyze(debug bool) error {
+	funcName := "[Analyze()] "
 	for l.File.Scan() {
 		currentLine := l.File.Text()
 
@@ -80,6 +81,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
 			l.CurrentBlockType = CONSTANTBLOCK
+			l.GL.Printf("%+vSwitched to CONSTANTBLOCK", funcName)
 			if debug {
 				log.Printf("Switched to CONSTANTBLOCK")
 			}
@@ -87,6 +89,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.R.RegexVariable.StartsWithVariable(currentLine) {
 			l.CurrentBlockType = VARIABLEBLOCK
+			l.GL.Printf("%+vSwitched to VARIABLEBLOCK", funcName)
+
 			if debug {
 				log.Printf("Switched to VARIABLEBLOCK")
 			}
@@ -99,7 +103,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		if l.CurrentBlockType == VARIABLEBLOCK {
-
+			l.NextVariable(currentLine, debug)
 		}
 
 	}

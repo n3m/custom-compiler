@@ -7,6 +7,7 @@ import (
 
 //NextConstant ...
 func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
+	funcName := "[NextConstant()] "
 	// var moduleName string = "[constants.go][NextConstant()]"
 
 	if l.CurrentBlockType == CONSTANTBLOCK {
@@ -21,8 +22,10 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 
 		if l.R.RegexVariable.StartsWithVariable(currentLine) {
 			l.CurrentBlockType = VARIABLEBLOCK
+			l.GL.Printf("%+vSwitched to VARIABLEBLOCK while analyzing for CONSTANTBLOCK", funcName)
+
 			if debug {
-				log.Printf("Switched to VARIABLEBLOCK while analyzing for Constant")
+				log.Printf("Switched to VARIABLEBLOCK while analyzing for CONSTANTBLOCK")
 			}
 			return
 		}
@@ -31,8 +34,9 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
 			l.FloatConstants[floatData[0]] = floatData[1]
+			l.GL.Printf("%+v[CONSTANT] Float Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[CONSTANT] Float Found %+v", currentLine)
+				log.Printf("[CONSTANT] Float Found > %+v", currentLine)
 			}
 			return
 		}
@@ -40,8 +44,10 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
 			l.IntConstants[floatData[0]] = floatData[1]
+			l.GL.Printf("%+v[CONSTANT] Int Found > %+v", funcName, currentLine)
+
 			if debug {
-				log.Printf("[CONSTANT] Int Found %+v", currentLine)
+				log.Printf("[CONSTANT] Int Found > %+v", currentLine)
 			}
 			return
 		}
