@@ -9,7 +9,7 @@ import (
 
 //RegexVariable ...
 type RegexVariable struct {
-	keyword string
+	Keyword string
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
 	V3      *regexp.Regexp
@@ -31,7 +31,7 @@ func NewRegexVariable(EL, LL, GL *log.Logger) (*RegexVariable, error) {
 	compiledV2 := regexp.MustCompile("^varia")
 	compiledV3 := regexp.MustCompile("^var")
 	return &RegexVariable{
-		keyword: "variables",
+		Keyword: "variables",
 		V1:      compiledV1,
 		V2:      compiledV2,
 		V3:      compiledV3,
@@ -50,13 +50,15 @@ func (r *RegexVariable) StartsWithVariable(str string) bool {
 	if r.V2.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
-		keyword := strings.Split(r.keyword, "")
+		Keyword := strings.Split(r.Keyword, "")
 		foundTypo := false
 		for i, char := range wrongWord {
 			if !foundTypo {
-				if string(char) != keyword[i] {
+				if string(char) != Keyword[i] {
 					foundTypo = true
-					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.keyword)
+					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+					r.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+
 				}
 			}
 		}
@@ -66,13 +68,15 @@ func (r *RegexVariable) StartsWithVariable(str string) bool {
 	if r.V3.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
-		keyword := strings.Split(r.keyword, "")
+		Keyword := strings.Split(r.Keyword, "")
 		foundTypo := false
 		for i, char := range wrongWord {
 			if !foundTypo {
-				if string(char) != keyword[i] {
+				if string(char) != Keyword[i] {
 					foundTypo = true
-					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.keyword)
+					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+					r.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+
 				}
 			}
 		}

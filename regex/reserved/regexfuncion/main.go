@@ -1,4 +1,4 @@
-package regexconstante
+package regexfuncion
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-//RegexConstante ...
-type RegexConstante struct {
+//RegexFuncion ...
+type RegexFuncion struct {
 	Keyword string
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
@@ -19,27 +19,30 @@ type RegexConstante struct {
 	GL *log.Logger
 }
 
-//NewRegexConstante ...
-func NewRegexConstante(EL, LL, GL *log.Logger) (*RegexConstante, error) {
-	var moduleName string = "[regexconstante][NewRegexConstante()]"
+//NewRegexFuncion ...
+func NewRegexFuncion(EL, LL, GL *log.Logger) (*RegexFuncion, error) {
+	var moduleName string = "[regexfuncion][NewRegexFuncion()]"
 
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
-	return &RegexConstante{
-		Keyword: "constantes",
-		V1:      regexp.MustCompile("^constantes"),
-		V2:      regexp.MustCompile("^consta"),
-		V3:      regexp.MustCompile("^con"),
-		GL:      GL,
+
+	compiledV1 := regexp.MustCompile("^Funcion")
+	compiledV2 := regexp.MustCompile("^Funci")
+	compiledV3 := regexp.MustCompile("^fun")
+	return &RegexFuncion{
+		Keyword: "Funcion",
+		V1:      compiledV1,
+		V2:      compiledV2,
+		V3:      compiledV3,
 		EL:      EL,
 		LL:      LL,
+		GL:      GL,
 	}, nil
 }
 
-//StartsWithConstante ...
-func (r *RegexConstante) StartsWithConstante(str string) bool {
-
+//StartsWithfuncion ...
+func (r *RegexFuncion) StartsWithfuncion(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -48,15 +51,14 @@ func (r *RegexConstante) StartsWithConstante(str string) bool {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
-
 		foundTypo := false
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
 					foundTypo = true
-
 					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
 					r.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+
 				}
 			}
 		}
@@ -74,6 +76,7 @@ func (r *RegexConstante) StartsWithConstante(str string) bool {
 					foundTypo = true
 					log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
 					r.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
+
 				}
 			}
 		}
@@ -83,8 +86,8 @@ func (r *RegexConstante) StartsWithConstante(str string) bool {
 	return false
 }
 
-//StartsWithConstanteNoCheck ...
-func (r *RegexConstante) StartsWithConstanteNoCheck(str string) bool {
+//StartsWithfuncionNoCheck ...
+func (r *RegexFuncion) StartsWithfuncionNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -98,4 +101,5 @@ func (r *RegexConstante) StartsWithConstanteNoCheck(str string) bool {
 	}
 
 	return false
+
 }
