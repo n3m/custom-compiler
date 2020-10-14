@@ -100,14 +100,19 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 
 		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
 			typeOfData, variableData := getVariablesFromString(currentLine)
-			l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Default Found > %+v", currentLine)
-			}
+			// l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
+			// if debug {
+			// 	log.Printf("[VARIABLE] Default Found > %+v", currentLine)
+			// }
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+				}
+
+				l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[VARIABLE] Alfabetico Found > %+v", currentLine)
 				}
 
 				foundTypo := false
@@ -132,6 +137,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
 				}
 
+				l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[VARIABLE] Entero Found > %+v", currentLine)
+				}
+
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexVariableEntero.Keyword, "")
 				for i, char := range typeOfData {
@@ -152,6 +162,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			if l.R.RegexVariableFlotante.MatchVariableFlotanteCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
+				}
+
+				l.GL.Printf("%+v[VARIABLE] Flotante Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[VARIABLE] Flotante Found > %+v", currentLine)
 				}
 
 				foundTypo := false
@@ -176,6 +191,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
 				}
 
+				l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[VARIABLE] Logico Found > %+v", currentLine)
+				}
+
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexVariableLogico.Keyword, "")
 				for i, char := range typeOfData {
@@ -196,6 +216,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 			if l.R.RegexVariableReal.MatchVariableRealCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+				}
+
+				l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[VARIABLE] Real Found > %+v", currentLine)
 				}
 
 				foundTypo := false
