@@ -41,8 +41,8 @@ func NewRegexFuncion(EL, LL, GL *log.Logger) (*RegexFuncion, error) {
 	}, nil
 }
 
-//StartsWithfuncion ...
-func (r *RegexFuncion) StartsWithfuncion(str string) bool {
+//StartsWithFuncion ...
+func (r *RegexFuncion) StartsWithFuncion(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -86,8 +86,8 @@ func (r *RegexFuncion) StartsWithfuncion(str string) bool {
 	return false
 }
 
-//StartsWithfuncionNoCheck ...
-func (r *RegexFuncion) StartsWithfuncionNoCheck(str string) bool {
+//StartsWithFuncionNoCheck ...
+func (r *RegexFuncion) StartsWithFuncionNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

@@ -13,7 +13,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 	// var moduleName string = "[variables.go][NextVariable()]"
 	funcName := "[NextVariable()] "
 
-	if l.CurrentBlockType == VARIABLEBLOCK {
+	if l.CurrentBlockType == models.VARIABLEBLOCK {
 		if l.R.RegexVariable.StartsWithVariableNoCheck(currentLine) {
 			data := strings.Split(currentLine, " ")
 			currentLine = ""
@@ -22,16 +22,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			}
 		}
 		currentLine = strings.TrimSpace(currentLine)
-
-		if l.R.RegexConstante.StartsWithConstante(currentLine) {
-			l.CurrentBlockType = CONSTANTBLOCK
-			l.GL.Printf("%+vSwitched to CONSTANTBLOCK while analyzing for VARIABLEBLOCK", funcName)
-
-			if debug {
-				log.Printf("Switched to CONSTANTBLOCK while analyzing for VARIABLEBLOCK")
-			}
-			return
-		}
 
 		if l.R.RegexVariableAlfabetico.MatchVariableAlfabetico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)

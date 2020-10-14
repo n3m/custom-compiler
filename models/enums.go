@@ -1,5 +1,19 @@
 package models
 
+//BlockType ...
+type BlockType int
+
+const (
+	//DEFAULTBLOCK ...
+	DEFAULTBLOCK BlockType = iota
+	//CONSTANTBLOCK ...
+	CONSTANTBLOCK
+	//VARIABLEBLOCK ...
+	VARIABLEBLOCK
+	//FUNCTIONBLOCK ...
+	FUNCTIONBLOCK
+)
+
 //TokenType ...
 type TokenType string
 

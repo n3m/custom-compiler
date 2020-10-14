@@ -10,18 +10,6 @@ import (
 	"github.com/DrN3MESiS/pprnt"
 )
 
-//BlockType ...
-type BlockType int
-
-const (
-	//DEFAULTBLOCK ...
-	DEFAULTBLOCK BlockType = iota
-	//CONSTANTBLOCK ...
-	CONSTANTBLOCK
-	//VARIABLEBLOCK ...
-	VARIABLEBLOCK
-)
-
 //LexicalAnalyzer ...
 type LexicalAnalyzer struct {
 	File *bufio.Scanner     //File
@@ -31,7 +19,7 @@ type LexicalAnalyzer struct {
 	GL   *log.Logger        //General Logger
 
 	//TEST
-	CurrentBlockType BlockType
+	CurrentBlockType models.BlockType
 	ConstantStorage  []models.Token
 	VariableStorage  []models.Token
 }
@@ -61,7 +49,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		LL:   LexLogger,
 		GL:   GeneralLogger,
 
-		CurrentBlockType: DEFAULTBLOCK,
+		CurrentBlockType: models.DEFAULTBLOCK,
 		ConstantStorage:  []models.Token{},
 		VariableStorage:  []models.Token{},
 	}, nil
@@ -78,7 +66,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		/* Type Validation */
 
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
-			l.CurrentBlockType = CONSTANTBLOCK
+			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.GL.Printf("%+vSwitched to CONSTANTBLOCK", funcName)
 			if debug {
 				log.Printf("Switched to CONSTANTBLOCK")
@@ -86,7 +74,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		if l.R.RegexVariable.StartsWithVariable(currentLine) {
-			l.CurrentBlockType = VARIABLEBLOCK
+			l.CurrentBlockType = models.VARIABLEBLOCK
 			l.GL.Printf("%+vSwitched to VARIABLEBLOCK", funcName)
 
 			if debug {
@@ -94,14 +82,27 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
+		if l.R.RegexFuncion.StartsWithFuncion(currentLine) {
+			l.CurrentBlockType = models.FUNCTIONBLOCK
+			l.GL.Printf("%+vSwitched to FUNCTIONBLOCK", funcName)
+
+			if debug {
+				log.Printf("Switched to FUNCTIONBLOCK")
+			}
+		}
+
 		/* Data Segregator */
 
-		if l.CurrentBlockType == CONSTANTBLOCK {
+		if l.CurrentBlockType == models.CONSTANTBLOCK {
 			l.NextConstant(currentLine, lineIndex, debug)
 		}
 
-		if l.CurrentBlockType == VARIABLEBLOCK {
+		if l.CurrentBlockType == models.VARIABLEBLOCK {
 			l.NextVariable(currentLine, lineIndex, debug)
+		}
+
+		if l.CurrentBlockType == models.FUNCTIONBLOCK {
+			l.NextFuncion(currentLine, lineIndex, debug)
 		}
 		lineIndex++
 	}

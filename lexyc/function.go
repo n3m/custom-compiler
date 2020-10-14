@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-//NextConstant ...
-func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debug bool) {
-	funcName := "[NextConstant()] "
-	// var moduleName string = "[constants.go][NextConstant()]"
+//NextFuncion ...
+func (l *LexicalAnalyzer) NextFuncion(currentLine string, lineIndex int64, debug bool) {
+	funcName := "[NextFuncion()] "
+	// var moduleName string = "[constants.go][NextFuncion()]"
 
-	if l.CurrentBlockType == models.CONSTANTBLOCK {
-		if l.R.RegexConstante.StartsWithConstanteNoCheck(currentLine) {
+	if l.CurrentBlockType == models.FUNCTIONBLOCK {
+		if l.R.RegexFuncion.StartsWithFuncionNoCheck(currentLine) {
 			data := strings.Split(currentLine, " ")
 			currentLine = ""
 			for _, str := range data[1:] {
