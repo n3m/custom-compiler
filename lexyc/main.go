@@ -58,7 +58,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 //Analyze ...
 func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	funcName := "[Analyze()] "
-	var lineIndex int64 = 0
+	var lineIndex int64 = 1
 	for l.File.Scan() {
 		currentLine := l.File.Text()
 		// l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)

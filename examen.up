@@ -6,8 +6,8 @@ varibles i, j, k, n, vector[MAX], matriz[MAX][MAX]:Entero;
           Alfa, Beta:Alfabetico;
           Log1, Log2:Logico;
 
-Funcion FacRec(n:Entero):Entero;
-Funcion FacIter(n:Entero):Entero;
+Funcon FacRec(n:Entero):Entero;
+Funcin FacIter(n:Entero):Entero;
 Procedimiento LeeVec(k:Entero);
 Procedimiento LeeMat(K:Entero);
 Procedimiento OrdVec(k:Entero);

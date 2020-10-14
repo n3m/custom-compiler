@@ -18,8 +18,8 @@ func NewRegexFuncProtoDefault() (*RegexFuncProtoDefault, error) {
 	}, nil
 }
 
-//MatchVarDefault ...
-func (r *RegexFuncProtoDefault) MatchVarDefault(str string) bool {
+//MatchFuncDefault ...
+func (r *RegexFuncProtoDefault) MatchFuncDefault(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
