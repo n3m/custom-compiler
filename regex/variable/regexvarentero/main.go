@@ -6,7 +6,7 @@ import (
 
 //RegexVarEntero ...
 type RegexVarEntero struct {
-	keyword string
+	Keyword string
 	V1      *regexp.Regexp
 	V2i     *regexp.Regexp
 }
@@ -18,7 +18,7 @@ func NewRegexVariableEntero() (*RegexVarEntero, error) {
 	return &RegexVarEntero{
 		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Entero;$`),
 		V2i:     regexp.MustCompile(`(?i)entero`),
-		keyword: "Entero",
+		Keyword: "Entero",
 	}, nil
 }
 

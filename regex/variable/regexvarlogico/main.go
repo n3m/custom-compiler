@@ -6,7 +6,7 @@ import (
 
 //RegexVarLogico ...
 type RegexVarLogico struct {
-	keyword string
+	Keyword string
 	V1      *regexp.Regexp
 	V2i     *regexp.Regexp
 }
@@ -18,7 +18,7 @@ func NewRegexVariableLogico() (*RegexVarLogico, error) {
 	return &RegexVarLogico{
 		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Logico;$`),
 		V2i:     regexp.MustCompile(`(?i)logico`),
-		keyword: "Logico",
+		Keyword: "Logico",
 	}, nil
 }
 

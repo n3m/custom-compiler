@@ -100,10 +100,30 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 
 		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
 			typeOfData, variableData := getVariablesFromString(currentLine)
+			l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
+			if debug {
+				log.Printf("[VARIABLE] Default Found > %+v", currentLine)
+			}
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+				}
+
+				foundTypo := false
+				keyData := strings.Split(l.R.RegexVariableAlfabetico.Keyword, "")
+				for i, char := range typeOfData {
+					if i < len(keyData)-1 {
+						if !foundTypo {
+							if string(char) != keyData[i] {
+								foundTypo = true
+								if debug {
+									log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableAlfabetico.Keyword)
+								}
+								l.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableAlfabetico.Keyword)
+							}
+						}
+					}
 				}
 			}
 
@@ -111,11 +131,43 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
 				}
+
+				foundTypo := false
+				keyData := strings.Split(l.R.RegexVariableEntero.Keyword, "")
+				for i, char := range typeOfData {
+					if i < len(keyData)-1 {
+						if !foundTypo {
+							if string(char) != keyData[i] {
+								foundTypo = true
+								if debug {
+									log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableEntero.Keyword)
+								}
+								l.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableEntero.Keyword)
+							}
+						}
+					}
+				}
 			}
 
 			if l.R.RegexVariableFlotante.MatchVariableFlotanteCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
+				}
+
+				foundTypo := false
+				keyData := strings.Split(l.R.RegexVariableFlotante.Keyword, "")
+				for i, char := range typeOfData {
+					if i < len(keyData)-1 {
+						if !foundTypo {
+							if string(char) != keyData[i] {
+								foundTypo = true
+								if debug {
+									log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableFlotante.Keyword)
+								}
+								l.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableFlotante.Keyword)
+							}
+						}
+					}
 				}
 			}
 
@@ -123,22 +175,46 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, debug bool) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
 				}
+
+				foundTypo := false
+				keyData := strings.Split(l.R.RegexVariableLogico.Keyword, "")
+				for i, char := range typeOfData {
+					if i < len(keyData)-1 {
+						if !foundTypo {
+							if string(char) != keyData[i] {
+								foundTypo = true
+								if debug {
+									log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableLogico.Keyword)
+								}
+								l.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableLogico.Keyword)
+							}
+						}
+					}
+				}
 			}
 
 			if l.R.RegexVariableReal.MatchVariableRealCaseless(typeOfData) {
 				for _, name := range variableData {
 					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
 				}
+
+				foundTypo := false
+				keyData := strings.Split(l.R.RegexVariableReal.Keyword, "")
+				for i, char := range typeOfData {
+					if i < len(keyData)-1 {
+						if !foundTypo {
+							if string(char) != keyData[i] {
+								foundTypo = true
+								if debug {
+									log.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableReal.Keyword)
+								}
+								l.GL.Printf("Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", typeOfData, i, l.R.RegexVariableReal.Keyword)
+							}
+						}
+					}
+				}
 			}
 
-			// for _, name := range variableData {
-			// 	l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
-			// }
-
-			l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Default Found > %+v", currentLine)
-			}
 			return
 		}
 

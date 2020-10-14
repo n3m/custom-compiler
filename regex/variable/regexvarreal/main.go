@@ -6,7 +6,7 @@ import (
 
 //RegexVarReal ...
 type RegexVarReal struct {
-	keyword string
+	Keyword string
 	V1      *regexp.Regexp
 	V2i     *regexp.Regexp
 }
@@ -18,7 +18,7 @@ func NewRegexVariableReal() (*RegexVarReal, error) {
 	return &RegexVarReal{
 		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Real;$`),
 		V2i:     regexp.MustCompile(`(?i)real`),
-		keyword: "Real",
+		Keyword: "Real",
 	}, nil
 }
 

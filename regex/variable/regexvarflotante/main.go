@@ -6,7 +6,7 @@ import (
 
 //RegexVarFlotante ...
 type RegexVarFlotante struct {
-	keyword string
+	Keyword string
 	V1      *regexp.Regexp
 	V2i     *regexp.Regexp
 }
@@ -18,7 +18,7 @@ func NewRegexVariableFlotante() (*RegexVarFlotante, error) {
 	return &RegexVarFlotante{
 		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Flotante;$`),
 		V2i:     regexp.MustCompile(`(?i)flotante`),
-		keyword: "Flotante",
+		Keyword: "Flotante",
 	}, nil
 }
 
