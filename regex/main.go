@@ -5,7 +5,7 @@ import (
 	"go-custom-compiler/regex/constant/regexconstfloat"
 	"go-custom-compiler/regex/constant/regexconstint"
 	"go-custom-compiler/regex/reserved/regexconstante"
-	"go-custom-compiler/regex/reserved/regexfuncion"
+	"go-custom-compiler/regex/reserved/regexfuncionproto"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
 	"go-custom-compiler/regex/variable/regexvardefault"
@@ -29,7 +29,7 @@ type CustomRegex struct {
 	RegexVariableLogico     *regexvarlogico.RegexVarLogico
 	RegexVariableReal       *regexvarreal.RegexVarReal
 	RegexVariableDefault    *regexvardefault.RegexVarDefault
-	RegexFuncion            *regexfuncion.RegexFuncion
+	RegexFuncionProto       *regexfuncionproto.RegexFuncionProto
 
 	EL *log.Logger
 	LL *log.Logger
@@ -45,7 +45,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	}
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL, GL)
 	variableBuilder, _ := regexvariable.NewRegexVariable(EL, LL, GL)
-	funcionBuilder, _ := regexfuncion.NewRegexFuncion(EL, LL, GL)
+	funcionProtoBuilder, _ := regexfuncionproto.NewRegexFuncionProto(EL, LL, GL)
 
 	constfloatBuilder, _ := regexconstfloat.NewRegexFloat()
 	constintBuilder, _ := regexconstint.NewRegexInt()
@@ -57,8 +57,12 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	vardefaultBuilder, _ := regexvardefault.NewRegexVariableDefault()
 
 	return &CustomRegex{
-		RegexConstante:          constanteBuilder,
-		RegexVariable:           variableBuilder,
+		//Reserved
+		RegexConstante: constanteBuilder,
+		RegexVariable:  variableBuilder,
+		//Proto
+		RegexFuncionProto: funcionProtoBuilder,
+		//Variants
 		RegexConstanteFloat:     constfloatBuilder,
 		RegexConstanteInt:       constintBuilder,
 		RegexVariableAlfabetico: varalfabeticoBuilder,
@@ -67,7 +71,6 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexVariableLogico:     varlogicoBuilder,
 		RegexVariableReal:       varrealBuilder,
 		RegexVariableDefault:    vardefaultBuilder,
-		RegexFuncion:            funcionBuilder,
 		EL:                      EL,
 		LL:                      LL,
 		GL:                      GL,

@@ -1,4 +1,4 @@
-package regexfuncion
+package regexfuncionproto
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-//RegexFuncion ...
-type RegexFuncion struct {
+//RegexFuncionProto ...
+type RegexFuncionProto struct {
 	Keyword string
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
@@ -19,9 +19,9 @@ type RegexFuncion struct {
 	GL *log.Logger
 }
 
-//NewRegexFuncion ...
-func NewRegexFuncion(EL, LL, GL *log.Logger) (*RegexFuncion, error) {
-	var moduleName string = "[regexfuncion][NewRegexFuncion()]"
+//NewRegexFuncionProto ...
+func NewRegexFuncionProto(EL, LL, GL *log.Logger) (*RegexFuncionProto, error) {
+	var moduleName string = "[regexFuncionProto][NewRegexFuncionProto()]"
 
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
@@ -30,7 +30,7 @@ func NewRegexFuncion(EL, LL, GL *log.Logger) (*RegexFuncion, error) {
 	compiledV1 := regexp.MustCompile("^Funcion")
 	compiledV2 := regexp.MustCompile("^Funci")
 	compiledV3 := regexp.MustCompile("^fun")
-	return &RegexFuncion{
+	return &RegexFuncionProto{
 		Keyword: "Funcion",
 		V1:      compiledV1,
 		V2:      compiledV2,
@@ -41,8 +41,8 @@ func NewRegexFuncion(EL, LL, GL *log.Logger) (*RegexFuncion, error) {
 	}, nil
 }
 
-//StartsWithFuncion ...
-func (r *RegexFuncion) StartsWithFuncion(str string) bool {
+//StartsWithFuncionProto ...
+func (r *RegexFuncionProto) StartsWithFuncionProto(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -86,8 +86,8 @@ func (r *RegexFuncion) StartsWithFuncion(str string) bool {
 	return false
 }
 
-//StartsWithFuncionNoCheck ...
-func (r *RegexFuncion) StartsWithFuncionNoCheck(str string) bool {
+//StartsWithFuncionProtoNoCheck ...
+func (r *RegexFuncionProto) StartsWithFuncionProtoNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

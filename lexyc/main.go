@@ -82,12 +82,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
-		if l.R.RegexFuncion.StartsWithFuncion(currentLine) {
-			l.CurrentBlockType = models.FUNCTIONBLOCK
-			l.GL.Printf("%+vSwitched to FUNCTIONBLOCK", funcName)
+		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine) {
+			l.CurrentBlockType = models.FUNCTIONPROTOBLOCK
+			l.GL.Printf("%+vSwitched to FUNCTIONPROTOBLOCK", funcName)
 
 			if debug {
-				log.Printf("Switched to FUNCTIONBLOCK")
+				log.Printf("Switched to FUNCTIONPROTOBLOCK")
 			}
 		}
 
@@ -101,8 +101,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.NextVariable(currentLine, lineIndex, debug)
 		}
 
-		if l.CurrentBlockType == models.FUNCTIONBLOCK {
-			l.NextFuncion(currentLine, lineIndex, debug)
+		if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
+			l.NextFuncionProto(currentLine, lineIndex, debug)
 		}
 		lineIndex++
 	}
