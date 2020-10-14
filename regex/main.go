@@ -19,17 +19,20 @@ import (
 
 //CustomRegex ...
 type CustomRegex struct {
-	RegexConstante          *regexconstante.RegexConstante
+	//Constante
+	RegexConstante      *regexconstante.RegexConstante
+	RegexConstanteFloat *regexconstfloat.RegexFloat
+	RegexConstanteInt   *regexconstint.RegexInt
+	//Variable
 	RegexVariable           *regexvariable.RegexVariable
-	RegexConstanteFloat     *regexconstfloat.RegexFloat
-	RegexConstanteInt       *regexconstint.RegexInt
 	RegexVariableAlfabetico *regexvaralfabetico.RegexVarAlfabetico
 	RegexVariableEntero     *regexvarentero.RegexVarEntero
 	RegexVariableFlotante   *regexvarflotante.RegexVarFlotante
 	RegexVariableLogico     *regexvarlogico.RegexVarLogico
 	RegexVariableReal       *regexvarreal.RegexVarReal
 	RegexVariableDefault    *regexvardefault.RegexVarDefault
-	RegexFuncionProto       *regexfuncionproto.RegexFuncionProto
+	//Function Proto
+	RegexFuncionProto *regexfuncionproto.RegexFuncionProto
 
 	EL *log.Logger
 	LL *log.Logger

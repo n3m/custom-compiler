@@ -5,19 +5,19 @@ import (
 	"strings"
 )
 
-//NextFuncionProto ...
-func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, debug bool) {
-	funcName := "[NextFuncionProto()] "
-	// var moduleName string = "[regexfunctionproto][NextFuncionProto()]"
+//NextProcedureProto ...
+func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64, debug bool) {
+	funcName := "[NextProcedureProto()] "
+	// var moduleName string = "[regexfunctionproto][NextProcedureProto()]"
 
-	if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
-		if l.R.RegexFuncionProto.StartsWithFuncionProtoNoCheck(currentLine) {
-			data := strings.Split(currentLine, " ")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
-		}
+	if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
+		// if l.R.RegexProcedureProto.StartsWithProcedureProtoNoCheck(currentLine) {
+		// 	data := strings.Split(currentLine, " ")
+		// 	currentLine = ""
+		// 	for _, str := range data[1:] {
+		// 		currentLine += str + " "
+		// 	}
+		// }
 		currentLine = strings.TrimSpace(currentLine)
 
 		// if l.R.RegexConstanteFloat.MatchFloatConstantDeclaration(currentLine) {
