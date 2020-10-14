@@ -7,7 +7,7 @@ import (
 )
 
 //NextConstant ...
-func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
+func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debug bool) {
 	funcName := "[NextConstant()] "
 	// var moduleName string = "[constants.go][NextConstant()]"
 
@@ -52,6 +52,8 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, debug bool) {
 			}
 			return
 		}
+
+		l.GL.Printf("%+v Did not found any type of match on Line[%+v]! ", funcName, lineIndex)
 
 	}
 }

@@ -70,6 +70,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 //Analyze ...
 func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	funcName := "[Analyze()] "
+	var lineIndex int64 = 0
 	for l.File.Scan() {
 		currentLine := l.File.Text()
 		// l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)
@@ -96,13 +97,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		/* Data Segregator */
 
 		if l.CurrentBlockType == CONSTANTBLOCK {
-			l.NextConstant(currentLine, debug)
+			l.NextConstant(currentLine, lineIndex, debug)
 		}
 
 		if l.CurrentBlockType == VARIABLEBLOCK {
-			l.NextVariable(currentLine, debug)
+			l.NextVariable(currentLine, lineIndex, debug)
 		}
-
+		lineIndex++
 	}
 
 	return nil

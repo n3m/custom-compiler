@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var version string = "0.0.11"
+var version string = "0.0.12"
 
 func main() {
 
