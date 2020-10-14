@@ -72,7 +72,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	funcName := "[Analyze()] "
 	for l.File.Scan() {
 		currentLine := l.File.Text()
-		l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)
+		// l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)
 
 		/* Type Validation */
 

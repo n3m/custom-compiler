@@ -1,6 +1,7 @@
 package regexvariable
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -12,11 +13,19 @@ type RegexVariable struct {
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
 	V3      *regexp.Regexp
+
+	EL *log.Logger
+	LL *log.Logger
+	GL *log.Logger
 }
 
 //NewRegexVariable ...
-func NewRegexVariable() (*RegexVariable, error) {
-	// var moduleName string = "[regexvariable][NewRegexVariable()]"
+func NewRegexVariable(EL, LL, GL *log.Logger) (*RegexVariable, error) {
+	var moduleName string = "[regexvariable][NewRegexVariable()]"
+
+	if EL == nil || LL == nil || GL == nil {
+		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
+	}
 
 	compiledV1 := regexp.MustCompile("^variables")
 	compiledV2 := regexp.MustCompile("^varia")
@@ -26,6 +35,9 @@ func NewRegexVariable() (*RegexVariable, error) {
 		V1:      compiledV1,
 		V2:      compiledV2,
 		V3:      compiledV3,
+		EL:      EL,
+		LL:      LL,
+		GL:      GL,
 	}, nil
 }
 

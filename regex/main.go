@@ -41,8 +41,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
-	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL)
-	variableBuilder, _ := regexvariable.NewRegexVariable()
+	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL, GL)
+	variableBuilder, _ := regexvariable.NewRegexVariable(EL, LL, GL)
 	constfloatBuilder, _ := regexconstfloat.NewRegexFloat()
 	constintBuilder, _ := regexconstint.NewRegexInt()
 	varalfabeticoBuilder, _ := regexvaralfabetico.NewRegexVariableAlfabetico()
