@@ -90,10 +90,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
 			typeOfData, variableData := getVariablesFromString(currentLine)
-			// l.GL.Printf("%+v[VARIABLE] Default Found > %+v", funcName, currentLine)
-			// if debug {
-			// 	log.Printf("[VARIABLE] Default Found > %+v", currentLine)
-			// }
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
 				for _, name := range variableData {
