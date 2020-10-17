@@ -13,6 +13,7 @@ type RegexProcedureProto struct {
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
 	V3      *regexp.Regexp
+	V4End   *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -30,11 +31,13 @@ func NewRegexProcedureProto(EL, LL, GL *log.Logger) (*RegexProcedureProto, error
 	compiledV1 := regexp.MustCompile("^Procedimiento")
 	compiledV2 := regexp.MustCompile("^Procedim")
 	compiledV3 := regexp.MustCompile("^Proc")
+	compiledV4End := regexp.MustCompile(";$")
 	return &RegexProcedureProto{
 		Keyword: "Procedimiento",
 		V1:      compiledV1,
 		V2:      compiledV2,
 		V3:      compiledV3,
+		V4End:   compiledV4End,
 		EL:      EL,
 		LL:      LL,
 		GL:      GL,
@@ -43,11 +46,11 @@ func NewRegexProcedureProto(EL, LL, GL *log.Logger) (*RegexProcedureProto, error
 
 //StartsWithProcedureProto ...
 func (r *RegexProcedureProto) StartsWithProcedureProto(str string) bool {
-	if r.V1.MatchString(str) {
+	if r.V1.MatchString(str) && r.V4End.MatchString(str) {
 		return true
 	}
 
-	if r.V2.MatchString(str) {
+	if r.V2.MatchString(str) && r.V4End.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
@@ -65,7 +68,7 @@ func (r *RegexProcedureProto) StartsWithProcedureProto(str string) bool {
 		return true
 	}
 
-	if r.V3.MatchString(str) {
+	if r.V3.MatchString(str) && r.V4End.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")

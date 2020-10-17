@@ -102,6 +102,15 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
+		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine) {
+			l.CurrentBlockType = models.PROCEDUREPROTOBLOCK
+			l.GL.Printf("%+vSwitched to PROCEDUREPROTOBLOCK", funcName)
+
+			if debug {
+				log.Printf("Switched to PROCEDUREPROTOBLOCK")
+			}
+		}
+
 		/* Data Segregator */
 
 		if l.CurrentBlockType == models.CONSTANTBLOCK {
@@ -114,6 +123,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
 			l.NextFuncionProto(currentLine, lineIndex, debug)
+		}
+
+		if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
+			// l.NextFuncionProto(currentLine, lineIndex, debug)
 		}
 		lineIndex++
 	}
