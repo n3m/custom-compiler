@@ -65,6 +65,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		/* Type Validation */
 
+		if isComment, err := l.R.StartsWith("//", currentLine); err != nil {
+			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
+			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
+		} else {
+			if isComment {
+				l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
+				log.Printf("Skipping Comment at line %+v", lineIndex)
+				continue
+			}
+		}
+
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
 			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.GL.Printf("%+vSwitched to CONSTANTBLOCK", funcName)

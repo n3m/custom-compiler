@@ -1,4 +1,4 @@
-package regexfuncionproto
+package regexprocedureproto
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-//RegexFuncionProto ...
-type RegexFuncionProto struct {
+//RegexProcedureProto ...
+type RegexProcedureProto struct {
 	Keyword string
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
@@ -19,19 +19,19 @@ type RegexFuncionProto struct {
 	GL *log.Logger
 }
 
-//NewRegexFuncionProto ...
-func NewRegexFuncionProto(EL, LL, GL *log.Logger) (*RegexFuncionProto, error) {
-	var moduleName string = "[regexFuncionProto][NewRegexFuncionProto()]"
+//NewRegexProcedureProto ...
+func NewRegexProcedureProto(EL, LL, GL *log.Logger) (*RegexProcedureProto, error) {
+	var moduleName string = "[regexProcedureProto][NewRegexProcedureProto()]"
 
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledV1 := regexp.MustCompile("^Funcion")
-	compiledV2 := regexp.MustCompile("^Func")
-	compiledV3 := regexp.MustCompile("^fu")
-	return &RegexFuncionProto{
-		Keyword: "Funcion",
+	compiledV1 := regexp.MustCompile("^Procedimiento")
+	compiledV2 := regexp.MustCompile("^Procedim")
+	compiledV3 := regexp.MustCompile("^Proc")
+	return &RegexProcedureProto{
+		Keyword: "Procedimiento",
 		V1:      compiledV1,
 		V2:      compiledV2,
 		V3:      compiledV3,
@@ -41,8 +41,8 @@ func NewRegexFuncionProto(EL, LL, GL *log.Logger) (*RegexFuncionProto, error) {
 	}, nil
 }
 
-//StartsWithFuncionProto ...
-func (r *RegexFuncionProto) StartsWithFuncionProto(str string) bool {
+//StartsWithProcedureProto ...
+func (r *RegexProcedureProto) StartsWithProcedureProto(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -86,8 +86,8 @@ func (r *RegexFuncionProto) StartsWithFuncionProto(str string) bool {
 	return false
 }
 
-//StartsWithFuncionProtoNoCheck ...
-func (r *RegexFuncionProto) StartsWithFuncionProtoNoCheck(str string) bool {
+//StartsWithProcedureProtoNoCheck ...
+func (r *RegexProcedureProto) StartsWithProcedureProtoNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

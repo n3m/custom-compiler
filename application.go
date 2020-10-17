@@ -68,7 +68,7 @@ func main() {
 		generalLogger.Printf("File analyzed correctly")
 	}
 
-	lex.Print()
+	// lex.Print()
 
 	generalLogger.Printf("Compiler has finished with Status [0]")
 
