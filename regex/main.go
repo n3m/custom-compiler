@@ -3,6 +3,7 @@ package regex
 import (
 	"fmt"
 	"go-custom-compiler/regex/constant/regexconstalfabetica"
+	"go-custom-compiler/regex/constant/regexconstdefault"
 	"go-custom-compiler/regex/constant/regexconstentera"
 	"go-custom-compiler/regex/constant/regexconstlogica"
 	"go-custom-compiler/regex/constant/regexconstreal"
@@ -33,6 +34,7 @@ import (
 type CustomRegex struct {
 	//Constante
 	RegexConstante           *regexconstante.RegexConstante
+	RegexConstanteDefault    *regexconstdefault.RegexConstDefault
 	RegexConstanteEntera     *regexconstentera.RegexConstEntera
 	RegexConstanteReal       *regexconstreal.RegexConstReal
 	RegexConstanteLogica     *regexconstlogica.RegexConstLogica
@@ -75,6 +77,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Constante
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL, GL)
+	constdefaultBuilder, _ := regexconstdefault.NewRegexConstDefault()
 	constenteraBuilder, _ := regexconstentera.NewRegexConstEntera()
 	constrealBuilder, _ := regexconstreal.NewRegexConstReal()
 	constlogicaBuilder, _ := regexconstlogica.NewRegexConstLogica()
@@ -109,6 +112,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexConstante: constanteBuilder,
 		RegexVariable:  variableBuilder,
 		//Constante
+		RegexConstanteDefault:    constdefaultBuilder,
 		RegexConstanteAlfabetica: constalfabeticaBuilder,
 		RegexConstanteEntera:     constenteraBuilder,
 		RegexConstanteLogica:     constlogicaBuilder,
@@ -124,9 +128,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexFunctionProtoAlfabetico: funcProtoAlfabetico,
 		RegexFunctionProtoDefault:    funcProtoDefault,
 		RegexFunctionProtoEntero:     funcProtoEntero,
-		// RegexFunctionProtoFlotante:   funcProtoFlotante,
-		RegexFunctionProtoLogico: funcProtoLogico,
-		RegexFunctionProtoReal:   funcProtoReal,
+		RegexFunctionProtoLogico:     funcProtoLogico,
+		RegexFunctionProtoReal:       funcProtoReal,
 		//Procedure
 		RegexProcedureProto:           procedureProtoBuilder,
 		RegexProcedureProtoAlfabetico: procedureProtoAlfabetico,
