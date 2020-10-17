@@ -126,7 +126,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
-			// l.NextFuncionProto(currentLine, lineIndex, debug)
+			l.NextProcedureProto(currentLine, lineIndex, debug)
 		}
 		lineIndex++
 	}
