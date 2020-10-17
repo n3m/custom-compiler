@@ -4,22 +4,22 @@ import (
 	"regexp"
 )
 
-//RegexAlfabetica ...
-type RegexAlfabetica struct {
+//RegexConstAlfabetica ...
+type RegexConstAlfabetica struct {
 	V1 *regexp.Regexp
 }
 
-//NewRegexAlfabetica ...
-func NewRegexAlfabetica() (*RegexAlfabetica, error) {
-	// var moduleName string = "[regexAlfabetica][NewRegexAlfabetica()]"
+//NewRegexConstAlfabetica ...
+func NewRegexConstAlfabetica() (*RegexConstAlfabetica, error) {
+	// var moduleName string = "[regexConstAlfabetica][NewRegexConstAlfabetica()]"
 
-	return &RegexAlfabetica{
+	return &RegexConstAlfabetica{
 		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(\"(\w)*\");$`),
 	}, nil
 }
 
 //MatchAlfabeticaConstantDeclaration ...
-func (r *RegexAlfabetica) MatchAlfabeticaConstantDeclaration(str string) bool {
+func (r *RegexConstAlfabetica) MatchAlfabeticaConstantDeclaration(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

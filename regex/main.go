@@ -33,10 +33,10 @@ import (
 type CustomRegex struct {
 	//Constante
 	RegexConstante           *regexconstante.RegexConstante
-	RegexConstanteEntera     *regexconstentera.RegexEntera
-	RegexConstanteReal       *regexconstreal.RegexReal
-	RegexConstanteLogica     *regexconstlogica.RegexLogica
-	RegexConstanteAlfabetica *regexconstalfabetica.RegexAlfabetica
+	RegexConstanteEntera     *regexconstentera.RegexConstEntera
+	RegexConstanteReal       *regexconstreal.RegexConstReal
+	RegexConstanteLogica     *regexconstlogica.RegexConstLogica
+	RegexConstanteAlfabetica *regexconstalfabetica.RegexConstAlfabetica
 
 	//Variable
 	RegexVariable           *regexvariable.RegexVariable
@@ -75,10 +75,10 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Constante
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL, GL)
-	constenteraBuilder, _ := regexconstentera.NewRegexEntera()
-	constrealBuilder, _ := regexconstreal.NewRegexReal()
-	constlogicaBuilder, _ := regexconstlogica.NewRegexLogica()
-	constalfabeticaBuilder, _ := regexconstalfabetica.NewRegexAlfabetica()
+	constenteraBuilder, _ := regexconstentera.NewRegexConstEntera()
+	constrealBuilder, _ := regexconstreal.NewRegexConstReal()
+	constlogicaBuilder, _ := regexconstlogica.NewRegexConstLogica()
+	constalfabeticaBuilder, _ := regexconstalfabetica.NewRegexConstAlfabetica()
 
 	//Variable
 	variableBuilder, _ := regexvariable.NewRegexVariable(EL, LL, GL)

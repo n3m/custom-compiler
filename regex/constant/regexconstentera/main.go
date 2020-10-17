@@ -4,22 +4,22 @@ import (
 	"regexp"
 )
 
-//RegexEntera ...
-type RegexEntera struct {
+//RegexConstEntera ...
+type RegexConstEntera struct {
 	V1 *regexp.Regexp
 }
 
-//NewRegexEntera ...
-func NewRegexEntera() (*RegexEntera, error) {
-	// var moduleName string = "[regexEntera][NewRegexEntera()]"
+//NewRegexConstEntera ...
+func NewRegexConstEntera() (*RegexConstEntera, error) {
+	// var moduleName string = "[regexConstEntera][NewRegexConstEntera()]"
 
-	return &RegexEntera{
+	return &RegexConstEntera{
 		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)([0-9]+|\-[0-9]+);$`),
 	}, nil
 }
 
 //MatchEnteraConstantDeclaration ...
-func (r *RegexEntera) MatchEnteraConstantDeclaration(str string) bool {
+func (r *RegexConstEntera) MatchEnteraConstantDeclaration(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

@@ -4,22 +4,24 @@ import (
 	"regexp"
 )
 
-//RegexLogica ...
-type RegexLogica struct {
-	V1 *regexp.Regexp
+//RegexConstLogica ...
+type RegexConstLogica struct {
+	V1  *regexp.Regexp
+	V2i *regexp.Regexp
 }
 
-//NewRegexLogica ...
-func NewRegexLogica() (*RegexLogica, error) {
-	// var moduleName string = "[regexLogica][NewRegexLogica()]"
+//NewRegexConstLogica ...
+func NewRegexConstLogica() (*RegexConstLogica, error) {
+	// var moduleName string = "[regexConstLogica][NewRegexConstLogica()]"
 
-	return &RegexLogica{
-		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(verdadero|falso);$`),
+	return &RegexConstLogica{
+		V1:  regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(verdadero|falso);$`),
+		V2i: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)((?i)verdadero|(?i)falso);$`),
 	}, nil
 }
 
 //MatchLogicaConstantDeclaration ...
-func (r *RegexLogica) MatchLogicaConstantDeclaration(str string) bool {
+func (r *RegexConstLogica) MatchLogicaConstantDeclaration(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
