@@ -12,7 +12,7 @@ Funcin FacIter(n:Entero):entero;
 Procedimiento LeeVec(k:Entero);
 Procedimiento LeeMat(K:Entero);
 Procedimiento OrdVec(k:Entero);
-Procedimiento ImpMat(K:Entero);
+Procedimiento ImpMat(K:entero);
 Procedimiento MulMat(k, v:Entero);
 //Procedimiento ImpMat(K:Entero);
 
