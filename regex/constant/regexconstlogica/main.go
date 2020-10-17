@@ -14,7 +14,7 @@ func NewRegexLogica() (*RegexLogica, error) {
 	// var moduleName string = "[regexLogica][NewRegexLogica()]"
 
 	return &RegexLogica{
-		V1: regexp.MustCompile(`^\w[^\s]*\s*:=\s*\d+\s*(\s*\+\s*\d+)*;`),
+		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(verdadero|falso);$`),
 	}, nil
 }
 
