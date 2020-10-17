@@ -66,11 +66,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			continue
 		}
-
-		// l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)
-
+		var LastBlockState models.BlockType
+		LastBlockState = l.CurrentBlockType
 		/* Type Validation */
-
 		if isComment, err := l.R.StartsWith("//", currentLine); err != nil {
 			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
 			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
@@ -78,47 +76,39 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if isComment {
 				l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
 				log.Printf("Skipping Comment at line %+v", lineIndex)
+				lineIndex++
+
 				continue
 			}
 		}
 
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
 			l.CurrentBlockType = models.CONSTANTBLOCK
-			l.GL.Printf("%+vSwitched to CONSTANTBLOCK", funcName)
-			if debug {
-				log.Printf("Switched to CONSTANTBLOCK")
-			}
 		}
 
 		if l.R.RegexVariable.StartsWithVariable(currentLine) {
 			l.CurrentBlockType = models.VARIABLEBLOCK
-			l.GL.Printf("%+vSwitched to VARIABLEBLOCK", funcName)
-
-			if debug {
-				log.Printf("Switched to VARIABLEBLOCK")
-			}
 		}
 
 		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine) {
 			l.CurrentBlockType = models.FUNCTIONPROTOBLOCK
-			l.GL.Printf("%+vSwitched to FUNCTIONPROTOBLOCK", funcName)
-
-			if debug {
-				log.Printf("Switched to FUNCTIONPROTOBLOCK")
-			}
 		}
 
 		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine) {
 			l.CurrentBlockType = models.PROCEDUREPROTOBLOCK
-			l.GL.Printf("%+vSwitched to PROCEDUREPROTOBLOCK", funcName)
-
-			if debug {
-				log.Printf("Switched to PROCEDUREPROTOBLOCK")
-			}
 		}
 
-		/* Data Segregator */
+		if l.R.RegexProcedure.StartsWithProcedure(currentLine) {
+			l.CurrentBlockType = models.PROCEDUREBLOCK
+		}
+		if l.R.RegexFunction.StartsWithFunction(currentLine) {
+			l.CurrentBlockType = models.FUNCTIONBLOCK
+		}
 
+		//Logger
+		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
+
+		/* Data Segregator */
 		if l.CurrentBlockType == models.CONSTANTBLOCK {
 			l.NextConstant(currentLine, lineIndex, debug)
 		}
@@ -138,6 +128,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	}
 
 	return nil
+}
+
+//RegisterBlockChange ...
+func (l *LexicalAnalyzer) RegisterBlockChange(LastBlockState models.BlockType, debug bool, funcName string, lineIndex int64) {
+	if LastBlockState != l.CurrentBlockType {
+		l.GL.Printf("%+vSwitched to %+v [%+v]", funcName, l.CurrentBlockType, lineIndex)
+		if debug {
+			log.Printf("Switched to %+v [%+v]", l.CurrentBlockType, lineIndex)
+		}
+	}
 }
 
 //Print ...
