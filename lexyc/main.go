@@ -61,6 +61,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	var lineIndex int64 = 1
 	for l.File.Scan() {
 		currentLine := l.File.Text()
+		if len(currentLine) == 0 {
+			lineIndex++
+
+			continue
+		}
+
 		// l.GL.Printf("%+vAnalyzing Line: '%+v'", funcName, currentLine)
 
 		/* Type Validation */

@@ -49,19 +49,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			return
 		}
 
-		if l.R.RegexVariableFlotante.MatchVariableFlotante(currentLine) {
-			_, variableData := getVariablesFromString(currentLine)
-			for _, name := range variableData {
-				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
-			}
-
-			l.GL.Printf("%+v[VARIABLE] Flotante Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[VARIABLE] Flotante Found > %+v", currentLine)
-			}
-			return
-		}
-
 		if l.R.RegexVariableLogico.MatchVariableLogico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
 			for _, name := range variableData {
@@ -139,33 +126,6 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
 								}
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
-							}
-						}
-					}
-				}
-			}
-
-			if l.R.RegexVariableFlotante.MatchVariableFlotanteCaseless(typeOfData) {
-				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.FLOTANTE, Key: name})
-				}
-
-				l.GL.Printf("%+v[VARIABLE] Flotante Found > %+v", funcName, currentLine)
-				if debug {
-					log.Printf("[VARIABLE] Flotante Found > %+v", currentLine)
-				}
-
-				foundTypo := false
-				keyData := strings.Split(l.R.RegexVariableFlotante.Keyword, "")
-				for i, char := range typeOfData {
-					if i < len(keyData)-1 {
-						if !foundTypo {
-							if string(char) != keyData[i] {
-								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableFlotante.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableFlotante.Keyword)
 							}
 						}
 					}

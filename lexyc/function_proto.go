@@ -53,13 +53,13 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			return
 		}
 
-		if l.R.RegexFunctionProtoFlotante.MatchFuncFlotante(currentLine) {
-			l.GL.Printf("%+v[FUNC PROTO] Flotante Funcion Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[FUNC PROTO] Flotante Funcion Found > %+v", currentLine)
-			}
-			return
-		}
+		// if l.R.RegexFunctionProtoFlotante.MatchFuncFlotante(currentLine) {
+		// 	l.GL.Printf("%+v[FUNC PROTO] Flotante Funcion Found > %+v", funcName, currentLine)
+		// 	if debug {
+		// 		log.Printf("[FUNC PROTO] Flotante Funcion Found > %+v", currentLine)
+		// 	}
+		// 	return
+		// }
 
 		if l.R.RegexFunctionProtoDefault.MatchFuncDefault(currentLine) {
 			funcType, _, _ := getDataFromFunctionProto(currentLine)
@@ -156,28 +156,28 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 				return
 			}
 
-			if l.R.RegexFunctionProtoFlotante.MatchFuncFlotanteCaseless(currentLine) {
-				l.GL.Printf("%+v[FUNC PROTO] Flotante Funcion Found > %+v", funcName, currentLine)
-				if debug {
-					log.Printf("[FUNC PROTO] Flotante Funcion Found > %+v", currentLine)
-				}
-				foundTypo := false
-				keyData := strings.Split(l.R.RegexFunctionProtoFlotante.Keyword, "")
-				for i, char := range funcType {
-					if i < len(keyData)-1 {
-						if !foundTypo {
-							if string(char) != keyData[i] {
-								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoFlotante.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoFlotante.Keyword)
-							}
-						}
-					}
-				}
-				return
-			}
+			// if l.R.RegexFunctionProtoFlotante.MatchFuncFlotanteCaseless(currentLine) {
+			// 	l.GL.Printf("%+v[FUNC PROTO] Flotante Funcion Found > %+v", funcName, currentLine)
+			// 	if debug {
+			// 		log.Printf("[FUNC PROTO] Flotante Funcion Found > %+v", currentLine)
+			// 	}
+			// 	foundTypo := false
+			// 	keyData := strings.Split(l.R.RegexFunctionProtoFlotante.Keyword, "")
+			// 	for i, char := range funcType {
+			// 		if i < len(keyData)-1 {
+			// 			if !foundTypo {
+			// 				if string(char) != keyData[i] {
+			// 					foundTypo = true
+			// 					if debug {
+			// 						log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoFlotante.Keyword)
+			// 					}
+			// 					l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoFlotante.Keyword)
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// 	return
+			// }
 			return
 		}
 

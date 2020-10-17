@@ -21,24 +21,47 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		}
 		currentLine = strings.TrimSpace(currentLine)
 
-		if l.R.RegexConstanteFloat.MatchFloatConstantDeclaration(currentLine) {
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			floatData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.FLOTANTE, Key: floatData[0], Value: floatData[1]})
-			l.GL.Printf("%+v[CONSTANT] Float Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[CONSTANT] Float Found > %+v", currentLine)
-			}
-			return
-		}
-		if l.R.RegexConstanteInt.MatchIntConstantDeclaration(currentLine) {
+		if l.R.RegexConstanteEntera.MatchEnteraConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			floatData := strings.Split(currentLine, ":=")
 			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.ENTERO, Key: floatData[0], Value: floatData[1]})
-			l.GL.Printf("%+v[CONSTANT] Int Found > %+v", funcName, currentLine)
+			l.GL.Printf("%+v[CONSTANT] Entero Found > %+v", funcName, currentLine)
 
 			if debug {
-				log.Printf("[CONSTANT] Int Found > %+v", currentLine)
+				log.Printf("[CONSTANT] Entero Found > %+v", currentLine)
+			}
+			return
+		}
+		if l.R.RegexConstanteReal.MatchRealConstantDeclaration(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			floatData := strings.Split(currentLine, ":=")
+			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.REAL, Key: floatData[0], Value: floatData[1]})
+			l.GL.Printf("%+v[CONSTANT] Real Found > %+v", funcName, currentLine)
+
+			if debug {
+				log.Printf("[CONSTANT] Real Found > %+v", currentLine)
+			}
+			return
+		}
+		if l.R.RegexConstanteAlfabetica.MatchAlfabeticaConstantDeclaration(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			floatData := strings.Split(currentLine, ":=")
+			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.ALFABETICO, Key: floatData[0], Value: floatData[1]})
+			l.GL.Printf("%+v[CONSTANT] Alfabetico Found > %+v", funcName, currentLine)
+
+			if debug {
+				log.Printf("[CONSTANT] Alfabetico Found > %+v", currentLine)
+			}
+			return
+		}
+		if l.R.RegexConstanteLogica.MatchLogicaConstantDeclaration(currentLine) {
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			floatData := strings.Split(currentLine, ":=")
+			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.LOGICO, Key: floatData[0], Value: floatData[1]})
+			l.GL.Printf("%+v[CONSTANT] Logico Found > %+v", funcName, currentLine)
+
+			if debug {
+				log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
 			}
 			return
 		}

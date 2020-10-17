@@ -2,18 +2,18 @@ package regex
 
 import (
 	"fmt"
-	"go-custom-compiler/regex/constant/regexconstfloat"
-	"go-custom-compiler/regex/constant/regexconstint"
+	"go-custom-compiler/regex/constant/regexconstalfabetica"
+	"go-custom-compiler/regex/constant/regexconstentera"
+	"go-custom-compiler/regex/constant/regexconstlogica"
+	"go-custom-compiler/regex/constant/regexconstreal"
 	"go-custom-compiler/regex/functionproto/regexfunctionprotoalfabetico"
 	"go-custom-compiler/regex/functionproto/regexfunctionprotodefault"
 	"go-custom-compiler/regex/functionproto/regexfunctionprotoentero"
-	"go-custom-compiler/regex/functionproto/regexfunctionprotoflotante"
 	"go-custom-compiler/regex/functionproto/regexfunctionprotologico"
 	"go-custom-compiler/regex/functionproto/regexfunctionprotoreal"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoalfabetico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotodefault"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoentero"
-	"go-custom-compiler/regex/procedureproto/regexprocedureprotoflotante"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/regexconstante"
@@ -23,7 +23,6 @@ import (
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
 	"go-custom-compiler/regex/variable/regexvardefault"
 	"go-custom-compiler/regex/variable/regexvarentero"
-	"go-custom-compiler/regex/variable/regexvarflotante"
 	"go-custom-compiler/regex/variable/regexvarlogico"
 	"go-custom-compiler/regex/variable/regexvarreal"
 	"log"
@@ -33,14 +32,16 @@ import (
 //CustomRegex ...
 type CustomRegex struct {
 	//Constante
-	RegexConstante      *regexconstante.RegexConstante
-	RegexConstanteFloat *regexconstfloat.RegexFloat
-	RegexConstanteInt   *regexconstint.RegexInt
+	RegexConstante           *regexconstante.RegexConstante
+	RegexConstanteEntera     *regexconstentera.RegexEntera
+	RegexConstanteReal       *regexconstreal.RegexReal
+	RegexConstanteLogica     *regexconstlogica.RegexLogica
+	RegexConstanteAlfabetica *regexconstalfabetica.RegexAlfabetica
+
 	//Variable
 	RegexVariable           *regexvariable.RegexVariable
 	RegexVariableAlfabetico *regexvaralfabetico.RegexVarAlfabetico
 	RegexVariableEntero     *regexvarentero.RegexVarEntero
-	RegexVariableFlotante   *regexvarflotante.RegexVarFlotante
 	RegexVariableLogico     *regexvarlogico.RegexVarLogico
 	RegexVariableReal       *regexvarreal.RegexVarReal
 	RegexVariableDefault    *regexvardefault.RegexVarDefault
@@ -51,7 +52,6 @@ type CustomRegex struct {
 	RegexFunctionProtoEntero     *regexfunctionprotoentero.RegexFuncProtoEntero
 	RegexFunctionProtoReal       *regexfunctionprotoreal.RegexFuncProtoReal
 	RegexFunctionProtoLogico     *regexfunctionprotologico.RegexFuncProtoLogico
-	RegexFunctionProtoFlotante   *regexfunctionprotoflotante.RegexFuncProtoFlotante
 	//Procimiento Proto
 	RegexProcedureProto           *regexprocedureproto.RegexProcedureProto
 	RegexProcedureProtoDefault    *regexprocedureprotodefault.RegexProcedureProtoDefault
@@ -59,7 +59,6 @@ type CustomRegex struct {
 	RegexProcedureProtoEntero     *regexprocedureprotoentero.RegexProcedureProtoEntero
 	RegexProcedureProtoReal       *regexprocedureprotoreal.RegexProcedureProtoReal
 	RegexProcedureProtoLogico     *regexprocedureprotologico.RegexProcedureProtoLogico
-	RegexProcedureProtoFlotante   *regexprocedureprotoflotante.RegexProcedureProtoFlotante
 
 	EL *log.Logger
 	LL *log.Logger
@@ -76,14 +75,15 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Constante
 	constanteBuilder, _ := regexconstante.NewRegexConstante(EL, LL, GL)
-	constfloatBuilder, _ := regexconstfloat.NewRegexFloat()
-	constintBuilder, _ := regexconstint.NewRegexInt()
+	constenteraBuilder, _ := regexconstentera.NewRegexEntera()
+	constrealBuilder, _ := regexconstreal.NewRegexReal()
+	constlogicaBuilder, _ := regexconstlogica.NewRegexLogica()
+	constalfabeticaBuilder, _ := regexconstalfabetica.NewRegexAlfabetica()
 
 	//Variable
 	variableBuilder, _ := regexvariable.NewRegexVariable(EL, LL, GL)
 	varalfabeticoBuilder, _ := regexvaralfabetico.NewRegexVariableAlfabetico()
 	varenteroBuilder, _ := regexvarentero.NewRegexVariableEntero()
-	varflotanteBuilder, _ := regexvarflotante.NewRegexVariableFlotante()
 	varlogicoBuilder, _ := regexvarlogico.NewRegexVariableLogico()
 	varrealBuilder, _ := regexvarreal.NewRegexVariableReal()
 	vardefaultBuilder, _ := regexvardefault.NewRegexVariableDefault()
@@ -94,7 +94,6 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	funcProtoAlfabetico, _ := regexfunctionprotoalfabetico.NewRegexFuncProtoAlfabetico()
 	funcProtoEntero, _ := regexfunctionprotoentero.NewRegexFuncProtoEntero()
 	funcProtoReal, _ := regexfunctionprotoreal.NewRegexFuncProtoReal()
-	funcProtoFlotante, _ := regexfunctionprotoflotante.NewRegexFuncProtoFlotante()
 	funcProtoLogico, _ := regexfunctionprotologico.NewRegexFuncProtoLogico()
 
 	//ProcedureProto
@@ -102,7 +101,6 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	procedureProtoDefault, _ := regexprocedureprotodefault.NewRegexProcedureProtoDefault()
 	procedureProtoAlfabetico, _ := regexprocedureprotoalfabetico.NewRegexProcedureProtoAlfabetico()
 	procedureProtoEntero, _ := regexprocedureprotoentero.NewRegexProcedureProtoEntero()
-	procedureProtoFlotante, _ := regexprocedureprotoflotante.NewRegexProcedureProtoFlotante()
 	procedureProtoReal, _ := regexprocedureprotoreal.NewRegexProcedureProtoReal()
 	procedureProtoLogico, _ := regexprocedureprotologico.NewRegexProcedureProtoLogico()
 
@@ -110,12 +108,14 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Reserved
 		RegexConstante: constanteBuilder,
 		RegexVariable:  variableBuilder,
-		//Variants
-		RegexConstanteFloat:     constfloatBuilder,
-		RegexConstanteInt:       constintBuilder,
+		//Constante
+		RegexConstanteAlfabetica: constalfabeticaBuilder,
+		RegexConstanteEntera:     constenteraBuilder,
+		RegexConstanteLogica:     constlogicaBuilder,
+		RegexConstanteReal:       constrealBuilder,
+		//Variable
 		RegexVariableAlfabetico: varalfabeticoBuilder,
 		RegexVariableEntero:     varenteroBuilder,
-		RegexVariableFlotante:   varflotanteBuilder,
 		RegexVariableLogico:     varlogicoBuilder,
 		RegexVariableReal:       varrealBuilder,
 		RegexVariableDefault:    vardefaultBuilder,
@@ -124,15 +124,14 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexFunctionProtoAlfabetico: funcProtoAlfabetico,
 		RegexFunctionProtoDefault:    funcProtoDefault,
 		RegexFunctionProtoEntero:     funcProtoEntero,
-		RegexFunctionProtoFlotante:   funcProtoFlotante,
-		RegexFunctionProtoLogico:     funcProtoLogico,
-		RegexFunctionProtoReal:       funcProtoReal,
+		// RegexFunctionProtoFlotante:   funcProtoFlotante,
+		RegexFunctionProtoLogico: funcProtoLogico,
+		RegexFunctionProtoReal:   funcProtoReal,
 		//Procedure
 		RegexProcedureProto:           procedureProtoBuilder,
 		RegexProcedureProtoAlfabetico: procedureProtoAlfabetico,
 		RegexProcedureProtoDefault:    procedureProtoDefault,
 		RegexProcedureProtoEntero:     procedureProtoEntero,
-		RegexProcedureProtoFlotante:   procedureProtoFlotante,
 		RegexProcedureProtoLogico:     procedureProtoLogico,
 		RegexProcedureProtoReal:       procedureProtoReal,
 
