@@ -39,7 +39,6 @@ type CustomRegex struct {
 	RegexConstanteReal       *regexconstreal.RegexConstReal
 	RegexConstanteLogica     *regexconstlogica.RegexConstLogica
 	RegexConstanteAlfabetica *regexconstalfabetica.RegexConstAlfabetica
-
 	//Variable
 	RegexVariable           *regexvariable.RegexVariable
 	RegexVariableAlfabetico *regexvaralfabetico.RegexVarAlfabetico

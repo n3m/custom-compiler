@@ -14,7 +14,7 @@ func NewRegexProcedureProtoDefault() (*RegexProcedureProtoDefault, error) {
 	// var moduleName string = "[regexint][NewRegexProcedureProtoDefault()]"
 
 	return &RegexProcedureProtoDefault{
-		V1: regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):[a-zA-Z]+;$`),
+		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)\)(\s*);$`),
 	}, nil
 }
 

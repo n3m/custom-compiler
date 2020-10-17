@@ -16,8 +16,8 @@ func NewRegexProcedureProtoAlfabetico() (*RegexProcedureProtoAlfabetico, error) 
 	// var moduleName string = "[regexint][NewRegexProcedureProtoAlfabetico()]"
 
 	return &RegexProcedureProtoAlfabetico{
-		V1:      regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):Alfabetico;$`),
-		V2i:     regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):(?i)alfabetico;$`),
+		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)Alfabetico(\s*)\)(\s*);$`),
+		V2i:     regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Alfabetico(\s*)\)(\s*);$`),
 		Keyword: "Alfabetico",
 	}, nil
 }
