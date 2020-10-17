@@ -1,5 +1,6 @@
 constants PI:=3.141592;
 	   MAX:=30;
+      TEST1:=verdaDero;
 
 varibles i, j, k, n, vector[MAX], matriz[MAX][MAX]:Entero;
           r, s, t:real;

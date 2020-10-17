@@ -78,7 +78,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 
 			// regexEntero := regexp.MustCompile(`([0-9]+|\-[0-9]+)`)
 			// regexReal := regexp.MustCompile(`(([0-9]+|\-[0-9]+)\.([0-9]+)|([0-9]+|\-[0-9]+)e[0-9]+)`)
-			regexLogico := regexp.MustCompile(`((?i)verdadero|(?i)falso))`)
+			regexLogico := regexp.MustCompile(`(?i)verdadero|(?i)falso`)
 			// regexAlfabetico := regexp.MustCompile(`(\s*)((\"(\w)*\")`)
 
 			if regexLogico.MatchString(value) {
