@@ -17,7 +17,7 @@ func NewRegexFuncProtoReal() (*RegexFuncProtoReal, error) {
 
 	return &RegexFuncProtoReal{
 		V1:      regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):Real;$`),
-		V2i:     regexp.MustCompile(`(?i)Real`),
+		V2i:     regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):(?i)real;$`),
 		Keyword: "Real",
 	}, nil
 }

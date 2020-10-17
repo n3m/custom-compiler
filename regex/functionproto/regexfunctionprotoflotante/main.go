@@ -17,7 +17,7 @@ func NewRegexFuncProtoFlotante() (*RegexFuncProtoFlotante, error) {
 
 	return &RegexFuncProtoFlotante{
 		V1:      regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):Flotante;$`),
-		V2i:     regexp.MustCompile(`(?i)flotante`),
+		V2i:     regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):(?i)flotante;$`),
 		Keyword: "Flotante",
 	}, nil
 }
