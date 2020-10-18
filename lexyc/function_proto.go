@@ -68,9 +68,9 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
-								}
+
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
+
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
 							}
 						}
@@ -91,9 +91,9 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
-								}
+
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
+
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
 							}
 						}
@@ -114,9 +114,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
-								}
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 							}
 						}
@@ -137,9 +135,9 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
-								}
+
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
+
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
 							}
 						}

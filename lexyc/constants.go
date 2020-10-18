@@ -93,9 +93,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
-								}
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
 							}
 						}
@@ -110,9 +108,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
-								}
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", value, i, lineIndex, keyword)
 							}
 						}

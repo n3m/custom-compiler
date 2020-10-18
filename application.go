@@ -59,7 +59,7 @@ func main() {
 		generalLogger.Printf("Created Lexical Analyzer")
 	}
 
-	debugMode := true
+	debugMode := false
 	err = lex.Analyze(debugMode)
 	if err != nil {
 		generalLogger.Printf("Error while analyzing! (%+v)", err.Error())
