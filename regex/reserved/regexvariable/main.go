@@ -42,7 +42,7 @@ func NewRegexVariable(EL, LL, GL *log.Logger) (*RegexVariable, error) {
 }
 
 //StartsWithVariable ...
-func (r *RegexVariable) StartsWithVariable(str string) bool {
+func (r *RegexVariable) StartsWithVariable(str string, lineIndex int64) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -58,7 +58,8 @@ func (r *RegexVariable) StartsWithVariable(str string) bool {
 					foundTypo = true
 					log.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
 					r.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					r.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, wrongWord, r.Keyword, str)
 				}
 			}
 		}
@@ -76,7 +77,8 @@ func (r *RegexVariable) StartsWithVariable(str string) bool {
 					foundTypo = true
 					log.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
 					r.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					r.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, wrongWord, r.Keyword, str)
 				}
 			}
 		}
