@@ -29,8 +29,8 @@ func NewRegexFuncionProto(EL, LL, GL *log.Logger) (*RegexFuncionProto, error) {
 	}
 
 	compiledV1 := regexp.MustCompile("^Funcion")
-	compiledV2 := regexp.MustCompile("^Func")
-	compiledV3 := regexp.MustCompile("^fu")
+	compiledV2 := regexp.MustCompile("^(?i)Func")
+	compiledV3 := regexp.MustCompile("^(?i)fu")
 	compiledV4End := regexp.MustCompile(";$")
 	return &RegexFuncionProto{
 		Keyword: "Funcion",

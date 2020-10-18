@@ -28,8 +28,8 @@ func NewRegexVariable(EL, LL, GL *log.Logger) (*RegexVariable, error) {
 	}
 
 	compiledV1 := regexp.MustCompile("^variables")
-	compiledV2 := regexp.MustCompile("^varia")
-	compiledV3 := regexp.MustCompile("^var")
+	compiledV2 := regexp.MustCompile("^(?i)varia")
+	compiledV3 := regexp.MustCompile("^(?i)var")
 	return &RegexVariable{
 		Keyword: "variables",
 		V1:      compiledV1,
