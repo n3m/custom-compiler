@@ -43,6 +43,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
 	}
 
+	ErrorLogger.Printf("=============================================================")
+	ErrorLogger.Printf("# Linea | # Columna | Error | Descripcion | Linea del Error")
+	ErrorLogger.Printf("=============================================================")
+
 	return &LexicalAnalyzer{
 		File: file,
 		R:    R,
@@ -114,6 +118,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else {
 				log.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
 				l.GL.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
 			}
 		}
 
@@ -124,6 +130,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else {
 				log.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
 				l.GL.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
 			}
 		}
 
@@ -135,6 +143,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else {
 				log.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
 				l.GL.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
 			}
 		}
 
@@ -145,13 +155,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else if l.ParentBlockType == models.PROCEDUREBLOCK {
 
 				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-
 				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
 			} else {
-
 				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-
 				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
 			}
 		}
 		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine) {
@@ -161,13 +172,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else if l.ParentBlockType == models.FUNCTIONBLOCK {
 
 				log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-
 				l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
 			} else {
-
 				log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-
 				l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", currentLine)
 			}
 		}
 
