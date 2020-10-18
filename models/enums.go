@@ -64,4 +64,6 @@ const (
 	OPASIG = "OPASIG"
 	//ID ...
 	ID = "ID"
+	//NONE ...
+	NONE = "NONE"
 )

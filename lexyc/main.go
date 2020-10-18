@@ -103,7 +103,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
-		log.Printf("> %+v", l.BlockQueue)
+		// log.Printf("BLOCK > %+v", l.BlockQueue)
 
 		/* StartsWith */
 
@@ -256,47 +256,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					break
 				default:
 					for _, dat := range lineData {
-						if l.R.RegexCustom.MatchCteLog(dat, lineIndex) {
-							l.OpQueue = append(l.OpQueue, models.CTELOG)
-							continue
-						}
-						if l.R.RegexCustom.MatchCteEnt(dat) {
-							l.OpQueue = append(l.OpQueue, models.CTEENT)
-							continue
-						}
-						if l.R.RegexCustom.MatchCteAlfa(dat) {
-							l.OpQueue = append(l.OpQueue, models.CTEALFA)
-							continue
-						}
-						if l.R.RegexCustom.MatchCteReal(dat) {
-							l.OpQueue = append(l.OpQueue, models.CTEREAL)
-							continue
-						}
-						if l.R.RegexCustom.MatchOpArit(dat) {
-							l.OpQueue = append(l.OpQueue, models.OPARIT)
-							continue
-						}
-						if l.R.RegexCustom.MatchOpLog(dat) {
-							l.OpQueue = append(l.OpQueue, models.OPLOG)
-							continue
-						}
-						if l.R.RegexCustom.MatchOpRel(dat) {
-							l.OpQueue = append(l.OpQueue, models.OPREL)
-							continue
-						}
-						if l.R.RegexCustom.MatchIdent(dat) {
-							l.OpQueue = append(l.OpQueue, models.ID)
-							continue
-						}
+						l.AnalyzeForItem(dat, lineIndex)
 					}
 					break
 				}
 
 				//TODO: Create Func to eval OPQueue
 
-				// if len(l.OpQueue) > 0 {
-				// 	log.Printf("OP Q > %+v", l.OpQueue)
-				// }
 			} else {
 				l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
 			}
@@ -319,16 +285,77 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+
+			params := strings.Split(currentLine, ",")
+
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectNoNone() {
+				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
+			}
+
+			l.GL.Printf("%+v Found Imprimenl instruction [Line: %+v]", funcName, lineIndex)
+
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+
+			params := strings.Split(currentLine, ",")
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectNoNone() {
+				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
+			}
+			l.GL.Printf("%+v Found Imprime instruction [Line: %+v]", funcName, lineIndex)
+
 		}
 
 		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+			params := strings.Split(currentLine, ",")
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectIdent(currentLine, lineIndex) {
+				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
+			}
+
+			l.GL.Printf("%+v Found Lee instruction [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger
@@ -355,6 +382,45 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	}
 
 	return nil
+}
+
+//AnalyzeForItem ...
+func (l *LexicalAnalyzer) AnalyzeForItem(str string, lineIndex int64) {
+	str = strings.TrimSpace(str)
+	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
+		l.OpQueue = append(l.OpQueue, models.CTELOG)
+		return
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEENT)
+		return
+	}
+	if l.R.RegexCustom.MatchCteAlfa(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEALFA)
+		return
+	}
+	if l.R.RegexCustom.MatchCteReal(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEREAL)
+		return
+	}
+	if l.R.RegexCustom.MatchOpArit(str) {
+		l.OpQueue = append(l.OpQueue, models.OPARIT)
+		return
+	}
+	if l.R.RegexCustom.MatchOpLog(str) {
+		l.OpQueue = append(l.OpQueue, models.OPLOG)
+		return
+	}
+	if l.R.RegexCustom.MatchOpRel(str) {
+		l.OpQueue = append(l.OpQueue, models.OPREL)
+		return
+	}
+	if l.R.RegexCustom.MatchIdent(str) {
+		l.OpQueue = append(l.OpQueue, models.ID)
+		return
+	}
+
+	l.OpQueue = append(l.OpQueue, models.NONE)
 }
 
 //LogError ...
