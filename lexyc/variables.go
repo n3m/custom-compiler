@@ -1,9 +1,11 @@
 package lexyc
 
 import (
-	"go-custom-compiler/models"
 	"log"
 	"strings"
+
+	"go-custom-compiler/helpers"
+	"go-custom-compiler/models"
 )
 
 //^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:[a-zA-Z]+;$
@@ -25,9 +27,16 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 		if l.R.RegexVariableAlfabetico.MatchVariableAlfabetico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
-			for _, name := range variableData {
+			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				if index != len(variableData)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"alfabetico", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
 			if debug {
@@ -38,9 +47,16 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 		if l.R.RegexVariableEntero.MatchVariableEntero(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
-			for _, name := range variableData {
+			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				if index != len(variableData)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"entero", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
 			if debug {
@@ -51,9 +67,16 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 		if l.R.RegexVariableLogico.MatchVariableLogico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
-			for _, name := range variableData {
+			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				if index != len(variableData)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"logico", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
 			if debug {
@@ -64,9 +87,15 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 		if l.R.RegexVariableReal.MatchVariableReal(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
-			for _, name := range variableData {
+			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+				if index != len(variableData)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"real", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
 			if debug {
@@ -202,5 +231,8 @@ func getVariablesFromString(currentLine string) (string, []string) {
 	varType := lineData[1]
 	variables := lineData[0]
 	variableData := strings.Split(variables, ",")
+	for i := range variableData {
+		variableData[i] = strings.TrimSpace(variableData[i])
+	}
 	return varType, variableData
 }

@@ -3,9 +3,11 @@ package lexyc
 import (
 	"bufio"
 	"fmt"
+	"log"
+
+	"go-custom-compiler/helpers"
 	"go-custom-compiler/models"
 	"go-custom-compiler/regex"
-	"log"
 
 	"github.com/DrN3MESiS/pprnt"
 )
@@ -42,6 +44,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		return nil, fmt.Errorf("[ERROR]%+v %+v", moduleName, err.Error())
 	}
 
+	LexLogger.Println("----------------------------------------------")
+	LexLogger.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Lexema", "Token"}))
+	LexLogger.Println("----------------------------------------------")
+
 	return &LexicalAnalyzer{
 		File: file,
 		R:    R,
@@ -71,15 +77,15 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		/* Type Validation */
 
-		if isComment, err := l.R.StartsWith("//", currentLine); err != nil {
+		isComment, err := l.R.StartsWith("//", currentLine)
+		if err != nil {
 			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
 			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
-		} else {
-			if isComment {
-				l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
-				log.Printf("Skipping Comment at line %+v", lineIndex)
-				continue
-			}
+		}
+		if isComment {
+			l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
+			log.Printf("Skipping Comment at line %+v", lineIndex)
+			continue
 		}
 
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
@@ -88,6 +94,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if debug {
 				log.Printf("Switched to CONSTANTBLOCK")
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"constantes", helpers.PALABRARESERVADA}))
 		}
 
 		if l.R.RegexVariable.StartsWithVariable(currentLine) {
@@ -97,6 +104,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if debug {
 				log.Printf("Switched to VARIABLEBLOCK")
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"variables", helpers.PALABRARESERVADA}))
 		}
 
 		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine) {
@@ -106,6 +114,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if debug {
 				log.Printf("Switched to FUNCTIONPROTOBLOCK")
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"funcion", helpers.PALABRARESERVADA}))
 		}
 
 		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine) {
@@ -115,6 +124,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if debug {
 				log.Printf("Switched to PROCEDUREPROTOBLOCK")
 			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"procedimiento", helpers.PALABRARESERVADA}))
 		}
 
 		/* Data Segregator */
