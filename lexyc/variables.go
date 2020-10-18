@@ -29,7 +29,13 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
-				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
+				for _, group := range groups[1:] {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
+				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
@@ -49,7 +55,13 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
-				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
+				for _, group := range groups[1:] {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
+				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
@@ -69,7 +81,13 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
-				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{name, helpers.IDENTIFICADOR}))
+				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
+				for _, group := range groups[1:] {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
+				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
@@ -89,6 +107,13 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
 				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
+				for _, group := range groups[1:] {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
+				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}

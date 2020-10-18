@@ -1,6 +1,7 @@
 package lexyc
 
 import (
+	"go-custom-compiler/helpers"
 	"go-custom-compiler/models"
 	"log"
 	"regexp"
@@ -19,7 +20,22 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 		currentLine = strings.TrimSpace(currentLine)
 
 		if l.R.RegexProcedureProtoEntero.MatchProcedureEntero(currentLine) {
-			// procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+
+			vars := strings.Split(procParamVars, ", ")
+			for i, procParamVar := range vars {
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
+				if i != len(vars)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+
 			l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 			if debug {
 				log.Printf("[PROCEDURE PROTO] Entero Found > %+v", currentLine)
@@ -27,7 +43,21 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			return
 		}
 		if l.R.RegexProcedureProtoLogico.MatchProcedureLogico(currentLine) {
-			// procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+
+			vars := strings.Split(procParamVars, ", ")
+			for i, procParamVar := range vars {
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
+				if i != len(vars)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Logico Found > %+v", funcName, currentLine)
 			if debug {
@@ -36,7 +66,21 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			return
 		}
 		if l.R.RegexProcedureProtoReal.MatchProcedureReal(currentLine) {
-			// procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+
+			vars := strings.Split(procParamVars, ", ")
+			for i, procParamVar := range vars {
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
+				if i != len(vars)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Real Found > %+v", funcName, currentLine)
 			if debug {
@@ -45,7 +89,21 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			return
 		}
 		if l.R.RegexProcedureProtoAlfabetico.MatchProcedureAlfabetico(currentLine) {
-			// procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+
+			vars := strings.Split(procParamVars, ", ")
+			for i, procParamVar := range vars {
+				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
+				if i != len(vars)-1 {
+					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+			}
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Alfabetico Found > %+v", funcName, currentLine)
 			if debug {
