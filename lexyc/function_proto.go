@@ -72,7 +72,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoAlfabetico.Keyword, currentLine)
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoAlfabetico.Keyword, currentLine)
 							}
 						}
 					}
@@ -96,7 +96,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoEntero.Keyword, currentLine)
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoEntero.Keyword, currentLine)
 							}
 						}
 					}
@@ -119,7 +119,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoReal.Keyword, currentLine)
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoReal.Keyword, currentLine)
 							}
 						}
 					}
@@ -143,7 +143,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoLogico.Keyword, currentLine)
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoLogico.Keyword, currentLine)
 							}
 						}
 					}

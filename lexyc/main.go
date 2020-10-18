@@ -428,7 +428,7 @@ func (l *LexicalAnalyzer) AnalyzeForItem(str string, lineIndex int64) {
 func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
-	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, columnIndex, err, description, currentLine)
+	l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 }
 
 //LogErrorGeneral ...

@@ -110,5 +110,5 @@ func (r *RegexProcedure) StartsWithProcedureNoCheck(str string) bool {
 func (r *RegexProcedure) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
-	r.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, columnIndex, err, description, currentLine)
+	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 }
