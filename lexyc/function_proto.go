@@ -13,11 +13,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 
 	if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
 		if l.R.RegexFuncionProto.StartsWithFuncionProtoNoCheck(currentLine) {
-			data := strings.Split(currentLine, " ")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
+			currentLine = strings.Join(strings.Split(currentLine, " ")[1:], " ")
 		}
 		currentLine = strings.TrimSpace(currentLine)
 

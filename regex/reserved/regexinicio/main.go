@@ -1,4 +1,4 @@
-package regexconstante
+package regexinicio
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-//RegexConstante ...
-type RegexConstante struct {
+//RegexInicio ...
+type RegexInicio struct {
 	Keyword string
 	V1      *regexp.Regexp
 	V2      *regexp.Regexp
@@ -19,26 +19,26 @@ type RegexConstante struct {
 	GL *log.Logger
 }
 
-//NewRegexConstante ...
-func NewRegexConstante(EL, LL, GL *log.Logger) (*RegexConstante, error) {
-	var moduleName string = "[regexconstante][NewRegexConstante()]"
+//NewRegexInicio ...
+func NewRegexInicio(EL, LL, GL *log.Logger) (*RegexInicio, error) {
+	var moduleName string = "[regexInicio][NewRegexInicio()]"
 
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
-	return &RegexConstante{
-		Keyword: "constantes",
-		V1:      regexp.MustCompile("^constantes"),
-		V2:      regexp.MustCompile("^(?i)consta"),
-		V3:      regexp.MustCompile("^(?i)con"),
+	return &RegexInicio{
+		Keyword: "Inicio",
+		V1:      regexp.MustCompile("^Inicio"),
+		V2:      regexp.MustCompile("^(?i)Inic"),
+		V3:      regexp.MustCompile("^(?i)In"),
 		GL:      GL,
 		EL:      EL,
 		LL:      LL,
 	}, nil
 }
 
-//StartsWithConstante ...
-func (r *RegexConstante) StartsWithConstante(str string) bool {
+//StartsWithInicio ...
+func (r *RegexInicio) StartsWithInicio(str string) bool {
 
 	if r.V1.MatchString(str) {
 		return true
@@ -83,8 +83,8 @@ func (r *RegexConstante) StartsWithConstante(str string) bool {
 	return false
 }
 
-//StartsWithConstanteNoCheck ...
-func (r *RegexConstante) StartsWithConstanteNoCheck(str string) bool {
+//StartsWithInicioNoCheck ...
+func (r *RegexInicio) StartsWithInicioNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

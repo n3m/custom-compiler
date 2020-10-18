@@ -29,8 +29,8 @@ func NewRegexProcedureProto(EL, LL, GL *log.Logger) (*RegexProcedureProto, error
 	}
 
 	compiledV1 := regexp.MustCompile("^Procedimiento")
-	compiledV2 := regexp.MustCompile("^Procedim")
-	compiledV3 := regexp.MustCompile("^Proc")
+	compiledV2 := regexp.MustCompile("^(?i)Procedim")
+	compiledV3 := regexp.MustCompile("^(?i)Proc")
 	compiledV4End := regexp.MustCompile(";$")
 	return &RegexProcedureProto{
 		Keyword: "Procedimiento",

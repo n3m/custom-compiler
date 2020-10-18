@@ -14,11 +14,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 	if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
 		if l.R.RegexProcedureProto.StartsWithProcedureProtoNoCheck(currentLine) {
-			data := strings.Split(currentLine, " ")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
+			currentLine = strings.Join(strings.Split(currentLine, " ")[1:], " ")
 		}
 		currentLine = strings.TrimSpace(currentLine)
 

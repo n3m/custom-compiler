@@ -17,7 +17,7 @@ Procedimiento MulMat(k, v:Entero);
 //Procedimiento ImpMat(K:Entero);
 
 Procedimiento Selecciona()
-Inicio
+Iniio
    Repetir
       Imprime("Dame un numero: ");
       lee(n);

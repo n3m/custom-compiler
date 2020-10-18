@@ -18,8 +18,11 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/regexconstante"
+	"go-custom-compiler/regex/reserved/regexfin/regexfinfunction"
+	"go-custom-compiler/regex/reserved/regexfin/regexfinprocedure"
 	"go-custom-compiler/regex/reserved/regexfuncionproto"
 	"go-custom-compiler/regex/reserved/regexfunction"
+	"go-custom-compiler/regex/reserved/regexinicio"
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
 	"go-custom-compiler/regex/reserved/regexvariable"
@@ -34,7 +37,7 @@ import (
 
 //CustomRegex ...
 type CustomRegex struct {
-	//Constante
+	//Constant
 	RegexConstante           *regexconstante.RegexConstante
 	RegexConstanteDefault    *regexconstdefault.RegexConstDefault
 	RegexConstanteEntera     *regexconstentera.RegexConstEntera
@@ -66,6 +69,11 @@ type CustomRegex struct {
 	RegexProcedure *regexprocedure.RegexProcedure
 	//Funcion
 	RegexFunction *regexfunction.RegexFunction
+	//Inicio
+	RegexInicio *regexinicio.RegexInicio
+	//Fin
+	RegexFinProcedure *regexfinprocedure.RegexFinProcedure
+	RegexFinFunction  *regexfinfunction.RegexFinFunction
 
 	EL *log.Logger
 	LL *log.Logger
@@ -114,8 +122,16 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Procedure
 	procedureBuilder, _ := regexprocedure.NewRegexProcedure(EL, LL, GL)
+
 	//Function
 	functionBuilder, _ := regexfunction.NewRegexFunction(EL, LL, GL)
+
+	//Inicio
+	inicioBuilder, _ := regexinicio.NewRegexInicio(EL, LL, GL)
+
+	//Fin
+	finProcedureBuilder, _ := regexfinprocedure.NewRegexFinProcedure(EL, LL, GL)
+	finFunctionBuilder, _ := regexfinfunction.NewRegexFinFunction(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -151,6 +167,11 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexProcedure: procedureBuilder,
 		//Function
 		RegexFunction: functionBuilder,
+		//Inicio
+		RegexInicio: inicioBuilder,
+		//Fin
+		RegexFinFunction:  finFunctionBuilder,
+		RegexFinProcedure: finProcedureBuilder,
 
 		EL: EL,
 		LL: LL,
