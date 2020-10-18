@@ -124,10 +124,10 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableAlfabetico.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableAlfabetico.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableAlfabetico.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableAlfabetico.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, typeOfData, l.R.RegexVariableAlfabetico.Keyword, currentLine)
 							}
 						}
 					}
@@ -151,10 +151,10 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableEntero.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, typeOfData, l.R.RegexVariableEntero.Keyword, currentLine)
 							}
 						}
 					}
@@ -178,10 +178,10 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableLogico.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableLogico.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableLogico.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableLogico.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, typeOfData, l.R.RegexVariableLogico.Keyword, currentLine)
 							}
 						}
 					}
@@ -205,10 +205,10 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableReal.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableReal.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableReal.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", typeOfData, i, lineIndex, l.R.RegexVariableReal.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, typeOfData, l.R.RegexVariableReal.Keyword, currentLine)
 							}
 						}
 					}

@@ -74,10 +74,10 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoEntero.Keyword, currentLine)
 							}
 						}
 					}
@@ -97,10 +97,10 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoReal.Keyword, currentLine)
 							}
 						}
 					}
@@ -120,10 +120,10 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoLogico.Keyword, currentLine)
 							}
 						}
 					}
@@ -143,10 +143,10 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								if debug {
-									log.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
-								}
-								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v] on line [%+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
+								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
+								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoAlfabetico.Keyword, currentLine)
 							}
 						}
 					}
