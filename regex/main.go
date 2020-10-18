@@ -28,6 +28,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
 	"go-custom-compiler/regex/reserved/regexvariable"
+	"go-custom-compiler/regex/value/regexcustom"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
 	"go-custom-compiler/regex/variable/regexvardefault"
 	"go-custom-compiler/regex/variable/regexvarentero"
@@ -79,6 +80,8 @@ type CustomRegex struct {
 	//Loop
 	RegexLoopRepetir  *regexlooprepetir.RegexLoopRepetir
 	RegexLoopHastaQue *regexloophastaque.RegexLoopHastaQue
+	//Custom
+	RegexCustom *regexcustom.RegexCustom
 
 	EL *log.Logger
 	LL *log.Logger
@@ -142,6 +145,9 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	repetirLoopBuilder, _ := regexlooprepetir.NewRegexLoopRepetir(EL, LL, GL)
 	hastaqueLoopBuilder, _ := regexloophastaque.NewRegexLoopHastaQue(EL, LL, GL)
 
+	//Custom
+	customBuilder, _ := regexcustom.NewRegexCustom()
+
 	return &CustomRegex{
 		//Reserved
 		RegexConstante: constanteBuilder,
@@ -184,6 +190,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Loop
 		RegexLoopRepetir:  repetirLoopBuilder,
 		RegexLoopHastaQue: hastaqueLoopBuilder,
+		//Custom
+		RegexCustom: customBuilder,
 
 		EL: EL,
 		LL: LL,
