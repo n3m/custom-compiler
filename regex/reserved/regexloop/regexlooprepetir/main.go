@@ -28,8 +28,9 @@ func NewRegexLoopRepetir(EL, LL, GL *log.Logger) (*RegexLoopRepetir, error) {
 	}
 
 	compiledV1 := regexp.MustCompile("^Repetir")
-	compiledV2 := regexp.MustCompile("^(?i)Repe")
-	compiledV3 := regexp.MustCompile("^(?i)Re")
+	compiledV2 := regexp.MustCompile("^(?i)Repet")
+	compiledV3 := regexp.MustCompile("^(?i)Rep")
+
 	return &RegexLoopRepetir{
 		Keyword: "Repetir",
 		V1:      compiledV1,

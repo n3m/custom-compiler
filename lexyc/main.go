@@ -7,6 +7,7 @@ import (
 	"go-custom-compiler/models"
 	"go-custom-compiler/regex"
 	"log"
+	"strings"
 
 	"github.com/DrN3MESiS/pprnt"
 )
@@ -73,7 +74,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		// l.GL.Printf("%+v Analyzing line: %+v", funcName, lineIndex)
 
 		if len(currentLine) == 0 {
-			l.GL.Printf("%+v Skipped line: %+v; Reason: Empty", funcName, lineIndex)
+			l.GL.Printf("%+v Skipped [Line: %+v]; Reason: Empty", funcName, lineIndex)
 			lineIndex++
 
 			continue
@@ -81,20 +82,23 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		var LastBlockState models.BlockType
 		LastBlockState = l.CurrentBlockType
 		/* Type Validation */
-		if isComment, err := l.R.StartsWith("//", currentLine); err != nil {
+		isComment, err := l.R.StartsWith("//", currentLine)
+		if err != nil {
 			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
 			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
-		} else {
-			if isComment {
-				l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
-				if debug {
-					log.Printf("Skipping Comment at line %+v", lineIndex)
-				}
-				lineIndex++
-
-				continue
-			}
 		}
+
+		if isComment {
+			l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
+			if debug {
+				log.Printf("Skipping Comment at line %+v", lineIndex)
+			}
+			lineIndex++
+
+			continue
+		}
+
+		currentLine = strings.TrimSpace(currentLine)
 
 		log.Printf("> %+v", l.BlockQueue)
 
@@ -137,11 +141,21 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
 			}
 
-			if helpers.QueueContainsBlock(l.BlockQueue, models.PROCEDUREBLOCK) {
+			switch l.BlockQueue[len(l.BlockQueue)-1] {
+			case models.INITBLOCK:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something when already initialized", currentLine)
+				break
+			case models.PROCEDUREBLOCK:
+				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
 				l.GL.Printf("%+v Initialized a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-
-			} else if helpers.QueueContainsBlock(l.BlockQueue, models.FUNCTIONBLOCK) {
+				break
+			case models.FUNCTIONBLOCK:
+				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
 				l.GL.Printf("%+v Initialized a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
+				break
+
+			default:
+				break
 			}
 		}
 
@@ -150,7 +164,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
 			}
 
-			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.FUNCTIONBLOCK)
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.FUNCTIONBLOCK)
 			if ok {
 				l.BlockQueue = newArr
 			} else {
@@ -161,7 +186,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 
 			}
-
 		}
 
 		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine, lineIndex) {
@@ -169,7 +193,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
 			}
 
-			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.PROCEDUREBLOCK)
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.PROCEDUREBLOCK)
 			if ok {
 				l.BlockQueue = newArr
 			} else {
@@ -178,9 +209,33 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				} else {
 					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
 				}
+			}
+		}
 
+		if l.R.RegexLoopRepetir.StartsWithRepetir(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a REPEATBLOCK outside of a BLOCK", currentLine)
 			}
 
+			l.BlockQueue = append(l.BlockQueue, models.REPEATBLOCK)
+			l.GL.Printf("%+v Initialized a REPEATBLOCK [Line: %+v]", funcName, lineIndex)
+		}
+
+		if l.R.RegexLoopHastaQue.StartsWithHastaQue(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a REPEATBLOCK outside of a BLOCK", currentLine)
+			}
+
+			if l.BlockQueue[len(l.BlockQueue)-1] == models.REPEATBLOCK {
+				newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.REPEATBLOCK)
+				if ok {
+					l.BlockQueue = newArr
+				} else {
+					l.LogErrorGeneral(lineIndex, "N/A", "N/A", "I tried to delete something that was inside the slice that I saw before trying to delete", currentLine)
+				}
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", fmt.Sprintf("Attempted to end a REPEATBLOCK before finalizing a %+v", l.BlockQueue[len(l.BlockQueue)-1]), currentLine)
+			}
 		}
 
 		//Logger
@@ -203,11 +258,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.NextProcedureProto(currentLine, lineIndex, debug)
 		}
 
-		if l.CurrentBlockType == models.PROCEDUREBLOCK {
-		}
-
-		if l.CurrentBlockType == models.FUNCTIONBLOCK {
-		}
 		lineIndex++
 	}
 
@@ -217,6 +267,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 //LogError ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, columnIndex, err, description, currentLine)
+}
+
+//LogErrorGeneral ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogErrorGeneral(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, columnIndex, err, description, currentLine)
