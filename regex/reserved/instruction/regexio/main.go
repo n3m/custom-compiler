@@ -47,6 +47,15 @@ func NewRegexIO(EL, LL, GL *log.Logger) (*RegexIO, error) {
 	}, nil
 }
 
+//MatchPC ...
+func (r *RegexIO) MatchPC(str string, lineIndex int64) bool {
+	if r.ENDSWITH.MatchString(str) {
+		return true
+	}
+
+	return false
+}
+
 //MatchImprimenl ...
 func (r *RegexIO) MatchImprimenl(str string, lineIndex int64) bool {
 	if r.IMPRIMENL.MatchString(str) {

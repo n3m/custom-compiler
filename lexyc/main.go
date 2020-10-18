@@ -315,6 +315,22 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
+		if l.R.RegexIO.MatchImprimenl(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+		}
+
+		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 
