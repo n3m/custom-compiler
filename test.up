@@ -1,0 +1,24 @@
+Procedimiento Selecciona()
+Iniio
+   Repetir
+      Imprime("Dame un numero: ");
+      lee(n);
+      Imprime("Factorial R]recursivo I]interactivo S]salir: ");
+      Lee(opc);
+      Cuando el valor de opc 
+      Inicio
+         Sea "R", "r": imprimenl("Factorial Recursivo de ", n, " es= ", FacRec(n))
+         Sea "I", "i": imprimenl("Factorial Iterativo de ", n, " es= ", Faciter(n))
+         Otro: Si (opc <> "S" y opc <> "s") hacer 
+                  Imprimenl("Opcion Invalida!!!")
+      Fin;
+   hasta que (opc = "S" o opc = "s");
+Fin de Procedimiento;
+
+Funcion FacRec(n:entero):Entero
+Inicio
+   Si (n < 2) hacer 
+      regresa(1)
+   sino
+      regresa(FacRec(n-1)*n);
+Fin de Funcion;
