@@ -256,7 +256,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					break
 				default:
 					for _, dat := range lineData {
-						if l.R.RegexCustom.MatchCteLog(dat) {
+						if l.R.RegexCustom.MatchCteLog(dat, lineIndex) {
 							l.OpQueue = append(l.OpQueue, models.CTELOG)
 							continue
 						}
