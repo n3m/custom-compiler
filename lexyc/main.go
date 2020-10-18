@@ -75,17 +75,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		var LastBlockState models.BlockType
 		LastBlockState = l.CurrentBlockType
 		/* Type Validation */
-		if isComment, err := l.R.StartsWith("//", currentLine); err != nil {
+		isComment, err := l.R.StartsWith("//", currentLine)
+		if err != nil {
 			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
 			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
-		} else {
-			if isComment {
-				l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
-				log.Printf("Skipping Comment at line %+v", lineIndex)
-				lineIndex++
+		}
+		if isComment {
+			l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
+			log.Printf("Skipping Comment at line %+v", lineIndex)
+			lineIndex++
 
-				continue
-			}
+			continue
 		}
 
 		if l.R.RegexConstante.StartsWithConstante(currentLine) {
