@@ -118,50 +118,23 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.R.RegexProcedure.StartsWithProcedure(currentLine, lineIndex) {
 			if len(l.BlockQueue) > 0 {
-				log.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
 				l.BlockQueue = []models.BlockType{}
 			}
 			l.BlockQueue = append(l.BlockQueue, models.PROCEDUREBLOCK)
-			// if l.ParentBlockType == models.NULLBLOCK {
-			// 	l.ParentBlockType = models.PROCEDUREBLOCK
-			// 	l.CurrentBlockType = models.PROCEDUREBLOCK
-			// } else {
-			// 	log.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
-			// }
 		}
 
 		if l.R.RegexFunction.StartsWithFunction(currentLine, lineIndex) {
 			if len(l.BlockQueue) > 0 {
-				log.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
 				l.BlockQueue = []models.BlockType{}
 			}
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
-			// if l.ParentBlockType == models.NULLBLOCK {
-			// 	l.ParentBlockType = models.FUNCTIONBLOCK
-			// 	l.CurrentBlockType = models.FUNCTIONBLOCK
-			// } else {
-			// 	log.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
-			// }
 		}
 
 		if l.R.RegexInicio.StartsWithInicio(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
-				log.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
 			}
 
 			if helpers.QueueContainsBlock(l.BlockQueue, models.PROCEDUREBLOCK) {
@@ -170,25 +143,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			} else if helpers.QueueContainsBlock(l.BlockQueue, models.FUNCTIONBLOCK) {
 				l.GL.Printf("%+v Initialized a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
 			}
-
-			// if l.ParentBlockType == models.PROCEDUREBLOCK {
-			// 	l.GL.Printf("%+v Initialized a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-			// } else if l.ParentBlockType == models.FUNCTIONBLOCK {
-			// 	l.GL.Printf("%+v Initialized a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
-			// } else {
-			// 	log.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
-			// }
 		}
 
 		if l.R.RegexFinFunction.StartsWithFinDeFuncion(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
-				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
 			}
 
 			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.FUNCTIONBLOCK)
@@ -196,42 +155,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.BlockQueue = newArr
 			} else {
 				if helpers.QueueContainsBlock(l.BlockQueue, models.PROCEDUREBLOCK) {
-					log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-					l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
 				} else {
-					log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-					l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
 				}
 
 			}
 
-			// if l.ParentBlockType == models.FUNCTIONBLOCK {
-			// 	l.ParentBlockType = models.NULLBLOCK
-			// 	l.GL.Printf("%+v Finished a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
-			// } else if l.ParentBlockType == models.PROCEDUREBLOCK {
-
-			// 	log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
-			// } else {
-			// 	log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
-			// }
 		}
 
 		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
-				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
 			}
 
 			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.PROCEDUREBLOCK)
@@ -239,34 +174,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.BlockQueue = newArr
 			} else {
 				if helpers.QueueContainsBlock(l.BlockQueue, models.FUNCTIONBLOCK) {
-					log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-					l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
 				} else {
-					log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-					l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
 				}
 
 			}
 
-			// if l.ParentBlockType == models.PROCEDUREBLOCK {
-			// 	l.ParentBlockType = models.NULLBLOCK
-			// 	l.GL.Printf("%+v Finished a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-			// } else if l.ParentBlockType == models.FUNCTIONBLOCK {
-
-			// 	log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
-			// } else {
-			// 	log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-			// 	l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-			// 	//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-			// 	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
-			// }
 		}
 
 		//Logger
@@ -298,6 +212,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	}
 
 	return nil
+}
+
+//LogError ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, columnIndex, err, description, currentLine)
 }
 
 //RegisterBlockChange ...
