@@ -103,27 +103,35 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
-		// log.Printf("BLOCK > %+v", l.BlockQueue)
+		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
+		log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
 		/* StartsWith */
 
+		//Contante
 		if l.R.RegexConstante.StartsWithConstante(currentLine, lineIndex) {
 			l.CurrentBlockType = models.CONSTANTBLOCK
 		}
 
+		//Variable
 		if l.R.RegexVariable.StartsWithVariable(currentLine, lineIndex) {
 			l.CurrentBlockType = models.VARIABLEBLOCK
 		}
 
+		//FunctionProto
 		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.FUNCTIONPROTOBLOCK
 		}
 
+		//ProcedureProto
 		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.PROCEDUREPROTOBLOCK
 		}
 
+		//Procedure
 		if l.R.RegexProcedure.StartsWithProcedure(currentLine, lineIndex) {
+			l.GL.Println()
+
 			if len(l.BlockQueue) > 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
 				l.BlockQueue = []models.BlockType{}
@@ -131,14 +139,19 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.BlockQueue = append(l.BlockQueue, models.PROCEDUREBLOCK)
 		}
 
+		//Function
 		if l.R.RegexFunction.StartsWithFunction(currentLine, lineIndex) {
+			l.GL.Println()
+
 			if len(l.BlockQueue) > 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
 				l.BlockQueue = []models.BlockType{}
 			}
+
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
 		}
 
+		//Inicio
 		if l.R.RegexInicio.StartsWithInicio(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
@@ -148,20 +161,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			case models.INITBLOCK:
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something when already initialized", currentLine)
 				break
-			case models.PROCEDUREBLOCK:
+			case models.PROCEDUREBLOCK, models.FUNCTIONBLOCK, models.CUANDOBLOCK:
+				l.GL.Printf("%+v Initialized a %+v [Line: %+v]", funcName, l.BlockQueue[len(l.BlockQueue)-1], lineIndex)
 				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
-				l.GL.Printf("%+v Initialized a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-				break
-			case models.FUNCTIONBLOCK:
-				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
-				l.GL.Printf("%+v Initialized a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
 				break
 
 			default:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something non existent", currentLine)
 				break
 			}
 		}
 
+		//FinDeFuncion
 		if l.R.RegexFinFunction.StartsWithFinDeFuncion(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
@@ -189,8 +200,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 
 			}
+			l.GL.Println()
 		}
 
+		//FinDeProcedimiento
 		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
@@ -215,6 +228,33 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
+		//Fin
+		if l.R.RegexFin.StartsWithFin(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a SOMETHING that wasn't initialized", currentLine)
+			}
+
+			switch l.BlockQueue[len(l.BlockQueue)-1] {
+			case models.CUANDOBLOCK:
+				newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.CUANDOBLOCK)
+				if ok {
+					l.BlockQueue = newArr
+				}
+				break
+			default:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a SOMETHING:Inicio that didn't exist", currentLine)
+				break
+			}
+		}
+
+		//Repetir
 		if l.R.RegexLoopRepetir.StartsWithRepetir(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a REPEATBLOCK outside of a BLOCK", currentLine)
@@ -224,6 +264,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Initialized a REPEATBLOCK [Line: %+v]", funcName, lineIndex)
 		}
 
+		//Hasta Que (Repetir)
 		if l.R.RegexLoopHastaQue.StartsWithHastaQue(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a REPEATBLOCK outside of a BLOCK", currentLine)
@@ -281,6 +322,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 		}
 
+		//ImprimeNL
 		if l.R.RegexIO.MatchImprimenl(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
@@ -306,7 +348,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.GL.Printf("%+v Found Imprimenl instruction [Line: %+v]", funcName, lineIndex)
-
+			//Imprime
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
@@ -330,9 +372,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
 			l.GL.Printf("%+v Found Imprime instruction [Line: %+v]", funcName, lineIndex)
-
 		}
 
+		//Lee
 		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
@@ -356,6 +398,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.GL.Printf("%+v Found Lee instruction [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Cuando
+		if l.R.RegexConditionCuando.StartsWithCuando(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a CUANDOBLOCK outside of a BLOCK", currentLine)
+
+			}
+			l.BlockQueue = append(l.BlockQueue, models.CUANDOBLOCK)
+			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger

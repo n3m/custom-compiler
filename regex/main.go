@@ -18,8 +18,10 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
+	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
 	"go-custom-compiler/regex/reserved/regexconstante"
 	"go-custom-compiler/regex/reserved/regexcustom"
+	"go-custom-compiler/regex/reserved/regexfin/regexfin"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinfunction"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinprocedure"
 	"go-custom-compiler/regex/reserved/regexfuncionproto"
@@ -78,6 +80,7 @@ type CustomRegex struct {
 	//Fin
 	RegexFinProcedure *regexfinprocedure.RegexFinProcedure
 	RegexFinFunction  *regexfinfunction.RegexFinFunction
+	RegexFin          *regexfin.RegexFin
 	//Loop
 	RegexLoopRepetir  *regexlooprepetir.RegexLoopRepetir
 	RegexLoopHastaQue *regexloophastaque.RegexLoopHastaQue
@@ -85,6 +88,8 @@ type CustomRegex struct {
 	RegexCustom *regexcustom.RegexCustom
 	//IO
 	RegexIO *regexio.RegexIO
+	//Conditions
+	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 
 	EL *log.Logger
 	LL *log.Logger
@@ -143,6 +148,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	//Fin
 	finProcedureBuilder, _ := regexfinprocedure.NewRegexFinProcedure(EL, LL, GL)
 	finFunctionBuilder, _ := regexfinfunction.NewRegexFinFunction(EL, LL, GL)
+	finBuilder, _ := regexfin.NewRegexFin(EL, LL, GL)
 
 	//Loop
 	repetirLoopBuilder, _ := regexlooprepetir.NewRegexLoopRepetir(EL, LL, GL)
@@ -152,6 +158,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	customBuilder, _ := regexcustom.NewRegexCustom(EL, LL, GL)
 	//IO
 	ioBuilder, _ := regexio.NewRegexIO(EL, LL, GL)
+	//Conditions
+	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -192,6 +200,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Fin
 		RegexFinFunction:  finFunctionBuilder,
 		RegexFinProcedure: finProcedureBuilder,
+		RegexFin:          finBuilder,
 		//Loop
 		RegexLoopRepetir:  repetirLoopBuilder,
 		RegexLoopHastaQue: hastaqueLoopBuilder,
@@ -199,6 +208,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexCustom: customBuilder,
 		//IO
 		RegexIO: ioBuilder,
+		//Conditions
+		RegexConditionCuando: conditionCuandoBuilder,
 
 		EL: EL,
 		LL: LL,
