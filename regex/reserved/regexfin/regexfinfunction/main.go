@@ -34,7 +34,7 @@ func NewRegexFinFunction(EL, LL, GL *log.Logger) (*RegexFinFunction, error) {
 		V2:      regexp.MustCompile("^(?i)Fin de Funcion"),
 		V3:      regexp.MustCompile("^(?i)Fin de Func"),
 		V4:      regexp.MustCompile("^(?i)Fin de Fu"),
-		V5:      regexp.MustCompile("^(?i)Fin de P"),
+		V5:      regexp.MustCompile("^(?i)Fin de F"),
 		GL:      GL,
 		EL:      EL,
 		LL:      LL,
