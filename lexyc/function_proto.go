@@ -54,7 +54,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 		}
 
 		if l.R.RegexFunctionProtoDefault.MatchFuncDefault(currentLine) {
-			funcType, _, _ := getDataFromFunctionProto(currentLine)
+			funcType, _, _, _ := getDataFromFunctionProto(currentLine)
 
 			if l.R.RegexFunctionProtoAlfabetico.MatchFuncAlfabeticoCaseless(currentLine) {
 				l.GL.Printf("%+v[FUNC PROTO] Alfabetico Funcion Found > %+v", funcName, currentLine)
@@ -156,7 +156,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 	}
 }
 
-func getDataFromFunctionProto(currentLine string) (string, string, string) {
+func getDataFromFunctionProto(currentLine string) (string, string, string, string) {
 	currentLine = strings.TrimSuffix(currentLine, ";")
 	currentLine = strings.TrimSuffix(currentLine, " ")
 	lineData := strings.Split(currentLine, "):")
@@ -166,6 +166,9 @@ func getDataFromFunctionProto(currentLine string) (string, string, string) {
 	funcDataV2 := strings.Split(funcData, "(")
 	funcName := funcDataV2[0]
 	funcParams := funcDataV2[1]
+	paramsData := strings.Split(funcParams, ":")
+	funcParamType := paramsData[1]
+	funcParamName := paramsData[0]
 
-	return funcType, funcName, funcParams
+	return funcType, funcName, funcParamType, funcParamName
 }
