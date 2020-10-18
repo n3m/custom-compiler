@@ -54,11 +54,7 @@ func (r *RegexInicio) StartsWithInicio(str string, lineIndex int64) bool {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
 					foundTypo = true
-
-					log.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-					r.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					r.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, wrongWord, r.Keyword, str)
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
 				}
 			}
 		}
@@ -74,10 +70,7 @@ func (r *RegexInicio) StartsWithInicio(str string, lineIndex int64) bool {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
 					foundTypo = true
-					log.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-					r.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v]. Correct syntax should be '%+v'", wrongWord, i, r.Keyword)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					r.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, i, wrongWord, r.Keyword, str)
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
 				}
 			}
 		}
@@ -102,4 +95,14 @@ func (r *RegexInicio) StartsWithInicioNoCheck(str string) bool {
 	}
 
 	return false
+}
+
+//r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+
+//LogError ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (r *RegexInicio) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	r.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 }

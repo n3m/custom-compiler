@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"go-custom-compiler/helpers"
 	"go-custom-compiler/models"
@@ -23,6 +25,8 @@ type LexicalAnalyzer struct {
 	//TEST
 	CurrentBlockType models.BlockType
 	ParentBlockType  models.BlockType
+	BlockQueue       []models.BlockType
+	OpQueue          []models.TokenComp
 	ConstantStorage  []models.Token
 	VariableStorage  []models.Token
 }
@@ -60,7 +64,9 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		GL:   GeneralLogger,
 
 		ParentBlockType:  models.NULLBLOCK,
+		BlockQueue:       []models.BlockType{},
 		CurrentBlockType: models.NULLBLOCK,
+		OpQueue:          []models.TokenComp{},
 		ConstantStorage:  []models.Token{},
 		VariableStorage:  []models.Token{},
 	}, nil
@@ -72,10 +78,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	var lineIndex int64 = 1
 	for l.File.Scan() {
 		currentLine := l.File.Text()
-		l.GL.Printf("%+v Analyzing line: %+v", funcName, lineIndex)
 
 		if len(currentLine) == 0 {
-			l.GL.Printf("%+v Skipped line: %+v; Reason: Empty", funcName, lineIndex)
+			l.GL.Printf("%+v Skipped [Line: %+v]; Reason: Empty", funcName, lineIndex)
 			lineIndex++
 
 			continue
@@ -88,6 +93,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v[APP_ERR] %+v", funcName, err.Error())
 			return fmt.Errorf("%+v[APP_ERR] %+v", funcName, err.Error())
 		}
+
 		if isComment {
 			l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
 			if debug {
@@ -98,98 +104,317 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			continue
 		}
 
+		currentLine = strings.TrimSpace(currentLine)
+
+		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
+		log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
+
 		/* StartsWith */
 
+		//Contante
 		if l.R.RegexConstante.StartsWithConstante(currentLine, lineIndex) {
 			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"constantes", helpers.PALABRARESERVADA}))
 		}
 
+		//Variable
 		if l.R.RegexVariable.StartsWithVariable(currentLine, lineIndex) {
 			l.CurrentBlockType = models.VARIABLEBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"variables", helpers.PALABRARESERVADA}))
 		}
 
+		//FunctionProto
 		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.FUNCTIONPROTOBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"funcion", helpers.PALABRARESERVADA}))
 		}
 
+		//ProcedureProto
 		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.PROCEDUREPROTOBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"procedimiento", helpers.PALABRARESERVADA}))
 		}
 
+		//Procedure
 		if l.R.RegexProcedure.StartsWithProcedure(currentLine, lineIndex) {
-			if l.ParentBlockType == models.NULLBLOCK {
-				l.ParentBlockType = models.PROCEDUREBLOCK
-				l.CurrentBlockType = models.PROCEDUREBLOCK
-			} else {
-				log.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to create new procedure without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
+			l.GL.Println()
+
+			if len(l.BlockQueue) > 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new procedure without finalizing the last Function or Procedure", currentLine)
+				l.BlockQueue = []models.BlockType{}
 			}
+			l.BlockQueue = append(l.BlockQueue, models.PROCEDUREBLOCK)
 		}
 
+		//Function
 		if l.R.RegexFunction.StartsWithFunction(currentLine, lineIndex) {
-			if l.ParentBlockType == models.NULLBLOCK {
-				l.ParentBlockType = models.FUNCTIONBLOCK
-				l.CurrentBlockType = models.FUNCTIONBLOCK
-			} else {
-				log.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to create new function without finalizing the last Function or Procedure [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
+			l.GL.Println()
+
+			if len(l.BlockQueue) > 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new function without finalizing the last Function or Procedure", currentLine)
+				l.BlockQueue = []models.BlockType{}
 			}
+
+			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
 		}
 
+		//Inicio
 		if l.R.RegexInicio.StartsWithInicio(currentLine, lineIndex) {
-			if l.ParentBlockType == models.PROCEDUREBLOCK {
-				l.GL.Printf("%+v Initialized a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-			} else if l.ParentBlockType == models.FUNCTIONBLOCK {
-				l.GL.Printf("%+v Initialized a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
-			} else {
-				log.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to initialize something outside of a Block [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something outside of a Block", currentLine)
+			}
+
+			switch l.BlockQueue[len(l.BlockQueue)-1] {
+			case models.INITBLOCK:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something when already initialized", currentLine)
+				break
+			case models.PROCEDUREBLOCK, models.FUNCTIONBLOCK, models.CUANDOBLOCK:
+				l.GL.Printf("%+v Initialized a %+v [Line: %+v]", funcName, l.BlockQueue[len(l.BlockQueue)-1], lineIndex)
+				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
+				break
+
+			default:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to initialize something non existent", currentLine)
+				break
 			}
 		}
 
+		//FinDeFuncion
 		if l.R.RegexFinFunction.StartsWithFinDeFuncion(currentLine, lineIndex) {
-			if l.ParentBlockType == models.FUNCTIONBLOCK {
-				l.ParentBlockType = models.NULLBLOCK
-				l.GL.Printf("%+v Finished a FUNCTIONBLOCK [Line: %+v]", funcName, lineIndex)
-			} else if l.ParentBlockType == models.PROCEDUREBLOCK {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+			}
 
-				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
 			} else {
-				log.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.FUNCTIONBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				if helpers.QueueContainsBlock(l.BlockQueue, models.PROCEDUREBLOCK) {
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK:Inicio with a PROCEDUREBLOCK as parent", currentLine)
+				} else {
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a FUNCTIONBLOCK outside of a FUNCTIONBLOCK", currentLine)
+				}
+
+			}
+			l.GL.Println()
+		}
+
+		//FinDeProcedimiento
+		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
+			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK that wasn't initialized", currentLine)
+			}
+
+			newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.PROCEDUREBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				if helpers.QueueContainsBlock(l.BlockQueue, models.FUNCTIONBLOCK) {
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
+				} else {
+					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
+				}
 			}
 		}
-		if l.R.RegexFinProcedure.StartsWithFinDeProcedimiento(currentLine, lineIndex) {
-			if l.ParentBlockType == models.PROCEDUREBLOCK {
-				l.ParentBlockType = models.NULLBLOCK
-				l.GL.Printf("%+v Finished a PROCEDUREBLOCK [Line: %+v]", funcName, lineIndex)
-			} else if l.ParentBlockType == models.FUNCTIONBLOCK {
 
-				log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK:Inicio with a FUNCTIONBLOCK as parent", currentLine)
-			} else {
-				log.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-				l.GL.Printf("[ERR] Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK [Line: %+v]", lineIndex)
-				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-				l.EL.Printf("%+v|%+v|%+v|%+v|%+v", lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
+		//Fin
+		if l.R.RegexFin.StartsWithFin(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a SOMETHING that wasn't initialized", currentLine)
+			}
+
+			switch l.BlockQueue[len(l.BlockQueue)-1] {
+			case models.CUANDOBLOCK:
+				newArr, ok = helpers.RemoveFromQueue(l.BlockQueue, models.CUANDOBLOCK)
+				if ok {
+					l.BlockQueue = newArr
+				}
+				break
+			default:
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a SOMETHING:Inicio that didn't exist", currentLine)
+				break
+			}
+		}
+
+		//Repetir
+		if l.R.RegexLoopRepetir.StartsWithRepetir(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a REPEATBLOCK outside of a BLOCK", currentLine)
+			}
+
+			l.BlockQueue = append(l.BlockQueue, models.REPEATBLOCK)
+			l.GL.Printf("%+v Initialized a REPEATBLOCK [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Hasta Que (Repetir)
+		if l.R.RegexLoopHastaQue.StartsWithHastaQue(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a REPEATBLOCK outside of a BLOCK", currentLine)
+			}
+
+			/* Analyze Params */
+
+			data := strings.Split(currentLine, " ")
+			currentLine = ""
+			for _, str := range data[2:] {
+				currentLine += str + " "
+			}
+
+			l.OpQueue = []models.TokenComp{}
+
+			stage1 := regexp.MustCompile(`^(\s*)\((.*)\);(\s*)$`)
+			stage1v2 := regexp.MustCompile(`^(\s*)\((.*)\)(\s*)$`)
+			if stage1.MatchString(currentLine) || stage1v2.MatchString(currentLine) {
+				currentLine = strings.TrimPrefix(currentLine, "(")
+				currentLine = strings.TrimSuffix(currentLine, ";")
+				currentLine = strings.TrimSuffix(currentLine, ")")
+
+				lineData := strings.Split(currentLine, " ")
+				switch len(lineData) {
+				case 0:
+					l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
+					break
+				case 2:
+					l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' only has 2 params", currentLine)
+					break
+				default:
+					for _, dat := range lineData {
+						l.AnalyzeForItem(dat, lineIndex)
+					}
+					break
+				}
+
+				//TODO: Create Func to eval OPQueue
+
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
+			}
+
+			/* End Analyze Params*/
+
+			if l.BlockQueue[len(l.BlockQueue)-1] == models.REPEATBLOCK {
+				newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.REPEATBLOCK)
+				if ok {
+					l.BlockQueue = newArr
+				} else {
+					l.LogErrorGeneral(lineIndex, "N/A", "N/A", "I tried to delete something that was inside the slice that I saw before trying to delete", currentLine)
+				}
+			} else {
+				l.LogError(lineIndex, "N/A", "N/A", fmt.Sprintf("Attempted to end a REPEATBLOCK before finalizing a %+v", l.BlockQueue[len(l.BlockQueue)-1]), currentLine)
+			}
+		}
+
+		//ImprimeNL
+		if l.R.RegexIO.MatchImprimenl(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+
+			params := strings.Split(currentLine, ",")
+
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectNoNone() {
+				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
+			}
+
+			l.GL.Printf("%+v Found Imprimenl instruction [Line: %+v]", funcName, lineIndex)
+			//Imprime
+		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+
+			params := strings.Split(currentLine, ",")
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectNoNone() {
+				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
+			}
+			l.GL.Printf("%+v Found Imprime instruction [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Lee
+		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+			params := strings.Split(currentLine, ",")
+			l.OpQueue = []models.TokenComp{}
+			for _, str := range params {
+				l.AnalyzeForItem(str, lineIndex)
+			}
+
+			if !l.ExpectIdent(currentLine, lineIndex) {
+				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
+			}
+
+			l.GL.Printf("%+v Found Lee instruction [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Cuando
+		if l.R.RegexConditionCuando.StartsWithCuando(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a CUANDOBLOCK outside of a BLOCK", currentLine)
+
+			}
+			l.BlockQueue = append(l.BlockQueue, models.CUANDOBLOCK)
+			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger
@@ -212,15 +437,64 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.NextProcedureProto(currentLine, lineIndex, debug)
 		}
 
-		if l.CurrentBlockType == models.PROCEDUREBLOCK {
-		}
-
-		if l.CurrentBlockType == models.FUNCTIONBLOCK {
-		}
 		lineIndex++
 	}
 
 	return nil
+}
+
+//AnalyzeForItem ...
+func (l *LexicalAnalyzer) AnalyzeForItem(str string, lineIndex int64) {
+	str = strings.TrimSpace(str)
+	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
+		l.OpQueue = append(l.OpQueue, models.CTELOG)
+		return
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEENT)
+		return
+	}
+	if l.R.RegexCustom.MatchCteAlfa(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEALFA)
+		return
+	}
+	if l.R.RegexCustom.MatchCteReal(str) {
+		l.OpQueue = append(l.OpQueue, models.CTEREAL)
+		return
+	}
+	if l.R.RegexCustom.MatchOpArit(str) {
+		l.OpQueue = append(l.OpQueue, models.OPARIT)
+		return
+	}
+	if l.R.RegexCustom.MatchOpLog(str) {
+		l.OpQueue = append(l.OpQueue, models.OPLOG)
+		return
+	}
+	if l.R.RegexCustom.MatchOpRel(str) {
+		l.OpQueue = append(l.OpQueue, models.OPREL)
+		return
+	}
+	if l.R.RegexCustom.MatchIdent(str) {
+		l.OpQueue = append(l.OpQueue, models.ID)
+		return
+	}
+
+	l.OpQueue = append(l.OpQueue, models.NONE)
+}
+
+//LogError ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
+}
+
+//LogErrorGeneral ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogErrorGeneral(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 }
 
 //RegisterBlockChange ...
