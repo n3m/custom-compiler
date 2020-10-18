@@ -74,7 +74,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	var lineIndex int64 = 1
 	for l.File.Scan() {
 		currentLine := l.File.Text()
-		// l.GL.Printf("%+v Analyzing line: %+v", funcName, lineIndex)
 
 		if len(currentLine) == 0 {
 			l.GL.Printf("%+v Skipped [Line: %+v]; Reason: Empty", funcName, lineIndex)
