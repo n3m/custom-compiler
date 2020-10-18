@@ -19,6 +19,8 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/regexconstante"
 	"go-custom-compiler/regex/reserved/regexfuncionproto"
+	"go-custom-compiler/regex/reserved/regexfunction"
+	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
@@ -60,6 +62,10 @@ type CustomRegex struct {
 	RegexProcedureProtoEntero     *regexprocedureprotoentero.RegexProcedureProtoEntero
 	RegexProcedureProtoReal       *regexprocedureprotoreal.RegexProcedureProtoReal
 	RegexProcedureProtoLogico     *regexprocedureprotologico.RegexProcedureProtoLogico
+	//Procedimiento
+	RegexProcedure *regexprocedure.RegexProcedure
+	//Funcion
+	RegexFunction *regexfunction.RegexFunction
 
 	EL *log.Logger
 	LL *log.Logger
@@ -106,6 +112,11 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	procedureProtoReal, _ := regexprocedureprotoreal.NewRegexProcedureProtoReal()
 	procedureProtoLogico, _ := regexprocedureprotologico.NewRegexProcedureProtoLogico()
 
+	//Procedure
+	procedureBuilder, _ := regexprocedure.NewRegexProcedure(EL, LL, GL)
+	//Function
+	functionBuilder, _ := regexfunction.NewRegexFunction(EL, LL, GL)
+
 	return &CustomRegex{
 		//Reserved
 		RegexConstante: constanteBuilder,
@@ -122,20 +133,24 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexVariableLogico:     varlogicoBuilder,
 		RegexVariableReal:       varrealBuilder,
 		RegexVariableDefault:    vardefaultBuilder,
-		//Proto
+		//Function Proto
 		RegexFuncionProto:            funcionProtoBuilder,
 		RegexFunctionProtoAlfabetico: funcProtoAlfabetico,
 		RegexFunctionProtoDefault:    funcProtoDefault,
 		RegexFunctionProtoEntero:     funcProtoEntero,
 		RegexFunctionProtoLogico:     funcProtoLogico,
 		RegexFunctionProtoReal:       funcProtoReal,
-		//Procedure
+		//Procedure Proto
 		RegexProcedureProto:           procedureProtoBuilder,
 		RegexProcedureProtoAlfabetico: procedureProtoAlfabetico,
 		RegexProcedureProtoDefault:    procedureProtoDefault,
 		RegexProcedureProtoEntero:     procedureProtoEntero,
 		RegexProcedureProtoLogico:     procedureProtoLogico,
 		RegexProcedureProtoReal:       procedureProtoReal,
+		//Procedure
+		RegexProcedure: procedureBuilder,
+		//Function
+		RegexFunction: functionBuilder,
 
 		EL: EL,
 		LL: LL,

@@ -80,7 +80,6 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			constantData := strings.Split(currentLine, ":=")
 			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.LOGICO, Key: constantData[0], Value: constantData[1]})
 			l.GL.Printf("%+v[CONSTANT] Logico Found > %+v", funcName, currentLine)
-
 			if debug {
 				log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
 			}
@@ -107,6 +106,10 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				foundTypo := false
 				keyword := "verdadero"
 				keyData := strings.Split(keyword, "")
+				l.GL.Printf("%+v[CONSTANT] Logico Found > %+v", funcName, currentLine)
+				if debug {
+					log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
+				}
 				for i, char := range value {
 					if i < len(keyData)-1 {
 						if !foundTypo {
