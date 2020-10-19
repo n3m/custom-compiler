@@ -16,7 +16,7 @@ func NewRegexProcedureProtoLogico() (*RegexProcedureProtoLogico, error) {
 	// var moduleName string = "[regexint][NewRegexProcedureProtoLogico()]"
 
 	return &RegexProcedureProtoLogico{
-		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)Logico(\s*)\)(\s*);$`),
+		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Logico(\s*)\)(\s*);$`),
 		V2i:     regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Logico(\s*)\)(\s*);$`),
 		Keyword: "Logico",
 	}, nil

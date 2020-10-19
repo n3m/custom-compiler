@@ -30,7 +30,7 @@ func NewRegexLoopHastaQue(EL, LL, GL *log.Logger) (*RegexLoopHastaQue, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledE1 := regexp.MustCompile(`^(\s*)(Hasta(\s)+que)`)
+	compiledE1 := regexp.MustCompile(`^(\s*)((?i)Hasta(\s)+que)`)
 	compiledE2 := regexp.MustCompile(`^(\s*)((?i)hasta(\s)+(?i)que)`)
 	compiledE3 := regexp.MustCompile(`^(\s*)((?i)hasta(\s)+(?i)q)`)
 	compiledE4 := regexp.MustCompile(`^(\s*)(?i)hasta(\s)+`)

@@ -15,7 +15,7 @@ func NewRegexConstLogica() (*RegexConstLogica, error) {
 	// var moduleName string = "[regexConstLogica][NewRegexConstLogica()]"
 
 	return &RegexConstLogica{
-		V1:  regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(verdadero|falso);$`),
+		V1:  regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)((?i)verdadero|(?i)falso);$`),
 		V2i: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)((?i)verdadero|(?i)falso);$`),
 	}, nil
 }

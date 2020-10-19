@@ -28,7 +28,7 @@ func NewRegexFunction(EL, LL, GL *log.Logger) (*RegexFunction, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledV1 := regexp.MustCompile("^Funcion")
+	compiledV1 := regexp.MustCompile("^(?i)Funcion")
 	compiledV2 := regexp.MustCompile("^(?i)Func")
 	compiledV3 := regexp.MustCompile("^(?i)Fu")
 	compiledV4End := regexp.MustCompile("[^;]$")

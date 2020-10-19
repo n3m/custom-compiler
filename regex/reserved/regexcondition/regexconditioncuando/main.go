@@ -28,7 +28,7 @@ func NewRegexConditionCuando(EL, LL, GL *log.Logger) (*RegexConditionCuando, err
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledE1 := regexp.MustCompile(`^(\s*)(Cuando)(\s+)`)
+	compiledE1 := regexp.MustCompile(`^(\s*)((?i)Cuando)(\s+)`)
 	compiledE2 := regexp.MustCompile(`^(\s*)((?i)Cuando)(\s+)`)
 	compiledE3 := regexp.MustCompile(`^(\s*)((?i)Cuan)(\s+)`)
 	compiledE4 := regexp.MustCompile(`^(\s*)((?i)Cu)(\s+)`)

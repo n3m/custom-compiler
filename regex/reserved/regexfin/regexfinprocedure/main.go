@@ -30,7 +30,7 @@ func NewRegexFinProcedure(EL, LL, GL *log.Logger) (*RegexFinProcedure, error) {
 	}
 	return &RegexFinProcedure{
 		Keyword: "Fin de Procedimiento",
-		V1:      regexp.MustCompile("^Fin de Procedimiento"),
+		V1:      regexp.MustCompile("^(?i)Fin de Procedimiento"),
 		V2:      regexp.MustCompile("^(?i)Fin de Procedimi"),
 		V3:      regexp.MustCompile("^(?i)Fin de Proce"),
 		V4:      regexp.MustCompile("^(?i)Fin de Pro"),

@@ -16,7 +16,7 @@ func NewRegexProcedureProtoReal() (*RegexProcedureProtoReal, error) {
 	// var moduleName string = "[regexint][NewRegexProcedureProtoReal()]"
 
 	return &RegexProcedureProtoReal{
-		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)Real(\s*)\)(\s*);$`),
+		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Real(\s*)\)(\s*);$`),
 		V2i:     regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Real(\s*)\)(\s*);$`),
 		Keyword: "Real",
 	}, nil

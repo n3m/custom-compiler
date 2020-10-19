@@ -16,7 +16,7 @@ func NewRegexFuncProtoAlfabetico() (*RegexFuncProtoAlfabetico, error) {
 	// var moduleName string = "[regexint][NewRegexFuncProtoAlfabetico()]"
 
 	return &RegexFuncProtoAlfabetico{
-		V1:      regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):Alfabetico;$`),
+		V1:      regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):(?i)Alfabetico;$`),
 		V2i:     regexp.MustCompile(`\s*[a-zA-Z]+[a-zA-Z0-9]*\(([a-zA-Z]+[a-zA-Z0-9]*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*)*):[a-zA-Z]+\):(?i)alfabetico;$`),
 		Keyword: "Alfabetico",
 	}, nil

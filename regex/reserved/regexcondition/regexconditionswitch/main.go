@@ -32,9 +32,9 @@ func NewRegexConditionSwitch(EL, LL, GL *log.Logger) (*RegexConditionSwitch, err
 	return &RegexConditionSwitch{
 		KeywordV1: "Sea",
 		KeywordV2: "Otro",
-		V1:        regexp.MustCompile(`^(\s*)(Sea)(\s+)`),
+		V1:        regexp.MustCompile(`^(\s*)((?i)Sea)(\s+)`),
 		V1i:       regexp.MustCompile(`^(\s*)((?i)Sea)(\s+)`),
-		V2:        regexp.MustCompile(`^(\s*)(Otro)(\s+)`),
+		V2:        regexp.MustCompile(`^(\s*)((?i)Otro)(\s+)`),
 		V2i:       regexp.MustCompile(`^(\s*)((?i)Otro)(\s+)`),
 		EL:        EL,
 		LL:        LL,
