@@ -19,6 +19,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
+	"go-custom-compiler/regex/reserved/regexcondition/regexconditionsi"
 	"go-custom-compiler/regex/reserved/regexconstante"
 	"go-custom-compiler/regex/reserved/regexcustom"
 	"go-custom-compiler/regex/reserved/regexfin/regexfin"
@@ -90,6 +91,7 @@ type CustomRegex struct {
 	RegexIO *regexio.RegexIO
 	//Conditions
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
+	RegexConditionSi     *regexconditionsi.RegexConditionSi
 
 	EL *log.Logger
 	LL *log.Logger
@@ -160,6 +162,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	ioBuilder, _ := regexio.NewRegexIO(EL, LL, GL)
 	//Conditions
 	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
+	conditionSiBuilder, _ := regexconditionsi.NewRegexConditionSi(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -210,10 +213,10 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexIO: ioBuilder,
 		//Conditions
 		RegexConditionCuando: conditionCuandoBuilder,
-
-		EL: EL,
-		LL: LL,
-		GL: GL,
+		RegexConditionSi:     conditionSiBuilder,
+		EL:                   EL,
+		LL:                   LL,
+		GL:                   GL,
 	}, nil
 }
 

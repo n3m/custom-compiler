@@ -403,10 +403,25 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexConditionCuando.StartsWithCuando(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a CUANDOBLOCK outside of a BLOCK", currentLine)
-
 			}
 			l.BlockQueue = append(l.BlockQueue, models.CUANDOBLOCK)
+
+			//TODO: Get params
+
 			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Si
+		if l.R.RegexConditionSi.StartsWithSi(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Si' condition outside of a BLOCK", currentLine)
+			}
+
+			l.R.RegexConditionSi.ValidateCondition(currentLine, lineIndex)
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found Si condition [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger
