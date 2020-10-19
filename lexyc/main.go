@@ -346,7 +346,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
 
-			l.GL.Printf("%+v Found Imprimenl instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Imprimenl' instruction [Line: %+v]", funcName, lineIndex)
 			//Imprime
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
@@ -370,7 +370,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
-			l.GL.Printf("%+v Found Imprime instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Imprime' instruction [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Lee
@@ -396,7 +396,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
 			}
 
-			l.GL.Printf("%+v Found Lee instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Cuando
@@ -422,6 +422,34 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 
 			l.GL.Printf("%+v Found Si condition [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Switch: Sea
+		if l.R.RegexConditionSwitch.StartsWithSea(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Sea' instruction outside of a BLOCK", currentLine)
+			}
+
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK && l.BlockQueue[len(l.BlockQueue)-2] != models.CUANDOBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Sea' instruction outside of a CUANDOBLOCK", currentLine)
+			}
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
+		}
+		//Switch: Otro
+		if l.R.RegexConditionSwitch.StartsWithOtro(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Otro' instruction outside of a BLOCK", currentLine)
+			}
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK && l.BlockQueue[len(l.BlockQueue)-2] != models.CUANDOBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Otro' instruction outside of a CUANDOBLOCK", currentLine)
+			}
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found 'Otro' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger
