@@ -14,6 +14,8 @@ type RegexConditionCuando struct {
 	V2      *regexp.Regexp
 	V3      *regexp.Regexp
 	V4      *regexp.Regexp
+	V5      *regexp.Regexp
+	V6      *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -28,16 +30,14 @@ func NewRegexConditionCuando(EL, LL, GL *log.Logger) (*RegexConditionCuando, err
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledE1 := regexp.MustCompile(`^(\s*)((?i)Cuando)(\s+)`)
-	compiledE2 := regexp.MustCompile(`^(\s*)((?i)Cuando)(\s+)`)
-	compiledE3 := regexp.MustCompile(`^(\s*)((?i)Cuan)(\s+)`)
-	compiledE4 := regexp.MustCompile(`^(\s*)((?i)Cu)(\s+)`)
 	return &RegexConditionCuando{
 		Keyword: "Cuando",
-		V1:      compiledE1,
-		V2:      compiledE2,
-		V3:      compiledE3,
-		V4:      compiledE4,
+		V1:      regexp.MustCompile(`^(\s*)((?i)Cuando el valor de)(\s+)`),
+		V2:      regexp.MustCompile(`^(\s*)((?i)Cuando el valor)`),
+		V3:      regexp.MustCompile(`^(\s*)((?i)Cuando el)`),
+		V4:      regexp.MustCompile(`^(\s*)((?i)Cuando)`),
+		V5:      regexp.MustCompile(`^(\s*)((?i)Cuan)`),
+		V6:      regexp.MustCompile(`^(\s*)((?i)Cua)`),
 		EL:      EL,
 		LL:      LL,
 		GL:      GL,
@@ -84,6 +84,38 @@ func (r *RegexConditionCuando) StartsWithCuando(str string, lineIndex int64) boo
 	}
 
 	if r.V4.MatchString(str) {
+		strData := strings.Split(str, " ")
+		wrongWord := strData[0]
+		Keyword := strings.Split(r.Keyword, "")
+		foundTypo := false
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != Keyword[i] {
+					foundTypo = true
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+				}
+			}
+		}
+		return true
+	}
+
+	if r.V5.MatchString(str) {
+		strData := strings.Split(str, " ")
+		wrongWord := strData[0]
+		Keyword := strings.Split(r.Keyword, "")
+		foundTypo := false
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != Keyword[i] {
+					foundTypo = true
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+				}
+			}
+		}
+		return true
+	}
+
+	if r.V6.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
