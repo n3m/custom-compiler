@@ -27,7 +27,7 @@ func NewRegexLoopRepetir(EL, LL, GL *log.Logger) (*RegexLoopRepetir, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledV1 := regexp.MustCompile("^Repetir")
+	compiledV1 := regexp.MustCompile("^(?i)Repetir")
 	compiledV2 := regexp.MustCompile("^(?i)Repet")
 	compiledV3 := regexp.MustCompile("^(?i)Rep")
 

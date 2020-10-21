@@ -16,7 +16,7 @@ func NewRegexProcedureProtoEntero() (*RegexProcedureProtoEntero, error) {
 	// var moduleName string = "[regexint][NewRegexProcedureProtoEntero()]"
 
 	return &RegexProcedureProtoEntero{
-		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)Entero(\s*)\)(\s*);$`),
+		V1:      regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Entero(\s*)\)(\s*);$`),
 		V2i:     regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)(\()(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*)((\s*),(\s*)([a-zA-Z]+[a-zA-Z0-9]*))*:(\s*)(?i)Entero(\s*)\)(\s*);$`),
 		Keyword: "Entero",
 	}, nil

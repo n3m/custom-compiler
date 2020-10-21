@@ -28,9 +28,9 @@ func NewRegexInicio(EL, LL, GL *log.Logger) (*RegexInicio, error) {
 	}
 	return &RegexInicio{
 		Keyword: "Inicio",
-		V1:      regexp.MustCompile("^Inicio"),
-		V2:      regexp.MustCompile("^(?i)Inic"),
-		V3:      regexp.MustCompile("^(?i)In"),
+		V1:      regexp.MustCompile("^(?i)Inicio"),
+		V2:      regexp.MustCompile("^(?i)Inici"),
+		V3:      regexp.MustCompile("^(?i)Ini"),
 		GL:      GL,
 		EL:      EL,
 		LL:      LL,

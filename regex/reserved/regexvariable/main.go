@@ -27,7 +27,7 @@ func NewRegexVariable(EL, LL, GL *log.Logger) (*RegexVariable, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledV1 := regexp.MustCompile("^variables")
+	compiledV1 := regexp.MustCompile("^(?i)variables")
 	compiledV2 := regexp.MustCompile("^(?i)varia")
 	compiledV3 := regexp.MustCompile("^(?i)var")
 	return &RegexVariable{

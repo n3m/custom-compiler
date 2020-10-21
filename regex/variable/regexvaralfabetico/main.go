@@ -16,7 +16,7 @@ func NewRegexVariableAlfabetico() (*RegexVarAlfabetico, error) {
 	// var moduleName string = "[regexint][NewRegexVariableAlfabetico()]"
 
 	return &RegexVarAlfabetico{
-		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Alfabetico;$`),
+		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:(?i)Alfabetico;$`),
 		V2i:     regexp.MustCompile(`(?i)alfabetico`),
 		Keyword: "Alfabetico",
 	}, nil

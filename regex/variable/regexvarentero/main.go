@@ -16,7 +16,7 @@ func NewRegexVariableEntero() (*RegexVarEntero, error) {
 	// var moduleName string = "[regexint][NewRegexVariableEntero()]"
 
 	return &RegexVarEntero{
-		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:Entero;$`),
+		V1:      regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*(\s*,\s*[a-zA-Z]+[a-zA-Z0-9]*(\[[a-zA-Z0-9]+[a-zA-Z0-9]*\])*)*:(?i)Entero;$`),
 		V2i:     regexp.MustCompile(`(?i)entero`),
 		Keyword: "Entero",
 	}, nil

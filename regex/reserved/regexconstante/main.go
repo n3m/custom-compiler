@@ -28,7 +28,7 @@ func NewRegexConstante(EL, LL, GL *log.Logger) (*RegexConstante, error) {
 	}
 	return &RegexConstante{
 		Keyword: "constantes",
-		V1:      regexp.MustCompile("^constantes"),
+		V1:      regexp.MustCompile("^(?i)constantes"),
 		V2:      regexp.MustCompile("^(?i)consta"),
 		V3:      regexp.MustCompile("^(?i)con"),
 		GL:      GL,

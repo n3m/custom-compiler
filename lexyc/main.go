@@ -373,7 +373,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
 
-			l.GL.Printf("%+v Found Imprimenl instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Imprimenl' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"imprimenl", helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
@@ -402,7 +402,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
-			l.GL.Printf("%+v Found Imprime instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Imprime' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"imprime", helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
@@ -433,7 +433,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
 			}
 
-			l.GL.Printf("%+v Found Lee instruction [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"lee", helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
@@ -445,12 +445,55 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexConditionCuando.StartsWithCuando(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a CUANDOBLOCK outside of a BLOCK", currentLine)
-
 			}
 			l.BlockQueue = append(l.BlockQueue, models.CUANDOBLOCK)
+
+			//TODO: Get params
+
 			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"cuando", helpers.PALABRARESERVADA}))
+		}
+
+		//Si
+		if l.R.RegexConditionSi.StartsWithSi(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Si' condition outside of a BLOCK", currentLine)
+			}
+
+			l.R.RegexConditionSi.ValidateCondition(currentLine, lineIndex)
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found Si condition [Line: %+v]", funcName, lineIndex)
+		}
+
+		//Switch: Sea
+		if l.R.RegexConditionSwitch.StartsWithSea(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Sea' instruction outside of a BLOCK", currentLine)
+			}
+
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK && l.BlockQueue[len(l.BlockQueue)-2] != models.CUANDOBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Sea' instruction outside of a CUANDOBLOCK", currentLine)
+			}
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
+		}
+		//Switch: Otro
+		if l.R.RegexConditionSwitch.StartsWithOtro(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Otro' instruction outside of a BLOCK", currentLine)
+			}
+			if l.BlockQueue[len(l.BlockQueue)-1] != models.INITBLOCK && l.BlockQueue[len(l.BlockQueue)-2] != models.CUANDOBLOCK {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Otro' instruction outside of a CUANDOBLOCK", currentLine)
+			}
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found 'Otro' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 		}
 
 		//Logger

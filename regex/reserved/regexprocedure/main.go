@@ -28,7 +28,7 @@ func NewRegexProcedure(EL, LL, GL *log.Logger) (*RegexProcedure, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledV1 := regexp.MustCompile("^Procedimiento")
+	compiledV1 := regexp.MustCompile("^(?i)Procedimiento")
 	compiledV2 := regexp.MustCompile("^(?i)Procedim")
 	compiledV3 := regexp.MustCompile("^(?i)Proc")
 	compiledV4End := regexp.MustCompile("[^;]$")
