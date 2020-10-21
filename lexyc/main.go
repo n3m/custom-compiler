@@ -550,6 +550,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexLoopDesde.StartsWithDesde(currentLine, lineIndex) {
 			//TODO: Analyze
 			l.GL.Printf("%+v Found 'Desde' instruction [Line: %+v]", funcName, lineIndex)
+
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"desde", helpers.PALABRARESERVADA}))
 		}
 
 		//Logger
