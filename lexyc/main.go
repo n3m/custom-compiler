@@ -546,6 +546,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 		}
 
+		//Desde
+		if l.R.RegexLoopDesde.StartsWithDesde(currentLine, lineIndex) {
+			//TODO: Analyze
+			l.GL.Printf("%+v Found 'Desde' instruction [Line: %+v]", funcName, lineIndex)
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 
