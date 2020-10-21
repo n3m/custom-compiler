@@ -375,7 +375,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Imprimenl' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"imprimenl", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
@@ -404,7 +404,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			l.GL.Printf("%+v Found 'Imprime' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"imprime", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
@@ -435,7 +435,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"lee", helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
@@ -466,6 +466,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 
 			l.GL.Printf("%+v Found Si condition [Line: %+v]", funcName, lineIndex)
+
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"si", helpers.PALABRARESERVADA}))
 		}
 
 		//Switch: Sea
@@ -481,6 +483,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 
 			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sea", helpers.PALABRARESERVADA}))
 		}
 		//Switch: Otro
 		if l.R.RegexConditionSwitch.StartsWithOtro(currentLine, lineIndex) {
@@ -494,6 +497,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 
 			l.GL.Printf("%+v Found 'Otro' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"otro", helpers.PALABRARESERVADA}))
 		}
 
 		//Logger
