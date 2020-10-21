@@ -465,9 +465,24 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			//TODO: Get Params
 
-			l.GL.Printf("%+v Found Si condition [Line: %+v]", funcName, lineIndex)
+			l.GL.Printf("%+v Found 'Si' condition [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"si", helpers.PALABRARESERVADA}))
+		}
+
+		//Sino
+		if l.R.RegexConditionSi.StartsWithSino(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create a 'Si' condition outside of a BLOCK", currentLine)
+			}
+
+			l.R.RegexConditionSi.ValidateCondition(currentLine, lineIndex)
+
+			//TODO: Get Params
+
+			l.GL.Printf("%+v Found 'Sino' condition [Line: %+v]", funcName, lineIndex)
+
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sino", helpers.PALABRARESERVADA}))
 		}
 
 		//Switch: Sea
