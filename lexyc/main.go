@@ -524,6 +524,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			// }
 
 			l.GL.Printf("%+v Found 'Regresa' instruction [Line: %+v]", funcName, lineIndex)
+
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 		}
 
 		//Logger
