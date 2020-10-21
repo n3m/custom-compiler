@@ -500,6 +500,32 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"otro", helpers.PALABRARESERVADA}))
 		}
 
+		//Regresa
+		if l.R.RegexRegresa.MatchRegresa(currentLine, lineIndex) {
+			if !l.R.RegexRegresa.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			currentLine = strings.TrimSuffix(currentLine, ")")
+
+			data := strings.Split(currentLine, "(")
+			currentLine = ""
+			for _, str := range data[1:] {
+				currentLine += str + " "
+			}
+			// params := strings.Split(currentLine, ",")
+			// l.OpQueue = []models.TokenComp{}
+			// for _, str := range params {
+			// 	l.AnalyzeForItem(str, lineIndex)
+			// }
+
+			// if !l.ExpectIdent(currentLine, lineIndex) {
+			// 	l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
+			// }
+
+			l.GL.Printf("%+v Found 'Regresa' instruction [Line: %+v]", funcName, lineIndex)
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 
