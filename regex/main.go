@@ -18,6 +18,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
+	"go-custom-compiler/regex/reserved/instruction/regexregresa"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionsi"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionswitch"
@@ -88,8 +89,9 @@ type CustomRegex struct {
 	RegexLoopHastaQue *regexloophastaque.RegexLoopHastaQue
 	//Custom
 	RegexCustom *regexcustom.RegexCustom
-	//IO
-	RegexIO *regexio.RegexIO
+	//Instructions
+	RegexIO      *regexio.RegexIO
+	RegexRegresa *regexregresa.RegexRegresa
 	//Conditions
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
@@ -160,9 +162,9 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Custom
 	customBuilder, _ := regexcustom.NewRegexCustom(EL, LL, GL)
-	//IO
+	//Instructions
 	ioBuilder, _ := regexio.NewRegexIO(EL, LL, GL)
-	//Conditions
+	regresaBuilder, _ := regexregresa.NewRegexRegresa(EL, LL, GL)
 	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
 	conditionSiBuilder, _ := regexconditionsi.NewRegexConditionSi(EL, LL, GL)
 	conditionSwitchBuilder, _ := regexconditionswitch.NewRegexConditionSwitch(EL, LL, GL)
@@ -212,8 +214,9 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexLoopHastaQue: hastaqueLoopBuilder,
 		//Custom
 		RegexCustom: customBuilder,
-		//IO
-		RegexIO: ioBuilder,
+		//Instructions
+		RegexIO:      ioBuilder,
+		RegexRegresa: regresaBuilder,
 		//Conditions
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
