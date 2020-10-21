@@ -1,9 +1,11 @@
 package lexyc
 
 import (
-	"go-custom-compiler/models"
 	"log"
 	"strings"
+
+	"go-custom-compiler/helpers"
+	"go-custom-compiler/models"
 )
 
 //NextFuncionProto ...
@@ -13,11 +15,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 
 	if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
 		if l.R.RegexFuncionProto.StartsWithFuncionProtoNoCheck(currentLine) {
-			data := strings.Split(currentLine, " ")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
+			currentLine = strings.Join(strings.Split(currentLine, " ")[1:], " ")
 		}
 		currentLine = strings.TrimSpace(currentLine)
 
@@ -26,6 +24,17 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if debug {
 				log.Printf("[FUNC PROTO] Alfabetico Funcion Found > %+v", currentLine)
 			}
+
+			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			return
 		}
 
@@ -34,6 +43,17 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if debug {
 				log.Printf("[FUNC PROTO] Entero Funcion Found > %+v", currentLine)
 			}
+
+			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			return
 		}
 
@@ -42,6 +62,17 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if debug {
 				log.Printf("[FUNC PROTO] Real Funcion Found > %+v", currentLine)
 			}
+
+			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			return
 		}
 
@@ -50,6 +81,17 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if debug {
 				log.Printf("[FUNC PROTO] Logico Funcion Found > %+v", currentLine)
 			}
+
+			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
+			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			return
 		}
 

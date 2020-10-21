@@ -1,9 +1,10 @@
 package main
 
 import (
+	"os"
+
 	"go-custom-compiler/helpers"
 	"go-custom-compiler/lexyc"
-	"os"
 )
 
 var version string = "0.0.12"
