@@ -209,10 +209,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			}
 			l.GL.Println()
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Fin", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"de", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"funcion", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Fin", helpers.PALABRARESERVADA,
+				"de", helpers.PALABRARESERVADA,
+				"funcion", helpers.PALABRARESERVADA,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//FinDeProcedimiento
@@ -238,10 +240,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a PROCEDUREBLOCK outside of a PROCEDUREBLOCK", currentLine)
 				}
 			}
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Fin", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"de", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"procedimiento", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Fin", helpers.PALABRARESERVADA,
+				"de", helpers.PALABRARESERVADA,
+				"procedimiento", helpers.PALABRARESERVADA,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//Fin
@@ -268,8 +272,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", "Attempted to end a SOMETHING:Inicio that didn't exist", currentLine)
 				break
 			}
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Fin", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Fin", helpers.PALABRARESERVADA,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//Repetir
@@ -341,11 +347,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.LogError(lineIndex, "N/A", "N/A", fmt.Sprintf("Attempted to end a REPEATBLOCK before finalizing a %+v", l.BlockQueue[len(l.BlockQueue)-1]), currentLine)
 			}
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"hasta", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"que", helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"hasta", helpers.PALABRARESERVADA,
+				"que", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//ImprimeNL
@@ -375,10 +383,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Imprimenl' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				data[0], helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 			//Imprime
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
@@ -404,10 +414,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			l.GL.Printf("%+v Found 'Imprime' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				data[0], helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//Lee
@@ -435,10 +447,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				data[0], helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//Cuando
@@ -540,10 +554,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Regresa' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{data[0], helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				data[0], helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 		}
 
 		//Desde

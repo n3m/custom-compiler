@@ -7,7 +7,7 @@ const (
 	ARRAYREGEXP string = `(?m)(\w+)([\w*])*`
 )
 
-// GetGroupMatches ...
+// GetGroupMatches returns the groups matched by the pattern giving in the line
 func GetGroupMatches(line, pattern string) []string {
 	groups := []string{}
 

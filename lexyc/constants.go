@@ -34,10 +34,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				log.Printf("[CONSTANT] Entero Found > %+v", currentLine)
 			}
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[0], helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":=", helpers.OPERADORASIGNACION}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[1], helpers.CONSTANTEENTERA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				constantData[0], helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+				constantData[1], helpers.CONSTANTEENTERA,
+				";", helpers.DELIMITADOR,
+			}))
 			return
 		}
 
@@ -51,10 +53,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				log.Printf("[CONSTANT] Real Found > %+v", currentLine)
 			}
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[0], helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":=", helpers.OPERADORASIGNACION}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[1], helpers.CONSTANTEREAL}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				constantData[0], helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+				constantData[1], helpers.CONSTANTEREAL,
+				";", helpers.DELIMITADOR,
+			}))
 			return
 		}
 
@@ -68,10 +72,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				log.Printf("[CONSTANT] Alfabetico Found > %+v", currentLine)
 			}
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[0], helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":=", helpers.OPERADORASIGNACION}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[1], helpers.CONSTANTEALFABETICA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				constantData[0], helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+				constantData[1], helpers.CONSTANTEALFABETICA,
+				";", helpers.DELIMITADOR,
+			}))
 			return
 		}
 
@@ -84,10 +90,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
 			}
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[0], helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":=", helpers.OPERADORASIGNACION}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{constantData[1], helpers.CONSTANTELOGICA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				constantData[0], helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+				constantData[1], helpers.CONSTANTELOGICA,
+				";", helpers.DELIMITADOR,
+			}))
 			return
 		}
 

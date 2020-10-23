@@ -31,7 +31,7 @@ const (
 	DELIMITADOR string = "<Delim>"
 )
 
-// IndentString ...
+// IndentString returns the giving elements indented
 func IndentString(noIndents int, elements []string) string {
 	indented := ""
 
@@ -41,6 +41,18 @@ func IndentString(noIndents int, elements []string) string {
 		indented += strings.Repeat("\t", noIndentations)
 	}
 	indented += elements[len(elements)-1]
+
+	return indented
+}
+
+// IndentStringInLines returns the giving elements grouped in lines indented
+func IndentStringInLines(noIndents, noElementsInLine int, elements []string) string {
+	indented := ""
+
+	for i := 0; i < len(elements); i += noElementsInLine {
+		indented += IndentString(noIndents, elements[i:i+noElementsInLine])
+		indented += "\n"
+	}
 
 	return indented
 }
