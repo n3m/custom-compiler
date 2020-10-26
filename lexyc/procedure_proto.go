@@ -214,7 +214,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 		}
 
-		l.GL.Printf("%+v Did not found any type of match on Line[%+v]! ", funcName, lineIndex)
+		// l.GL.Printf("%+v Did not found any type of match on Line[%+v]! ", funcName, lineIndex)
 
 	}
 }

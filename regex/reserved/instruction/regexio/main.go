@@ -37,8 +37,8 @@ func NewRegexIO(EL, LL, GL *log.Logger) (*RegexIO, error) {
 		IMPRIMENLi:       regexp.MustCompile(`^((?i)Imprimenl)`),
 		IMPRIME:          regexp.MustCompile(`^((?i)Imprime)`),
 		IMPRIMEi:         regexp.MustCompile(`^((?i)Imprime)`),
-		LEE:              regexp.MustCompile(`^((?i)Lee)`),
-		LEEi:             regexp.MustCompile(`^((?i)Lee)`),
+		LEE:              regexp.MustCompile(`^((?i)Lee)(\()`),
+		LEEi:             regexp.MustCompile(`^((?i)Lee)(\()`),
 		ENDSWITH:         regexp.MustCompile(`;$`),
 
 		GL: GL,
