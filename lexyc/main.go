@@ -78,6 +78,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	var lineIndex int64 = 1
 	for l.File.Scan() {
 		currentLine := l.File.Text()
+		foundSomething := false
 
 		if len(currentLine) == 0 {
 			l.GL.Printf("%+v Skipped [Line: %+v]; Reason: Empty", funcName, lineIndex)
@@ -114,24 +115,28 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexConstante.StartsWithConstante(currentLine, lineIndex) {
 			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"constantes", helpers.PALABRARESERVADA}))
+			foundSomething = true
 		}
 
 		//Variable
 		if l.R.RegexVariable.StartsWithVariable(currentLine, lineIndex) {
 			l.CurrentBlockType = models.VARIABLEBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"variables", helpers.PALABRARESERVADA}))
+			foundSomething = true
 		}
 
 		//FunctionProto
 		if l.R.RegexFuncionProto.StartsWithFuncionProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.FUNCTIONPROTOBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"funcion", helpers.PALABRARESERVADA}))
+			foundSomething = true
 		}
 
 		//ProcedureProto
 		if l.R.RegexProcedureProto.StartsWithProcedureProto(currentLine, lineIndex) && l.ParentBlockType == models.NULLBLOCK {
 			l.CurrentBlockType = models.PROCEDUREPROTOBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"procedimiento", helpers.PALABRARESERVADA}))
+			foundSomething = true
 		}
 
 		//Procedure
@@ -143,7 +148,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.BlockQueue = []models.BlockType{}
 			}
 			l.BlockQueue = append(l.BlockQueue, models.PROCEDUREBLOCK)
-			continue
+
+			foundSomething = true
 		}
 
 		//Function
@@ -156,7 +162,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
-			continue
+
+			foundSomething = true
 		}
 
 		//Inicio
@@ -181,7 +188,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Inicio", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//FinDeFuncion
@@ -219,7 +227,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"funcion", helpers.PALABRARESERVADA,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//FinDeProcedimiento
@@ -251,7 +260,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"procedimiento", helpers.PALABRARESERVADA,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Fin
@@ -282,7 +292,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"Fin", helpers.PALABRARESERVADA,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Repetir
@@ -295,7 +306,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Initialized a REPEATBLOCK [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"repetir", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Hasta Que (Repetir)
@@ -362,7 +374,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//ImprimeNL
@@ -398,8 +411,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
 			//Imprime
+			foundSomething = true
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
@@ -430,7 +444,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Lee
@@ -464,7 +479,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Cuando
@@ -479,7 +495,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"cuando", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Si
@@ -495,7 +512,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Si' condition [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"si", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Sino
@@ -511,7 +529,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Sino' condition [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sino", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Switch: Sea
@@ -528,7 +547,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sea", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 		//Switch: Otro
 		if l.R.RegexConditionSwitch.StartsWithOtro(currentLine, lineIndex) {
@@ -543,7 +563,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Otro' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"otro", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Regresa
@@ -577,7 +598,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Desde
@@ -586,7 +608,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Desde' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"desde", helpers.PALABRARESERVADA}))
-			continue
+
+			foundSomething = true
 		}
 
 		//Logger
@@ -595,24 +618,23 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		/* Data Segregator */
 		if l.CurrentBlockType == models.CONSTANTBLOCK {
 			l.NextConstant(currentLine, lineIndex, debug)
-			continue
 		}
 
 		if l.CurrentBlockType == models.VARIABLEBLOCK {
 			l.NextVariable(currentLine, lineIndex, debug)
-			continue
 		}
 
 		if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
 			l.NextFuncionProto(currentLine, lineIndex, debug)
-			continue
 		}
 
 		if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
 			l.NextProcedureProto(currentLine, lineIndex, debug)
-			continue
 		}
 
+		if !foundSomething {
+			log.Printf("Didn't find anything on [Line: %+v]", lineIndex)
+		}
 		lineIndex++
 	}
 
