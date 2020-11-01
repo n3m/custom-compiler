@@ -170,6 +170,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			case models.PROCEDUREBLOCK, models.FUNCTIONBLOCK, models.CUANDOBLOCK:
 				l.GL.Printf("%+v Initialized a %+v [Line: %+v]", funcName, l.BlockQueue[len(l.BlockQueue)-1], lineIndex)
 				l.BlockQueue = append(l.BlockQueue, models.INITBLOCK)
+				l.CurrentBlockType = models.NULLBLOCK
 				break
 
 			default:
