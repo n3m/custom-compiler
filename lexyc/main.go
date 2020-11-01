@@ -21,6 +21,7 @@ type LexicalAnalyzer struct {
 	EL   *log.Logger        //Error Logger
 	LL   *log.Logger        //Lex Logger
 	GL   *log.Logger        //General Logger
+	TEST *log.Logger
 
 	//TEST
 	CurrentBlockType models.BlockType
@@ -32,7 +33,7 @@ type LexicalAnalyzer struct {
 }
 
 //NewLexicalAnalyzer ...
-func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger *log.Logger) (*LexicalAnalyzer, error) {
+func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger) (*LexicalAnalyzer, error) {
 	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
 
 	if file == nil {
@@ -62,6 +63,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		EL:   ErrorLogger,
 		LL:   LexLogger,
 		GL:   GeneralLogger,
+		TEST: TestLogger,
 
 		ParentBlockType:  models.NULLBLOCK,
 		BlockQueue:       []models.BlockType{},
@@ -612,6 +614,30 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			foundSomething = true
 		}
 
+		//Interrumpe
+		if l.R.Regexsystem.MatchInterrumpe(currentLine, lineIndex) {
+			if !l.R.Regexsystem.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+
+			l.GL.Printf("%+v Found 'Interrumpe' instruction [Line: %+v]", funcName, lineIndex)
+
+			foundSomething = true
+
+		}
+
+		//Limpia
+		if l.R.Regexsystem.MatchLimpia(currentLine, lineIndex) {
+			if !l.R.Regexsystem.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+
+			l.GL.Printf("%+v Found 'Limpia' instruction [Line: %+v]", funcName, lineIndex)
+
+			foundSomething = true
+
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 
@@ -633,7 +659,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		if !foundSomething {
-			log.Printf("Didn't find anything on [Line: %+v]", lineIndex)
+			l.LogTest(lineIndex, "", "", "Didn't find anything", currentLine)
 		}
 		lineIndex++
 	}
@@ -691,14 +717,21 @@ func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err
 //LogErrorGeneral ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogErrorGeneral(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
-	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
+	l.GL.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
+}
+
+//LogTest ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogTest(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
+	l.TEST.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
 }
 
 //RegisterBlockChange ...
 func (l *LexicalAnalyzer) RegisterBlockChange(LastBlockState models.BlockType, debug bool, funcName string, lineIndex int64) {
 	if LastBlockState != l.CurrentBlockType {
-		l.GL.Printf("%+vSwitched to %+v [%+v]", funcName, l.CurrentBlockType, lineIndex)
+		l.GL.Printf("%+v Switched to %+v [%+v]", funcName, l.CurrentBlockType, lineIndex)
 		if debug {
 			log.Printf("Switched to %+v [%+v]", l.CurrentBlockType, lineIndex)
 		}

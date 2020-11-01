@@ -19,6 +19,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
 	"go-custom-compiler/regex/reserved/instruction/regexregresa"
+	"go-custom-compiler/regex/reserved/instruction/regexsystem"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionsi"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionswitch"
@@ -94,6 +95,7 @@ type CustomRegex struct {
 	//Instructions
 	RegexIO      *regexio.RegexIO
 	RegexRegresa *regexregresa.RegexRegresa
+	Regexsystem  *regexsystem.RegexSystem
 	//Conditions
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
@@ -171,6 +173,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
 	conditionSiBuilder, _ := regexconditionsi.NewRegexConditionSi(EL, LL, GL)
 	conditionSwitchBuilder, _ := regexconditionswitch.NewRegexConditionSwitch(EL, LL, GL)
+	systemBuilder, _ := regexsystem.NewRegexSystem(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -221,6 +224,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Instructions
 		RegexIO:      ioBuilder,
 		RegexRegresa: regresaBuilder,
+		Regexsystem:  systemBuilder,
 		//Conditions
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
