@@ -35,7 +35,7 @@ func NewRegexCustom(EL, LL, GL *log.Logger) (*RegexCustom, error) {
 		KeywordLOG1: "verdadero",
 		KeywordLOG2: "falso",
 		CTEALFA:     regexp.MustCompile(`^(\")(\s*)([^"])*(\")$`),
-		CTEENT:      regexp.MustCompile(`(0-9)+`),
+		CTEENT:      regexp.MustCompile(`([0-9]+)`),
 		CTEREAL:     regexp.MustCompile(`^(\s*)(-?)(((E|e)(-?)([0-9]*))|([0-9]+\.[0-9]+)|(([0-9]+)(E|e)(-?)([0-9]*)))$`),
 		CTELOG:      regexp.MustCompile(`^((?i)verdadero|falso)$`),
 		CTELOGi:     regexp.MustCompile(`^((?i)verdadero|(?i)falso)$`),

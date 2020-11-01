@@ -615,27 +615,60 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//Interrumpe
-		if l.R.Regexsystem.MatchInterrumpe(currentLine, lineIndex) {
-			if !l.R.Regexsystem.MatchPC(currentLine, lineIndex) {
+		if l.R.RegexSystem.MatchInterrumpe(currentLine, lineIndex) {
+			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.GL.Printf("%+v Found 'Interrumpe' instruction [Line: %+v]", funcName, lineIndex)
 
 			foundSomething = true
-
 		}
 
 		//Limpia
-		if l.R.Regexsystem.MatchLimpia(currentLine, lineIndex) {
-			if !l.R.Regexsystem.MatchPC(currentLine, lineIndex) {
+		if l.R.RegexSystem.MatchLimpia(currentLine, lineIndex) {
+			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.GL.Printf("%+v Found 'Limpia' instruction [Line: %+v]", funcName, lineIndex)
 
 			foundSomething = true
+		}
 
+		//Asignación
+		if l.R.RegexAsignacion.MatchAsignacion(currentLine, lineIndex) {
+			if !l.R.RegexAsignacion.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
+
+			currentLine = strings.TrimSpace(currentLine)
+			data := strings.Split(currentLine, ":=")
+			assignToAnalyze := data[1]
+			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
+
+			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
+				foundSomething = true
+				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
+			}
+			if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
+				foundSomething = true
+				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
+			}
+			if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
+				foundSomething = true
+				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
+			}
+			if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
+				foundSomething = true
+				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
+			}
+
+			if !foundSomething {
+				l.GL.Printf("%+v Found 'Unknown Assign [`%+v`]' instruction [Line: %+v] ", funcName, assignToAnalyze, lineIndex)
+			}
+
+			foundSomething = true
 		}
 
 		//Logger
@@ -659,7 +692,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		if !foundSomething {
-			l.LogTest(lineIndex, "", "", "Didn't find anything", currentLine)
+			switch l.CurrentBlockType {
+			case models.NULLBLOCK:
+				l.LogTest(lineIndex, "", "", "Didn't find anything", currentLine)
+			}
 		}
 		lineIndex++
 	}
