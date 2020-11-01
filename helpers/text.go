@@ -7,7 +7,7 @@ import (
 
 const (
 	// LEXINDENT ...
-	LEXINDENT int = 5
+	LEXINDENT int = 15
 )
 
 const (
@@ -17,6 +17,10 @@ const (
 	OPERADORARITMETICO string = "<OpArit>"
 	//OPERADORASIGNACION ...
 	OPERADORASIGNACION string = "<OpAsig>"
+	//OPERADORRELACIONAL ...
+	OPERADORRELACIONAL string = "<OpRel>"
+	//OPERADORLOGICO ...
+	OPERADORLOGICO string = "<OpLog>"
 	//CONSTANTEREAL ...
 	CONSTANTEREAL string = "<CteReal>"
 	//CONSTANTEENTERA ...

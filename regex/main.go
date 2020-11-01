@@ -17,6 +17,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoentero"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
+	_regeximprime "go-custom-compiler/regex/reserved/instruction/regeximprime"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
 	"go-custom-compiler/regex/reserved/instruction/regexregresa"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
@@ -33,9 +34,13 @@ import (
 	"go-custom-compiler/regex/reserved/regexloop/regexloopdesde"
 	"go-custom-compiler/regex/reserved/regexloop/regexloophastaque"
 	"go-custom-compiler/regex/reserved/regexloop/regexlooprepetir"
+	_regexaritmetico "go-custom-compiler/regex/reserved/regexoperador/regexaritmetico"
+	_regexlogico "go-custom-compiler/regex/reserved/regexoperador/regexlogico"
+	_regexrelacional "go-custom-compiler/regex/reserved/regexoperador/regexrelacional"
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
 	"go-custom-compiler/regex/reserved/regexvariable"
+	_regexvar "go-custom-compiler/regex/variable/regexvar"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
 	"go-custom-compiler/regex/variable/regexvardefault"
 	"go-custom-compiler/regex/variable/regexvarentero"
@@ -61,6 +66,7 @@ type CustomRegex struct {
 	RegexVariableLogico     *regexvarlogico.RegexVarLogico
 	RegexVariableReal       *regexvarreal.RegexVarReal
 	RegexVariableDefault    *regexvardefault.RegexVarDefault
+	RegexVar                *_regexvar.RegexVar
 	//Funcion Proto
 	RegexFuncionProto            *regexfuncionproto.RegexFuncionProto
 	RegexFunctionProtoDefault    *regexfunctionprotodefault.RegexFuncProtoDefault
@@ -98,6 +104,12 @@ type CustomRegex struct {
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
 	RegexConditionSwitch *regexconditionswitch.RegexConditionSwitch
+	//Operators
+	RegexOperatorRelacional *_regexrelacional.RegexOpRelacional
+	RegexOperatorAritmetico *_regexaritmetico.RegexOpAritmetico
+	RegexOperatorLogico     *_regexlogico.RegexOpLogico
+	//Imprime
+	RegexImprime *_regeximprime.RegexImprime
 
 	EL *log.Logger
 	LL *log.Logger
@@ -127,6 +139,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	varlogicoBuilder, _ := regexvarlogico.NewRegexVariableLogico()
 	varrealBuilder, _ := regexvarreal.NewRegexVariableReal()
 	vardefaultBuilder, _ := regexvardefault.NewRegexVariableDefault()
+	varBuilder, _ := _regexvar.NewRegexVar()
 
 	//FunctionProto
 	funcionProtoBuilder, _ := regexfuncionproto.NewRegexFuncionProto(EL, LL, GL)
@@ -171,6 +184,12 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
 	conditionSiBuilder, _ := regexconditionsi.NewRegexConditionSi(EL, LL, GL)
 	conditionSwitchBuilder, _ := regexconditionswitch.NewRegexConditionSwitch(EL, LL, GL)
+	//Operators
+	relacionalBuilder, _ := _regexrelacional.NewRegexOpRelacional()
+	aritmeticoBuilder, _ := _regexaritmetico.NewRegexOpAritmetico()
+	logicoBuilder, _ := _regexlogico.NewRegexOpLogico()
+	//Imprime
+	imprimeBuilder, _ := _regeximprime.NewRegexImprime()
 
 	return &CustomRegex{
 		//Reserved
@@ -188,6 +207,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexVariableLogico:     varlogicoBuilder,
 		RegexVariableReal:       varrealBuilder,
 		RegexVariableDefault:    vardefaultBuilder,
+		RegexVar:                varBuilder,
 		//Function Proto
 		RegexFuncionProto:            funcionProtoBuilder,
 		RegexFunctionProtoAlfabetico: funcProtoAlfabetico,
@@ -225,9 +245,16 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
 		RegexConditionSwitch: conditionSwitchBuilder,
-		EL:                   EL,
-		LL:                   LL,
-		GL:                   GL,
+		//Operators
+		RegexOperatorRelacional: relacionalBuilder,
+		RegexOperatorAritmetico: aritmeticoBuilder,
+		RegexOperatorLogico:     logicoBuilder,
+		//Imprime
+		RegexImprime: imprimeBuilder,
+
+		EL: EL,
+		LL: LL,
+		GL: GL,
 	}, nil
 }
 

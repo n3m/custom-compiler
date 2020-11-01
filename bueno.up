@@ -145,8 +145,10 @@ Fin de Procedimiento;
 Programa
    limpia;
    Selecciona();
-   Imprime("Dame Radio = ");Lee(r);
-   Imprime("Dame Altura= ");Lee(s);
+   Imprime("Dame Radio = ");
+   Lee(r);
+   Imprime("Dame Altura= ");
+   Lee(s);
    Imprimenl("El Volum del Cilindro= ", VolCil(r, s);
    Imprimenl("Es el radio= ", r, " mayor que Altura= ", s, " ? ", Compara(r, s, 2));
    LeeVecmat();
