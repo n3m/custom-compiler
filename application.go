@@ -28,6 +28,9 @@ func main() {
 	lexLogger, lexFile, err := helpers.CreateLogger("lex_data.lex", false)
 	defer lexFile.Close()
 
+	testLogger, testFile, err := helpers.CreateLogger("test_data.test", false)
+	defer testFile.Close()
+
 	generalLogger, logFile, err := helpers.CreateLogger("process.log", true)
 	defer logFile.Close()
 	generalLogger.Printf("<=== Compiler has started on V%+v ===>", version)
@@ -52,7 +55,7 @@ func main() {
 	reader := helpers.GetScannerFromFile(file)
 	generalLogger.Printf("Created Scanner from to File")
 
-	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger)
+	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger)
 	if err != nil {
 		generalLogger.Printf("Error while creating a new Lexical Analyzer! (%+v)", err.Error())
 		panic(err)

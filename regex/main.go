@@ -21,6 +21,8 @@ import (
 	"go-custom-compiler/regex/reserved/instruction/regexio"
 	"go-custom-compiler/regex/reserved/instruction/regexlee"
 	"go-custom-compiler/regex/reserved/instruction/regexregresa"
+	"go-custom-compiler/regex/reserved/instruction/regexsystem"
+	"go-custom-compiler/regex/reserved/regexasignacion"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionsi"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionswitch"
@@ -29,6 +31,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexfin/regexfin"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinfunction"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinprocedure"
+	"go-custom-compiler/regex/reserved/regexfin/regexfinprograma"
 	"go-custom-compiler/regex/reserved/regexfuncionproto"
 	"go-custom-compiler/regex/reserved/regexfunction"
 	"go-custom-compiler/regex/reserved/regexinicio"
@@ -40,6 +43,7 @@ import (
 	_regexrelacional "go-custom-compiler/regex/reserved/regexoperador/regexrelacional"
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
+	"go-custom-compiler/regex/reserved/regexprograma"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	_regexvar "go-custom-compiler/regex/variable/regexvar"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
@@ -99,10 +103,12 @@ type CustomRegex struct {
 	//Custom
 	RegexCustom *regexcustom.RegexCustom
 	//Instructions
-	RegexIO      *regexio.RegexIO
-	RegexRegresa *regexregresa.RegexRegresa
-	RegexImprime *_regeximprime.RegexImprime
-	RegexLee     *regexlee.RegexLee
+	RegexIO         *regexio.RegexIO
+	RegexRegresa    *regexregresa.RegexRegresa
+	RegexImprime    *_regeximprime.RegexImprime
+	RegexLee        *regexlee.RegexLee
+	RegexSystem     *regexsystem.RegexSystem
+	RegexAsignacion *regexasignacion.RegexAsignacion
 	//Conditions
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
@@ -111,6 +117,9 @@ type CustomRegex struct {
 	RegexOperatorRelacional *_regexrelacional.RegexOpRelacional
 	RegexOperatorAritmetico *_regexaritmetico.RegexOpAritmetico
 	RegexOperatorLogico     *_regexlogico.RegexOpLogico
+	//Programa
+	RegexPrograma    *regexprograma.RegexPrograma
+	RegexFinPrograma *regexfinprograma.RegexFinPrograma
 
 	EL *log.Logger
 	LL *log.Logger
@@ -191,6 +200,11 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	relacionalBuilder, _ := _regexrelacional.NewRegexOpRelacional()
 	aritmeticoBuilder, _ := _regexaritmetico.NewRegexOpAritmetico()
 	logicoBuilder, _ := _regexlogico.NewRegexOpLogico()
+	systemBuilder, _ := regexsystem.NewRegexSystem(EL, LL, GL)
+	asignacionBuilder, _ := regexasignacion.NewRegexAsignacion(EL, LL, GL)
+	//Programa
+	finprogramaBuilder, _ := regexfinprograma.NewRegexFinPrograma(EL, LL, GL)
+	programaBuilder, _ := regexprograma.NewRegexPrograma(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -240,10 +254,12 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Custom
 		RegexCustom: customBuilder,
 		//Instructions
-		RegexIO:      ioBuilder,
-		RegexRegresa: regresaBuilder,
-		RegexImprime: imprimeBuilder,
-		RegexLee:     leeBuilder,
+		RegexIO:         ioBuilder,
+		RegexRegresa:    regresaBuilder,
+		RegexImprime:    imprimeBuilder,
+		RegexLee:        leeBuilder,
+		RegexSystem:     systemBuilder,
+		RegexAsignacion: asignacionBuilder,
 		//Conditions
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
@@ -252,6 +268,9 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexOperatorRelacional: relacionalBuilder,
 		RegexOperatorAritmetico: aritmeticoBuilder,
 		RegexOperatorLogico:     logicoBuilder,
+		//Programa
+		RegexFinPrograma: finprogramaBuilder,
+		RegexPrograma:    programaBuilder,
 
 		EL: EL,
 		LL: LL,
