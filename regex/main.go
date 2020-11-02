@@ -29,6 +29,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexfin/regexfin"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinfunction"
 	"go-custom-compiler/regex/reserved/regexfin/regexfinprocedure"
+	"go-custom-compiler/regex/reserved/regexfin/regexfinprograma"
 	"go-custom-compiler/regex/reserved/regexfuncionproto"
 	"go-custom-compiler/regex/reserved/regexfunction"
 	"go-custom-compiler/regex/reserved/regexinicio"
@@ -37,6 +38,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexloop/regexlooprepetir"
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
+	"go-custom-compiler/regex/reserved/regexprograma"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
 	"go-custom-compiler/regex/variable/regexvardefault"
@@ -102,6 +104,9 @@ type CustomRegex struct {
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
 	RegexConditionSwitch *regexconditionswitch.RegexConditionSwitch
+	//Programa
+	RegexPrograma    *regexprograma.RegexPrograma
+	RegexFinPrograma *regexfinprograma.RegexFinPrograma
 
 	EL *log.Logger
 	LL *log.Logger
@@ -177,6 +182,9 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	conditionSwitchBuilder, _ := regexconditionswitch.NewRegexConditionSwitch(EL, LL, GL)
 	systemBuilder, _ := regexsystem.NewRegexSystem(EL, LL, GL)
 	asignacionBuilder, _ := regexasignacion.NewRegexAsignacion(EL, LL, GL)
+	//Programa
+	finprogramaBuilder, _ := regexfinprograma.NewRegexFinPrograma(EL, LL, GL)
+	programaBuilder, _ := regexprograma.NewRegexPrograma(EL, LL, GL)
 
 	return &CustomRegex{
 		//Reserved
@@ -233,9 +241,13 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
 		RegexConditionSwitch: conditionSwitchBuilder,
-		EL:                   EL,
-		LL:                   LL,
-		GL:                   GL,
+		//Programa
+		RegexFinPrograma: finprogramaBuilder,
+		RegexPrograma:    programaBuilder,
+
+		EL: EL,
+		LL: LL,
+		GL: GL,
 	}, nil
 }
 

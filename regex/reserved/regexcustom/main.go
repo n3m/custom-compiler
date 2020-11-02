@@ -37,7 +37,7 @@ func NewRegexCustom(EL, LL, GL *log.Logger) (*RegexCustom, error) {
 		CTEALFA:     regexp.MustCompile(`^(\")(\s*)([^"])*(\")$`),
 		CTEENT:      regexp.MustCompile(`([0-9]+)`),
 		CTEREAL:     regexp.MustCompile(`^(\s*)(-?)(((E|e)(-?)([0-9]*))|([0-9]+\.[0-9]+)|(([0-9]+)(E|e)(-?)([0-9]*)))$`),
-		CTELOG:      regexp.MustCompile(`^((?i)verdadero|falso)$`),
+		CTELOG:      regexp.MustCompile(`^((?i)verdadero|(?i)falso)$`),
 		CTELOGi:     regexp.MustCompile(`^((?i)verdadero|(?i)falso)$`),
 		ID:          regexp.MustCompile(`^(\s*)([a-zA-Z]+)([a-zA-Z0-9])*$`),
 		OPARIT:      regexp.MustCompile(`^(\s*)(\+|\-|\*|\/|\%|\^)$`),

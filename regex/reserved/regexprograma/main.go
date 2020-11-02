@@ -1,4 +1,4 @@
-package regexfinprocedure
+package regexprograma
 
 import (
 	"fmt"
@@ -7,38 +7,43 @@ import (
 	"strings"
 )
 
-//RegexFinProcedure ...
-type RegexFinProcedure struct {
-	Keyword string
-	V1      *regexp.Regexp
-	V2      *regexp.Regexp
-	V3      *regexp.Regexp
+//RegexPrograma ...
+type RegexPrograma struct {
+	Keyword  string
+	V1       *regexp.Regexp
+	V2       *regexp.Regexp
+	V3       *regexp.Regexp
+	V4       *regexp.Regexp
+	ENDSWITH *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
 	GL *log.Logger
 }
 
-//NewRegexFinProcedure ...
-func NewRegexFinProcedure(EL, LL, GL *log.Logger) (*RegexFinProcedure, error) {
-	var moduleName string = "[RegexFinProcedure][NewRegexFinProcedure()]"
+//NewRegexPrograma ...
+func NewRegexPrograma(EL, LL, GL *log.Logger) (*RegexPrograma, error) {
+	var moduleName string = "[RegexPrograma][NewRegexPrograma()]"
 
 	if EL == nil || LL == nil || GL == nil {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
-	return &RegexFinProcedure{
-		Keyword: "Fin de Procedimiento",
-		V1:      regexp.MustCompile("^(?i)Fin de Procedimiento"),
-		V2:      regexp.MustCompile("^(?i)Fin de Procedimi"),
-		V3:      regexp.MustCompile("^(?i)Fin de Proce"),
-		GL:      GL,
-		EL:      EL,
-		LL:      LL,
+	return &RegexPrograma{
+		Keyword:  "Programa",
+		V1:       regexp.MustCompile(`^(\s*)(?i)Programa(\s*);$`),
+		V2:       regexp.MustCompile(`^(\s*)(?i)Programa(\s*)$`),
+		V3:       regexp.MustCompile(`^(\s*)(?i)Progra(\s*)$`),
+		V4:       regexp.MustCompile(`^(\s*)(?i)Prog(\s*)$`),
+		ENDSWITH: regexp.MustCompile(`;$`),
+
+		GL: GL,
+		EL: EL,
+		LL: LL,
 	}, nil
 }
 
-//StartsWithFinDeProcedimiento ...
-func (r *RegexFinProcedure) StartsWithFinDeProcedimiento(str string, lineIndex int64) bool {
+//StartsWithPrograma ...
+func (r *RegexPrograma) StartsWithPrograma(str string, lineIndex int64) bool {
 
 	if r.V1.MatchString(str) {
 		return true
@@ -71,6 +76,24 @@ func (r *RegexFinProcedure) StartsWithFinDeProcedimiento(str string, lineIndex i
 				if string(char) != Keyword[i] {
 					foundTypo = true
 					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+
+				}
+			}
+		}
+		return true
+	}
+
+	if r.V4.MatchString(str) {
+		strData := strings.Split(str, " ")
+		wrongWord := strData[0]
+		Keyword := strings.Split(r.Keyword, "")
+		foundTypo := false
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != Keyword[i] {
+					foundTypo = true
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+
 				}
 			}
 		}
@@ -80,8 +103,8 @@ func (r *RegexFinProcedure) StartsWithFinDeProcedimiento(str string, lineIndex i
 	return false
 }
 
-//StartsWithFinDeProcedimientoNoCheck ...
-func (r *RegexFinProcedure) StartsWithFinDeProcedimientoNoCheck(str string) bool {
+//StartsWithProgramaNoCheck ...
+func (r *RegexPrograma) StartsWithProgramaNoCheck(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
@@ -96,12 +119,10 @@ func (r *RegexFinProcedure) StartsWithFinDeProcedimientoNoCheck(str string) bool
 
 	return false
 }
-
-//r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
 
 //LogError ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
-func (r *RegexFinProcedure) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+func (r *RegexPrograma) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)

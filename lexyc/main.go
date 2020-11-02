@@ -671,6 +671,32 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			foundSomething = true
 		}
 
+		//Programa
+		if l.R.RegexPrograma.StartsWithPrograma(currentLine, lineIndex) {
+			l.GL.Println()
+
+			if len(l.BlockQueue) > 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to create new Programa without finalizing the last Function or Procedure", currentLine)
+				l.BlockQueue = []models.BlockType{}
+			}
+			l.BlockQueue = append(l.BlockQueue, models.PROGRAMBLOCK)
+
+			foundSomething = true
+		}
+
+		//Fin de Programa
+		if l.R.RegexFinPrograma.StartsWithFinPrograma(currentLine, lineIndex) {
+			if len(l.BlockQueue) == 0 {
+				l.LogError(lineIndex, "N/A", "N/A", "Attempted to END a PROGRAMBLOCK outside of a PROGRAMBLOCK", currentLine)
+			}
+
+			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.PROGRAMBLOCK)
+			if ok {
+				l.BlockQueue = newArr
+			}
+			foundSomething = true
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 
