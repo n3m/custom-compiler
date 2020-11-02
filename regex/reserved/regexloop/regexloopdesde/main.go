@@ -10,6 +10,11 @@ import (
 type RegexLoopDesde struct {
 	Keyword string
 	V1      *regexp.Regexp
+	V2      *regexp.Regexp
+	V3      *regexp.Regexp
+	V4      *regexp.Regexp
+	V5      *regexp.Regexp
+	V6      *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -24,11 +29,14 @@ func NewRegexLoopDesde(EL, LL, GL *log.Logger) (*RegexLoopDesde, error) {
 		return nil, fmt.Errorf("[ERROR]%+v Loggers came empty", moduleName)
 	}
 
-	compiledE1 := regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+valor(\s)+de(\s)+)([a-zA-Z]+[a-zA-Z0-9]*)(\s)*(\:\=)(\s)*(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)|(\(.+\))|(.+))(\s+)+hasta(\s+)(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)|(\(.+\)))(\s?)((decr|incr)(\s+)(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)))?`)
-
 	return &RegexLoopDesde{
 		Keyword: "Desde el valor de ",
-		V1:      compiledE1,
+		V1:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+valor(\s)+de(\s)+)([a-zA-Z]+[a-zA-Z0-9]*)(\s)*(\:\=)(\s)*(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)|(\(.+\))|(.+))(\s+)+hasta(\s+)(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)|(\(.+\)))(\s?)((decr|incr)(\s+)(([a-zA-Z]+[a-zA-Z0-9]*)|([0-9]+)))?`),
+		V2:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+valor(\s)+de(\s)+)`),
+		V3:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+valor(\s)+)`),
+		V4:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+)`),
+		V5:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+)`),
+		V6:      regexp.MustCompile(`^(\s*)((?i)Des)`),
 		EL:      EL,
 		LL:      LL,
 		GL:      GL,

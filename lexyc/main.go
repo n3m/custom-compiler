@@ -697,6 +697,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			foundSomething = true
 		}
 
+		//Custom Functions
+		if l.R.RegexCustomFunction.MatchCustomFunction(currentLine, lineIndex) {
+			l.GL.Printf("%+v Found 'Custom Function' instruction [Line: %+v]", funcName, lineIndex)
+			foundSomething = true
+		}
+
 		//Logger
 		l.RegisterBlockChange(LastBlockState, debug, funcName, lineIndex)
 

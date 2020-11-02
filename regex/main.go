@@ -17,6 +17,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoentero"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotologico"
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
+	"go-custom-compiler/regex/reserved/instruction/regexcustomfunction"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
 	"go-custom-compiler/regex/reserved/instruction/regexregresa"
 	"go-custom-compiler/regex/reserved/instruction/regexsystem"
@@ -94,7 +95,8 @@ type CustomRegex struct {
 	RegexLoopHastaQue *regexloophastaque.RegexLoopHastaQue
 	RegexLoopDesde    *regexloopdesde.RegexLoopDesde
 	//Custom
-	RegexCustom *regexcustom.RegexCustom
+	RegexCustom         *regexcustom.RegexCustom
+	RegexCustomFunction *regexcustomfunction.RegexCustomFunction
 	//Instructions
 	RegexIO         *regexio.RegexIO
 	RegexRegresa    *regexregresa.RegexRegresa
@@ -174,6 +176,7 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 
 	//Custom
 	customBuilder, _ := regexcustom.NewRegexCustom(EL, LL, GL)
+	customFunctionsBuilder, _ := regexcustomfunction.NewRegexCustomFunction(EL, LL, GL)
 	//Instructions
 	ioBuilder, _ := regexio.NewRegexIO(EL, LL, GL)
 	regresaBuilder, _ := regexregresa.NewRegexRegresa(EL, LL, GL)
@@ -231,7 +234,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexLoopHastaQue: hastaqueLoopBuilder,
 		RegexLoopDesde:    desdeLoopBuilder,
 		//Custom
-		RegexCustom: customBuilder,
+		RegexCustom:         customBuilder,
+		RegexCustomFunction: customFunctionsBuilder,
 		//Instructions
 		RegexIO:         ioBuilder,
 		RegexRegresa:    regresaBuilder,
