@@ -14,6 +14,7 @@ type RegexRegresa struct {
 	Regresa   *regexp.Regexp
 	RegresaV2 *regexp.Regexp
 	ENDSWITH  *regexp.Regexp
+	V3        *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -29,6 +30,7 @@ func NewRegexRegresa(EL, LL, GL *log.Logger) (*RegexRegresa, error) {
 		Regresa:   regexp.MustCompile(`^((?i)regresa)(\s*)\(.+\)(\s*);$`),
 		RegresaV2: regexp.MustCompile(`^((?i)regresa)(\s*)\(.+\)(\s*)`),
 		ENDSWITH:  regexp.MustCompile(`;$`),
+		V3:        regexp.MustCompile(`(?m)[rR]egresa\((.*)\)`),
 
 		GL: GL,
 		EL: EL,
@@ -67,6 +69,26 @@ func (r *RegexRegresa) MatchRegresa(str string, lineIndex int64) bool {
 		return true
 	}
 	return false
+}
+
+//GroupsRegresa ...
+func (r *RegexRegresa) GroupsRegresa(str string) []string {
+	groups := []string{}
+
+	if !r.V3.MatchString(str) {
+		return groups
+	}
+
+	matched := r.V3.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
 }
 
 //LogError ...

@@ -19,79 +19,35 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 		}
 		currentLine = strings.TrimSpace(currentLine)
 
+		funcType := ""
 		if l.R.RegexFunctionProtoAlfabetico.MatchFuncAlfabetico(currentLine) {
-			l.GL.Printf("%+v[FUNC PROTO] Alfabetico Funcion Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[FUNC PROTO] Alfabetico Funcion Found > %+v", currentLine)
-			}
-
-			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
-			return
+			funcType = "Alfabetico"
+		} else if l.R.RegexFunctionProtoEntero.MatchFuncEntero(currentLine) {
+			funcType = "Entero"
+		} else if l.R.RegexFunctionProtoReal.MatchFuncReal(currentLine) {
+			funcType = "Real"
+		} else if l.R.RegexFunctionProtoLogico.MatchFuncLogico(currentLine) {
+			funcType = "Logico"
 		}
 
-		if l.R.RegexFunctionProtoEntero.MatchFuncEntero(currentLine) {
-			l.GL.Printf("%+v[FUNC PROTO] Entero Funcion Found > %+v", funcName, currentLine)
+		if funcType != "" {
+			l.GL.Printf("%+v[FUNC PROTO] %v Funcion Found > %+v", funcName, funcType, currentLine)
 			if debug {
-				log.Printf("[FUNC PROTO] Entero Funcion Found > %+v", currentLine)
+				log.Printf("[FUNC PROTO] %v Funcion Found > %+v", funcType, currentLine)
 			}
 
 			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
-			return
-		}
-
-		if l.R.RegexFunctionProtoReal.MatchFuncReal(currentLine) {
-			l.GL.Printf("%+v[FUNC PROTO] Real Funcion Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[FUNC PROTO] Real Funcion Found > %+v", currentLine)
-			}
-
-			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
-			return
-		}
-
-		if l.R.RegexFunctionProtoLogico.MatchFuncLogico(currentLine) {
-			l.GL.Printf("%+v[FUNC PROTO] Logico Funcion Found > %+v", funcName, currentLine)
-			if debug {
-				log.Printf("[FUNC PROTO] Logico Funcion Found > %+v", currentLine)
-			}
-
-			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcParamType, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{funcType, helpers.PALABRARESERVADA}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				funcName, helpers.IDENTIFICADOR,
+				"(", helpers.DELIMITADOR,
+				funcParamName, helpers.IDENTIFICADOR,
+				":", helpers.DELIMITADOR,
+				funcParamType, helpers.IDENTIFICADOR,
+				")", helpers.DELIMITADOR,
+				":", helpers.DELIMITADOR,
+				funcType, helpers.PALABRARESERVADA,
+				";", helpers.DELIMITADOR,
+			}))
 			return
 		}
 

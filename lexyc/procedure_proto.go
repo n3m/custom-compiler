@@ -21,8 +21,10 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 		if l.R.RegexProcedureProtoEntero.MatchProcedureEntero(currentLine) {
 			procName, procParamType, procParamVars := getDataFromProcedureProto(currentLine)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procName, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"(", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				procName, helpers.IDENTIFICADOR,
+				"(", helpers.DELIMITADOR,
+			}))
 
 			vars := strings.Split(procParamVars, ", ")
 			for i, procParamVar := range vars {
@@ -31,10 +33,12 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
 			}
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamType, helpers.IDENTIFICADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{")", helpers.DELIMITADOR}))
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				":", helpers.DELIMITADOR,
+				procParamType, helpers.IDENTIFICADOR,
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}))
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 			if debug {

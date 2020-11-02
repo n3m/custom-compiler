@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"regexp"
 	"strings"
 
 	"go-custom-compiler/helpers"
@@ -50,9 +49,9 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
 	}
 
-	LexLogger.Println("----------------------------------------------")
+	LexLogger.Println("--------------------------------------------------------------------------------------------")
 	LexLogger.Println(helpers.IndentString(helpers.LEXINDENT, []string{"Lexema", "Token"}))
-	LexLogger.Println("----------------------------------------------")
+	LexLogger.Println("--------------------------------------------------------------------------------------------")
 	ErrorLogger.Printf("=============================================================")
 	ErrorLogger.Printf("# Linea | # Columna | Error | Descripcion | Linea del Error")
 	ErrorLogger.Printf("=============================================================")
@@ -150,6 +149,41 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.BlockQueue = []models.BlockType{}
 			}
 			l.BlockQueue = append(l.BlockQueue, models.PROCEDUREBLOCK)
+			procedureGroups := helpers.GetGroupMatches(currentLine, helpers.PROCEDIMIENTOREGEXP)
+			token := []string{
+				procedureGroups[0], helpers.PALABRARESERVADA,
+				procedureGroups[1], helpers.IDENTIFICADOR,
+				"(", helpers.DELIMITADOR,
+			}
+			params := strings.Join(procedureGroups[2:], "")
+			groups := strings.Split(params, ";")
+			for i, group := range groups {
+				if i > 0 {
+					token = append(token, []string{";", helpers.DELIMITADOR}...)
+				}
+				groupVars := strings.Split(group, ":")
+				vars := strings.Split(groupVars[0], ",")
+				if vars[0] != "" {
+					token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
+				}
+				for _, v := range vars[1:] {
+					v = strings.TrimSpace(v)
+					token = append(token, []string{
+						",", helpers.DELIMITADOR,
+					}...)
+					token = append(token, l.AnalyzeType(v)...)
+				}
+				if vars[0] != "" {
+					token = append(token, []string{
+						":", helpers.DELIMITADOR,
+						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA,
+					}...)
+				}
+			}
+			token = append(token, []string{
+				")", helpers.DELIMITADOR,
+			}...)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
@@ -164,6 +198,39 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
+			funcionGroups := helpers.GetGroupMatches(currentLine, helpers.FUNCIONREGEXP)
+			token := []string{
+				funcionGroups[0], helpers.PALABRARESERVADA,
+				funcionGroups[1], helpers.IDENTIFICADOR,
+				"(", helpers.DELIMITADOR,
+			}
+			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
+			groups := strings.Split(params, ";")
+			for i, group := range groups {
+				if i > 0 {
+					token = append(token, []string{";", helpers.DELIMITADOR}...)
+				}
+				groupVars := strings.Split(group, ":")
+				vars := strings.Split(groupVars[0], ",")
+				token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
+				for _, v := range vars[1:] {
+					v = strings.TrimSpace(v)
+					token = append(token, []string{
+						",", helpers.DELIMITADOR,
+					}...)
+					token = append(token, l.AnalyzeType(v)...)
+				}
+				token = append(token, []string{
+					":", helpers.DELIMITADOR,
+					strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA,
+				}...)
+			}
+			token = append(token, []string{
+				")", helpers.DELIMITADOR,
+				":", helpers.DELIMITADOR,
+				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA,
+			}...)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
@@ -320,38 +387,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			/* Analyze Params */
 
-			data := strings.Split(currentLine, " ")
-			currentLine = ""
-			for _, str := range data[2:] {
-				currentLine += str + " "
-			}
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"hasta", helpers.PALABRARESERVADA,
+				"que", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
 
 			l.OpQueue = []models.TokenComp{}
 
-			stage1 := regexp.MustCompile(`^(\s*)\((.*)\);(\s*)$`)
-			stage1v2 := regexp.MustCompile(`^(\s*)\((.*)\)(\s*)$`)
-			if stage1.MatchString(currentLine) || stage1v2.MatchString(currentLine) {
-				currentLine = strings.TrimPrefix(currentLine, "(")
-				currentLine = strings.TrimSuffix(currentLine, ";")
-				currentLine = strings.TrimSuffix(currentLine, ")")
-
-				lineData := strings.Split(currentLine, " ")
-				switch len(lineData) {
-				case 0:
-					l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
-					break
-				case 2:
-					l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' only has 2 params", currentLine)
-					break
-				default:
-					for _, dat := range lineData {
-						l.AnalyzeForItem(dat, lineIndex)
-					}
-					break
-				}
-
-				//TODO: Create Func to eval OPQueue
-
+			groups := helpers.GetGroupMatches(currentLine, helpers.HASTAQUEREGEXP)
+			if len(groups) > 0 {
+				params := groups[0]
+				l.AnalyzeParams(params)
 			} else {
 				l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
 			}
@@ -370,9 +417,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				"hasta", helpers.PALABRARESERVADA,
-				"que", helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -385,22 +429,28 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			currentLine = strings.TrimSuffix(currentLine, ")")
 
-			data := strings.Split(currentLine, "(")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Imprimenl", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
 
-			params := strings.Split(currentLine, ",")
-
+			params := l.R.RegexImprime.GroupsImprime(currentLine)
+			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
-			for _, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
+			for i, str := range params {
+				str = strings.TrimSpace(str)
+				token := l.AnalyzeType(str)
+				if i != len(params)-1 {
+					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					l.OpQueue = append(l.OpQueue, models.DELIM)
+				}
+				if len(token) > 0 {
+					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+				}
 			}
 
+			l.AnalyzeOpQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
@@ -408,8 +458,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Imprimenl' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				data[0], helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -420,29 +468,33 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			currentLine = strings.TrimSuffix(currentLine, ")")
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Imprime", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
 
-			data := strings.Split(currentLine, "(")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
-
-			params := strings.Split(currentLine, ",")
+			params := l.R.RegexImprime.GroupsImprime(currentLine)
+			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
-			for _, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
+			for i, str := range params {
+				str = strings.TrimSpace(str)
+				token := l.AnalyzeType(str)
+				if i != len(params)-1 {
+					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					l.OpQueue = append(l.OpQueue, models.DELIM)
+				}
+				if len(token) > 0 {
+					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+				}
 			}
 
+			l.AnalyzeOpQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
 			l.GL.Printf("%+v Found 'Imprime' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				data[0], helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -455,19 +507,15 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			currentLine = strings.TrimSuffix(currentLine, ")")
 
-			data := strings.Split(currentLine, "(")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
-			params := strings.Split(currentLine, ",")
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Lee", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
+
 			l.OpQueue = []models.TokenComp{}
-			for _, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
-			}
+			params := l.R.RegexLee.GroupsLee(currentLine)
+			l.AnalyzeParams(params[0])
 
 			if !l.ExpectIdent(currentLine, lineIndex) {
 				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
@@ -476,8 +524,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				data[0], helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -508,12 +554,22 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.R.RegexConditionSi.ValidateCondition(currentLine, lineIndex)
-
-			//TODO: Get Params
-
 			l.GL.Printf("%+v Found 'Si' condition [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"si", helpers.PALABRARESERVADA}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"si", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
+
+			l.OpQueue = []models.TokenComp{}
+			groups := helpers.GetGroupMatches(currentLine, helpers.SIREGEXP)
+			params := groups[0]
+			l.AnalyzeParams(params)
+
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				")", helpers.DELIMITADOR,
+				"hacer", helpers.PALABRARESERVADA,
+			}))
 
 			foundSomething = true
 		}
@@ -574,29 +630,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexRegresa.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			currentLine = strings.TrimSuffix(currentLine, ")")
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Regresa", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
 
-			data := strings.Split(currentLine, "(")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
-			// params := strings.Split(currentLine, ",")
-			// l.OpQueue = []models.TokenComp{}
-			// for _, str := range params {
-			// 	l.AnalyzeForItem(str, lineIndex)
-			// }
-
-			// if !l.ExpectIdent(currentLine, lineIndex) {
-			// 	l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
-			// }
-
-			l.GL.Printf("%+v Found 'Regresa' instruction [Line: %+v]", funcName, lineIndex)
+			l.OpQueue = []models.TokenComp{}
+			params := l.R.RegexRegresa.GroupsRegresa(currentLine)[0]
+			l.AnalyzeParams(params)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				data[0], helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -735,43 +778,184 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	return nil
 }
 
-//AnalyzeForItem ...
-func (l *LexicalAnalyzer) AnalyzeForItem(str string, lineIndex int64) {
-	str = strings.TrimSpace(str)
-	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
-		l.OpQueue = append(l.OpQueue, models.CTELOG)
-		return
+//AnalyzeParams ...
+func (l *LexicalAnalyzer) AnalyzeParams(params string) {
+	condiciones := l.R.RegexOperatorLogico.V1.Split(params, -1)
+	condicionadores := l.R.RegexOperatorLogico.GroupsOpLogico(params)
+	for i, condicion := range condiciones {
+		relaciones := l.R.RegexOperatorRelacional.V1.Split(condicion, -1)
+		relacionadores := l.R.RegexOperatorRelacional.GroupsOpRelacional(condicion)
+		for j, relacion := range relaciones {
+			aritmeticos := l.R.RegexOperatorAritmetico.V1.Split(relacion, -1)
+			aritmeticadores := l.R.RegexOperatorAritmetico.GroupsOpAritmetico(relacion)
+			for k, aritmetico := range aritmeticos {
+				aritmetico = strings.TrimPrefix(aritmetico, " ")
+				aritmetico = strings.TrimSuffix(aritmetico, " ")
+				token := []string{
+					aritmetico,
+				}
+				token = l.AnalyzeType(aritmetico)
+
+				if len(token) > 0 {
+					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+				}
+				if k < len(aritmeticadores) {
+					l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{aritmeticadores[k], helpers.OPERADORARITMETICO}))
+				}
+			}
+			if j < len(relacionadores) {
+				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{relacionadores[j], helpers.OPERADORRELACIONAL}))
+			}
+		}
+		if i < len(condicionadores) {
+			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{condicionadores[i], helpers.OPERADORLOGICO}))
+		}
 	}
-	if l.R.RegexCustom.MatchCteEnt(str) {
-		l.OpQueue = append(l.OpQueue, models.CTEENT)
-		return
-	}
-	if l.R.RegexCustom.MatchCteAlfa(str) {
+}
+
+//AnalyzeType ...
+func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
+	token := []string{line}
+	if l.R.RegexCustom.MatchCteAlfa(line) {
+		token = append(token, helpers.CONSTANTEALFABETICA)
 		l.OpQueue = append(l.OpQueue, models.CTEALFA)
-		return
-	}
-	if l.R.RegexCustom.MatchCteReal(str) {
+	} else if l.R.RegexFunction.MatchFunctionCallEnd(line) {
+		token = l.AnalyzeType(line[:len(line)-1])
+		token = append(token, []string{")", helpers.DELIMITADOR}...)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
+	} else if l.R.RegexConstanteEntera.MatchEnteraConstant(line) {
+		token = append(token, helpers.CONSTANTEENTERA)
+		l.OpQueue = append(l.OpQueue, models.CTEENT)
+	} else if l.R.RegexConstanteReal.MatchRealConstant(line) {
+		token = append(token, helpers.CONSTANTEREAL)
 		l.OpQueue = append(l.OpQueue, models.CTEREAL)
-		return
-	}
-	if l.R.RegexCustom.MatchOpArit(str) {
-		l.OpQueue = append(l.OpQueue, models.OPARIT)
-		return
-	}
-	if l.R.RegexCustom.MatchOpLog(str) {
-		l.OpQueue = append(l.OpQueue, models.OPLOG)
-		return
-	}
-	if l.R.RegexCustom.MatchOpRel(str) {
-		l.OpQueue = append(l.OpQueue, models.OPREL)
-		return
-	}
-	if l.R.RegexCustom.MatchIdent(str) {
+	} else if l.R.RegexFunction.MatchFunctionCall(line) {
+		groups := strings.Split(line, "(")
 		l.OpQueue = append(l.OpQueue, models.ID)
-		return
+		l.OpQueue = append(l.OpQueue, models.BRACK)
+		token = []string{
+			groups[0], helpers.IDENTIFICADOR,
+			"(", helpers.DELIMITADOR,
+		}
+		if len(groups) > 1 {
+			token = append(token, l.AnalyzeType(line[1:])...)
+		}
+		token = append(token, []string{
+			")", helpers.DELIMITADOR,
+		}...)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
+	} else if l.R.RegexFunction.MatchFunctionCall2(line) {
+		groups := strings.Split(line, "(")
+		l.OpQueue = append(l.OpQueue, models.ID)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
+		token = []string{
+			groups[0], helpers.IDENTIFICADOR,
+			"(", helpers.DELIMITADOR,
+		}
+		if len(groups) > 1 {
+			token = append(token, l.AnalyzeType(groups[1])...)
+		}
+	} else {
+		groups := l.R.RegexVar.GroupsVar(line)
+		token = []string{groups[0], helpers.IDENTIFICADOR}
+		l.OpQueue = append(l.OpQueue, models.ID)
+		if len(groups) > 1 {
+			for _, group := range groups[1:] {
+				if len(group) > 2 {
+					token = append(token, []string{
+						"[", helpers.DELIMITADOR,
+						group[1 : len(group)-1], helpers.IDENTIFICADOR,
+						"]", helpers.DELIMITADOR,
+					}...)
+					l.OpQueue = append(l.OpQueue, models.BRACK)
+					l.OpQueue = append(l.OpQueue, models.ID)
+					l.OpQueue = append(l.OpQueue, models.BRACK)
+				}
+			}
+		}
 	}
 
-	l.OpQueue = append(l.OpQueue, models.NONE)
+	return token
+}
+
+//AnalyzeOpQueue ...
+func (l *LexicalAnalyzer) AnalyzeOpQueue(currentLine string, lineIndex int64) {
+	noParentheses := 0
+	last := l.OpQueue[0]
+	token := ""
+	for _, item := range l.OpQueue[1:] {
+		switch item {
+		case models.BRACK:
+			token = "brackets"
+			noParentheses++
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			}
+			break
+		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
+			token = helpers.CONSTANTE
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			} else if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			}
+			break
+		case models.DELIM:
+			token = helpers.DELIMITADOR
+			if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			} else if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			}
+			break
+		case models.ID:
+			token = helpers.IDENTIFICADOR
+			if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			} else if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			}
+			break
+		case models.OPARIT, models.OPASIG, models.OPLOG, models.OPREL:
+			token = helpers.OPERADOR
+			if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			} else if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			} else if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			}
+			break
+		case models.PALRES:
+			token = helpers.PALABRARESERVADA
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			} else if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			} else if last == models.BRACK {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected brackets before "+token, currentLine)
+			} else if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			}
+			break
+		case models.NONE:
+			l.LogError(lineIndex, "N/A", "NONE", "Couldn't find reference", currentLine)
+			break
+		}
+		last = item
+	}
+
+	if noParentheses%2 != 0 {
+		l.LogError(lineIndex, "N/A", "Brackets", "Missing brackets", currentLine)
+	}
 }
 
 //LogError ...

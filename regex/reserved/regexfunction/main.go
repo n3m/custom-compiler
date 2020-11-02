@@ -14,6 +14,9 @@ type RegexFunction struct {
 	V2      *regexp.Regexp
 	V3      *regexp.Regexp
 	V4End   *regexp.Regexp
+	Call    *regexp.Regexp
+	Call2   *regexp.Regexp
+	CallEnd *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -32,12 +35,18 @@ func NewRegexFunction(EL, LL, GL *log.Logger) (*RegexFunction, error) {
 	compiledV2 := regexp.MustCompile("^(?i)Func")
 	compiledV3 := regexp.MustCompile("^(?i)Fu")
 	compiledV4End := regexp.MustCompile("[^;]$")
+	compiledCall := regexp.MustCompile(`.*\(.*\)`)
+	compiledCall2 := regexp.MustCompile(`.*\(.*`)
+	compiledCallEnd := regexp.MustCompile(`.*\)`)
 	return &RegexFunction{
 		Keyword: "Funcion",
 		V1:      compiledV1,
 		V2:      compiledV2,
 		V3:      compiledV3,
 		V4End:   compiledV4End,
+		Call:    compiledCall,
+		Call2:   compiledCall2,
+		CallEnd: compiledCallEnd,
 		EL:      EL,
 		LL:      LL,
 		GL:      GL,
@@ -101,6 +110,21 @@ func (r *RegexFunction) StartsWithFunctionNoCheck(str string) bool {
 
 	return false
 
+}
+
+//MatchFunctionCall ...
+func (r *RegexFunction) MatchFunctionCall(str string) bool {
+	return r.Call.MatchString(str)
+}
+
+//MatchFunctionCall2 ...
+func (r *RegexFunction) MatchFunctionCall2(str string) bool {
+	return r.Call2.MatchString(str)
+}
+
+//MatchFunctionCallEnd ...
+func (r *RegexFunction) MatchFunctionCallEnd(str string) bool {
+	return r.CallEnd.MatchString(str)
 }
 
 //r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
