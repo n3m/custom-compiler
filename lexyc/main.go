@@ -415,18 +415,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
 			for i, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
-
 				str = strings.TrimSpace(str)
 				token := l.AnalyzeType(str)
 				if i != len(params)-1 {
 					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					l.OpQueue = append(l.OpQueue, models.DELIM)
 				}
 				if len(token) > 0 {
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 				}
 			}
 
+			l.AnalyzeOpQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
@@ -451,17 +451,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
 			for i, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
 				str = strings.TrimSpace(str)
 				token := l.AnalyzeType(str)
 				if i != len(params)-1 {
 					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					l.OpQueue = append(l.OpQueue, models.DELIM)
 				}
 				if len(token) > 0 {
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 				}
 			}
 
+			l.AnalyzeOpQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
@@ -478,19 +479,15 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
-			currentLine = strings.TrimSuffix(currentLine, ";")
-			currentLine = strings.TrimSuffix(currentLine, ")")
 
-			data := strings.Split(currentLine, "(")
-			currentLine = ""
-			for _, str := range data[1:] {
-				currentLine += str + " "
-			}
-			params := strings.Split(currentLine, ",")
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Lee", helpers.PALABRARESERVADA,
+				"(", helpers.DELIMITADOR,
+			}))
+
 			l.OpQueue = []models.TokenComp{}
-			for _, str := range params {
-				l.AnalyzeForItem(str, lineIndex)
-			}
+			params := l.R.RegexLee.GroupsLee(currentLine)
+			l.AnalyzeParams(params[0])
 
 			if !l.ExpectIdent(currentLine, lineIndex) {
 				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
@@ -499,8 +496,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.GL.Printf("%+v Found 'Lee' instruction [Line: %+v]", funcName, lineIndex)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				data[0], helpers.PALABRARESERVADA,
-				"(", helpers.DELIMITADOR,
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
@@ -534,6 +529,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.OpQueue = []models.TokenComp{}
 			groups := helpers.GetGroupMatches(currentLine, helpers.SIREGEXP)
 			params := groups[0]
 			l.AnalyzeParams(params)
@@ -599,6 +595,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.OpQueue = []models.TokenComp{}
 			params := l.R.RegexRegresa.GroupsRegresa(currentLine)[0]
 			l.AnalyzeParams(params)
 
@@ -643,45 +640,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	return nil
 }
 
-//AnalyzeForItem ...
-func (l *LexicalAnalyzer) AnalyzeForItem(str string, lineIndex int64) {
-	str = strings.TrimSpace(str)
-	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
-		l.OpQueue = append(l.OpQueue, models.CTELOG)
-		return
-	}
-	if l.R.RegexCustom.MatchCteEnt(str) {
-		l.OpQueue = append(l.OpQueue, models.CTEENT)
-		return
-	}
-	if l.R.RegexCustom.MatchCteAlfa(str) {
-		l.OpQueue = append(l.OpQueue, models.CTEALFA)
-		return
-	}
-	if l.R.RegexCustom.MatchCteReal(str) {
-		l.OpQueue = append(l.OpQueue, models.CTEREAL)
-		return
-	}
-	if l.R.RegexCustom.MatchOpArit(str) {
-		l.OpQueue = append(l.OpQueue, models.OPARIT)
-		return
-	}
-	if l.R.RegexCustom.MatchOpLog(str) {
-		l.OpQueue = append(l.OpQueue, models.OPLOG)
-		return
-	}
-	if l.R.RegexCustom.MatchOpRel(str) {
-		l.OpQueue = append(l.OpQueue, models.OPREL)
-		return
-	}
-	if l.R.RegexCustom.MatchIdent(str) {
-		l.OpQueue = append(l.OpQueue, models.ID)
-		return
-	}
-
-	l.OpQueue = append(l.OpQueue, models.NONE)
-}
-
 //AnalyzeParams ...
 func (l *LexicalAnalyzer) AnalyzeParams(params string) {
 	condiciones := l.R.RegexOperatorLogico.V1.Split(params, -1)
@@ -722,22 +680,36 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 	token := []string{line}
 	if l.R.RegexCustom.MatchCteAlfa(line) {
 		token = append(token, helpers.CONSTANTEALFABETICA)
+		l.OpQueue = append(l.OpQueue, models.CTEALFA)
 	} else if l.R.RegexFunction.MatchFunctionCallEnd(line) {
 		token = l.AnalyzeType(line[:len(line)-1])
 		token = append(token, []string{")", helpers.DELIMITADOR}...)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexConstanteEntera.MatchEnteraConstant(line) {
 		token = append(token, helpers.CONSTANTEENTERA)
+		l.OpQueue = append(l.OpQueue, models.CTEENT)
 	} else if l.R.RegexConstanteReal.MatchRealConstant(line) {
 		token = append(token, helpers.CONSTANTEREAL)
+		l.OpQueue = append(l.OpQueue, models.CTEREAL)
 	} else if l.R.RegexFunction.MatchFunctionCall(line) {
 		groups := strings.Split(line, "(")
+		l.OpQueue = append(l.OpQueue, models.ID)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
 			groups[0], helpers.IDENTIFICADOR,
 			"(", helpers.DELIMITADOR,
-			")", helpers.DELIMITADOR,
 		}
+		if len(groups) > 1 {
+			token = append(token, l.AnalyzeType(line[1:])...)
+		}
+		token = append(token, []string{
+			")", helpers.DELIMITADOR,
+		}...)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexFunction.MatchFunctionCall2(line) {
 		groups := strings.Split(line, "(")
+		l.OpQueue = append(l.OpQueue, models.ID)
+		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
 			groups[0], helpers.IDENTIFICADOR,
 			"(", helpers.DELIMITADOR,
@@ -748,6 +720,7 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 	} else {
 		groups := l.R.RegexVar.GroupsVar(line)
 		token = []string{groups[0], helpers.IDENTIFICADOR}
+		l.OpQueue = append(l.OpQueue, models.ID)
 		if len(groups) > 1 {
 			for _, group := range groups[1:] {
 				if len(group) > 2 {
@@ -756,12 +729,95 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 						group[1 : len(group)-1], helpers.IDENTIFICADOR,
 						"]", helpers.DELIMITADOR,
 					}...)
+					l.OpQueue = append(l.OpQueue, models.BRACK)
+					l.OpQueue = append(l.OpQueue, models.ID)
+					l.OpQueue = append(l.OpQueue, models.BRACK)
 				}
 			}
 		}
 	}
 
 	return token
+}
+
+//AnalyzeOpQueue ...
+func (l *LexicalAnalyzer) AnalyzeOpQueue(currentLine string, lineIndex int64) {
+	noParentheses := 0
+	last := l.OpQueue[0]
+	token := ""
+	for _, item := range l.OpQueue[1:] {
+		switch item {
+		case models.BRACK:
+			token = "brackets"
+			noParentheses++
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			}
+			break
+		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
+			token = helpers.CONSTANTE
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			} else if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			}
+			break
+		case models.DELIM:
+			token = helpers.DELIMITADOR
+			if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			} else if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			}
+			break
+		case models.ID:
+			token = helpers.IDENTIFICADOR
+			if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			} else if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			}
+			break
+		case models.OPARIT, models.OPASIG, models.OPLOG, models.OPREL:
+			token = helpers.OPERADOR
+			if last == models.DELIM {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.DELIMITADOR+" before "+token, currentLine)
+			} else if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			} else if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			}
+			break
+		case models.PALRES:
+			token = helpers.PALABRARESERVADA
+			if last == models.PALRES {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.PALABRARESERVADA+" before "+token, currentLine)
+			} else if last == models.ID {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.IDENTIFICADOR+" before "+token, currentLine)
+			} else if last == models.CTEALFA || last == models.CTEENT || last == models.CTELOG || last == models.CTEREAL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.CONSTANTE+" before "+token, currentLine)
+			} else if last == models.BRACK {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected brackets before "+token, currentLine)
+			} else if last == models.OPARIT || last == models.OPASIG || last == models.OPLOG || last == models.OPREL {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+helpers.OPERADOR+" before "+token, currentLine)
+			}
+			break
+		case models.NONE:
+			l.LogError(lineIndex, "N/A", "NONE", "Couldn't find reference", currentLine)
+			break
+		}
+		last = item
+	}
+
+	if noParentheses%2 != 0 {
+		l.LogError(lineIndex, "N/A", "Brackets", "Missing brackets", currentLine)
+	}
 }
 
 //LogError ...

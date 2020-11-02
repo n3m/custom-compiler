@@ -19,6 +19,7 @@ import (
 	"go-custom-compiler/regex/procedureproto/regexprocedureprotoreal"
 	_regeximprime "go-custom-compiler/regex/reserved/instruction/regeximprime"
 	"go-custom-compiler/regex/reserved/instruction/regexio"
+	"go-custom-compiler/regex/reserved/instruction/regexlee"
 	"go-custom-compiler/regex/reserved/instruction/regexregresa"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditioncuando"
 	"go-custom-compiler/regex/reserved/regexcondition/regexconditionsi"
@@ -100,6 +101,8 @@ type CustomRegex struct {
 	//Instructions
 	RegexIO      *regexio.RegexIO
 	RegexRegresa *regexregresa.RegexRegresa
+	RegexImprime *_regeximprime.RegexImprime
+	RegexLee     *regexlee.RegexLee
 	//Conditions
 	RegexConditionCuando *regexconditioncuando.RegexConditionCuando
 	RegexConditionSi     *regexconditionsi.RegexConditionSi
@@ -108,8 +111,6 @@ type CustomRegex struct {
 	RegexOperatorRelacional *_regexrelacional.RegexOpRelacional
 	RegexOperatorAritmetico *_regexaritmetico.RegexOpAritmetico
 	RegexOperatorLogico     *_regexlogico.RegexOpLogico
-	//Imprime
-	RegexImprime *_regeximprime.RegexImprime
 
 	EL *log.Logger
 	LL *log.Logger
@@ -184,12 +185,12 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	conditionCuandoBuilder, _ := regexconditioncuando.NewRegexConditionCuando(EL, LL, GL)
 	conditionSiBuilder, _ := regexconditionsi.NewRegexConditionSi(EL, LL, GL)
 	conditionSwitchBuilder, _ := regexconditionswitch.NewRegexConditionSwitch(EL, LL, GL)
+	imprimeBuilder, _ := _regeximprime.NewRegexImprime()
+	leeBuilder, _ := regexlee.NewRegexLee()
 	//Operators
 	relacionalBuilder, _ := _regexrelacional.NewRegexOpRelacional()
 	aritmeticoBuilder, _ := _regexaritmetico.NewRegexOpAritmetico()
 	logicoBuilder, _ := _regexlogico.NewRegexOpLogico()
-	//Imprime
-	imprimeBuilder, _ := _regeximprime.NewRegexImprime()
 
 	return &CustomRegex{
 		//Reserved
@@ -241,6 +242,8 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		//Instructions
 		RegexIO:      ioBuilder,
 		RegexRegresa: regresaBuilder,
+		RegexImprime: imprimeBuilder,
+		RegexLee:     leeBuilder,
 		//Conditions
 		RegexConditionCuando: conditionCuandoBuilder,
 		RegexConditionSi:     conditionSiBuilder,
@@ -249,8 +252,6 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 		RegexOperatorRelacional: relacionalBuilder,
 		RegexOperatorAritmetico: aritmeticoBuilder,
 		RegexOperatorLogico:     logicoBuilder,
-		//Imprime
-		RegexImprime: imprimeBuilder,
 
 		EL: EL,
 		LL: LL,
