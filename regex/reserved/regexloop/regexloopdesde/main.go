@@ -16,6 +16,13 @@ type RegexLoopDesde struct {
 	V5      *regexp.Regexp
 	V6      *regexp.Regexp
 
+	WTest1 *regexp.Regexp
+	WTest2 *regexp.Regexp
+	WTest3 *regexp.Regexp
+	WTest4 *regexp.Regexp
+	WTest5 *regexp.Regexp
+	WTest6 *regexp.Regexp
+
 	EL *log.Logger
 	LL *log.Logger
 	GL *log.Logger
@@ -37,15 +44,42 @@ func NewRegexLoopDesde(EL, LL, GL *log.Logger) (*RegexLoopDesde, error) {
 		V4:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+el(\s)+)`),
 		V5:      regexp.MustCompile(`^(\s*)((?i)Desde(\s)+)`),
 		V6:      regexp.MustCompile(`^(\s*)((?i)Des)`),
-		EL:      EL,
-		LL:      LL,
-		GL:      GL,
+
+		WTest1: regexp.MustCompile(`((?i)Desde)`),
+		WTest2: regexp.MustCompile(`((?i)el)`),
+		WTest3: regexp.MustCompile(`((?i)valor)`),
+		WTest4: regexp.MustCompile(`((?i)de)`),
+		WTest5: regexp.MustCompile(`((?i)hasta)`),
+		EL:     EL,
+		LL:     LL,
+		GL:     GL,
 	}, nil
 }
 
 //StartsWithDesde ...
 func (r *RegexLoopDesde) StartsWithDesde(str string, lineIndex int64) bool {
 	if r.V1.MatchString(str) {
+		return true
+	}
+
+	if r.V2.MatchString(str) {
+		r.LogError(lineIndex, 0, str, fmt.Sprintf("Found invalid syntax. Correct syntax should be '%+v'", "hasta"), str)
+		return true
+	}
+	if r.V3.MatchString(str) {
+		r.LogError(lineIndex, 0, str, fmt.Sprintf("Found invalid syntax. Correct syntax should be '%+v'", "de"), str)
+		return true
+	}
+	if r.V4.MatchString(str) {
+		r.LogError(lineIndex, 0, str, fmt.Sprintf("Found invalid syntax. Correct syntax should be '%+v'", "valor"), str)
+		return true
+	}
+	if r.V5.MatchString(str) {
+		r.LogError(lineIndex, 0, str, fmt.Sprintf("Found invalid syntax. Correct syntax should be '%+v'", "el"), str)
+		return true
+	}
+	if r.V6.MatchString(str) {
+		r.LogError(lineIndex, 0, str, fmt.Sprintf("Found invalid syntax. Correct syntax should be '%+v'", "desde"), str)
 		return true
 	}
 
