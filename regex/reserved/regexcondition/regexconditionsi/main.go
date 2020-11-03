@@ -59,6 +59,10 @@ func (r *RegexConditionSi) StartsWithSi(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -84,6 +88,10 @@ func (r *RegexConditionSi) StartsWithSino(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordV3, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordV3) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -110,6 +118,10 @@ func (r *RegexConditionSi) ValidateCondition(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordValidate, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordValidate) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {

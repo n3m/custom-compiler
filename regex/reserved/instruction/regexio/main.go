@@ -67,6 +67,10 @@ func (r *RegexIO) MatchImprimenl(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordImprimenl, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordImprimenl) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordImprimenl), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -90,6 +94,10 @@ func (r *RegexIO) MatchImprime(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordImprime, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordImprime) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordImprime), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -113,6 +121,10 @@ func (r *RegexIO) MatchLee(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordLee, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordLee) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordLee), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {

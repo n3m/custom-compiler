@@ -50,6 +50,10 @@ func (r *RegexFinProcedure) StartsWithFinDeProcedimiento(str string, lineIndex i
 		Keyword := strings.Split(r.Keyword, "")
 
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -66,6 +70,10 @@ func (r *RegexFinProcedure) StartsWithFinDeProcedimiento(str string, lineIndex i
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {

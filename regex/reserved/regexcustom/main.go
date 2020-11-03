@@ -121,6 +121,10 @@ func (r *RegexCustom) MatchCteLog(str string, lineIndex int64) bool {
 		Keyword := strings.Split(r.KeywordLOG1, "")
 
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordLOG1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordLOG1), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -135,11 +139,15 @@ func (r *RegexCustom) MatchCteLog(str string, lineIndex int64) bool {
 		}
 
 		Keyword = strings.Split(r.KeywordLOG2, "")
+		if len(wrongWord) > len(r.KeywordLOG2) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordLOG2), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
 					foundTypo = true
-					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordLOG1), str)
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordLOG2), str)
 				}
 			}
 		}

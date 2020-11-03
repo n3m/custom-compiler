@@ -54,6 +54,10 @@ func (r *RegexConditionSwitch) StartsWithSea(str string, lineIndex int64) bool {
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordV1, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordV1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordV2), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -80,6 +84,10 @@ func (r *RegexConditionSwitch) StartsWithOtro(str string, lineIndex int64) bool 
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordV2, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.KeywordV2) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.KeywordV2), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {

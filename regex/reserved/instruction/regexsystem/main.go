@@ -68,6 +68,10 @@ func (r *RegexSystem) MatchInterrumpe(str string, lineIndex int64) bool {
 		wrongWord := str
 		Keyword := strings.Split(r.Keyword1, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -83,6 +87,10 @@ func (r *RegexSystem) MatchInterrumpe(str string, lineIndex int64) bool {
 		wrongWord := str
 		Keyword := strings.Split(r.Keyword1, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -106,6 +114,10 @@ func (r *RegexSystem) MatchLimpia(str string, lineIndex int64) bool {
 		wrongWord := str
 		Keyword := strings.Split(r.Keyword2, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword2) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword2), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
@@ -121,6 +133,10 @@ func (r *RegexSystem) MatchLimpia(str string, lineIndex int64) bool {
 		wrongWord := str
 		Keyword := strings.Split(r.Keyword2, "")
 		foundTypo := false
+		if len(wrongWord) > len(r.Keyword2) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword2), str)
+			return true
+		}
 		for i, char := range wrongWord {
 			if !foundTypo {
 				if string(char) != Keyword[i] {
