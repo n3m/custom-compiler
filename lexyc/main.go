@@ -29,6 +29,7 @@ type LexicalAnalyzer struct {
 	OpQueue          []models.TokenComp
 	ConstantStorage  []models.Token
 	VariableStorage  []models.Token
+	FunctionStorage  []models.TokenFunc
 }
 
 //NewLexicalAnalyzer ...
@@ -156,6 +157,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				procedureGroups[1], helpers.IDENTIFICADOR,
 				"(", helpers.DELIMITADOR,
 			}
+
+			symbol := models.TokenFunc{Key: procedureGroups[1]}
+
 			params := strings.Join(procedureGroups[2:], "")
 			groups := strings.Split(params, ";")
 			for i, group := range groups {
@@ -163,16 +167,23 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					token = append(token, []string{";", helpers.DELIMITADOR}...)
 				}
 				groupVars := strings.Split(group, ":")
+
+				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
+
 				vars := strings.Split(groupVars[0], ",")
 				if vars[0] != "" {
 					token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
+					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: vars[0]})
 				}
+
 				for _, v := range vars[1:] {
 					v = strings.TrimSpace(v)
 					token = append(token, []string{
 						",", helpers.DELIMITADOR,
 					}...)
 					token = append(token, l.AnalyzeType(v)...)
+
+					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
 				}
 				if vars[0] != "" {
 					token = append(token, []string{
@@ -185,6 +196,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				")", helpers.DELIMITADOR,
 			}...)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+			funcProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
+			if funcProto == nil {
+				l.FunctionStorage = append(l.FunctionStorage, symbol)
+			} else {
+				l.CompareFunction(currentLine, lineIndex, funcProto, &symbol)
+			}
 
 			foundSomething = true
 		}
@@ -205,6 +223,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				funcionGroups[1], helpers.IDENTIFICADOR,
 				"(", helpers.DELIMITADOR,
 			}
+
+			symbol := models.TokenFunc{Key: funcionGroups[1]}
+
 			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
 			groups := strings.Split(params, ";")
 			for i, group := range groups {
@@ -213,6 +234,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				groupVars := strings.Split(group, ":")
 				vars := strings.Split(groupVars[0], ",")
+
+				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
+				symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: vars[0]})
+
 				token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
 				for _, v := range vars[1:] {
 					v = strings.TrimSpace(v)
@@ -220,6 +245,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 						",", helpers.DELIMITADOR,
 					}...)
 					token = append(token, l.AnalyzeType(v)...)
+
+					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
 				}
 				token = append(token, []string{
 					":", helpers.DELIMITADOR,
@@ -232,6 +259,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA,
 			}...)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+			funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
+			symbol.Type = funcType
+
+			procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
+			if procProto == nil {
+				l.FunctionStorage = append(l.FunctionStorage, symbol)
+			} else {
+				l.CompareFunction(currentLine, lineIndex, procProto, &symbol)
+			}
 
 			foundSomething = true
 		}
@@ -776,6 +813,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		lineIndex++
 	}
 
+	// l.Print()
+
 	return nil
 }
 
@@ -959,6 +998,69 @@ func (l *LexicalAnalyzer) AnalyzeOpQueue(currentLine string, lineIndex int64) {
 	}
 }
 
+//FindSymbol Returns value for given key if found in symbol table
+func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key string) *models.Token {
+	for _, symbol := range l.ConstantStorage {
+		if symbol.Key == key {
+			return &symbol
+		}
+	}
+	for _, symbol := range l.VariableStorage {
+		if symbol.Key == key {
+			return &symbol
+		}
+	}
+	l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for name: "+key, currentLine)
+	return nil
+}
+
+//FindFunction Returns value for given key if found in symbol table
+func (l *LexicalAnalyzer) FindFunction(currentLine string, lineIndex int64, key string) *models.TokenFunc {
+	for _, symbol := range l.FunctionStorage {
+		if symbol.Key == key {
+			return &symbol
+		}
+	}
+	l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for function name: "+key, currentLine)
+	return nil
+}
+
+//CompareFunction Compares both given TokenFunc params
+func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, model, current *models.TokenFunc) {
+	modelParams := []string{}
+	modelSignature := "("
+	for i, param := range model.Params {
+		modelParams = append(modelParams, string(param.Type))
+		modelSignature += string(param.Type)
+		if i < len(model.Params)-1 {
+			modelSignature += ","
+		}
+	}
+	modelSignature += ")"
+	match := true
+	currentParams := []string{}
+	currentSignature := "("
+	for i, param := range current.Params {
+		currentParams = append(currentParams, string(param.Type))
+		currentSignature += string(param.Type)
+		if i < len(model.Params)-1 {
+			currentSignature += ","
+		}
+		if i < len(modelParams) && modelParams[i] != currentParams[i] {
+			match = false
+		}
+	}
+	currentSignature += ")"
+	if len(modelParams) != len(currentParams) {
+		match = false
+	}
+	if match {
+		return
+	}
+
+	l.LogError(lineIndex, "N/A", "UNEXPECTED", "Mismatch in "+model.Key+" Want: "+modelSignature+" Have: "+currentSignature, currentLine)
+}
+
 //LogError ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
@@ -1008,6 +1110,14 @@ func (l *LexicalAnalyzer) Print() {
 		log.Print("\n")
 	} else {
 		log.Println("Variables: 0")
+	}
+
+	if len(l.FunctionStorage) > 0 {
+		log.Print("Functions: ")
+		pprnt.Print(l.FunctionStorage)
+		log.Print("\n")
+	} else {
+		log.Println("Functions: 0")
 	}
 
 	log.SetFlags(log.LstdFlags)

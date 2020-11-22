@@ -1,7 +1,6 @@
 package lexyc
 
 import (
-	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -37,7 +36,6 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				log.Printf("[CONSTANT] Entero Found > %+v", currentLine)
 			}
 
-			fmt.Println(lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				constantData[0], helpers.IDENTIFICADOR,
 				":=", helpers.OPERADORASIGNACION,
