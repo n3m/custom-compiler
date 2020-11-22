@@ -30,9 +30,7 @@ func GetGroupMatches(line, pattern string) []string {
 
 	match, _ := regexp.MatchString(pattern, line)
 	if match {
-
 		expression := regexp.MustCompile(pattern)
-
 		matched := expression.FindAllStringSubmatch(line, -1)
 
 		for _, m := range matched {

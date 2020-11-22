@@ -21,6 +21,7 @@ Iniio
    Repetir
       Imprime("Dame un numero: ");
       lee(n);
+      
       Imprime("Factorial R]recursivo I]interactivo S]salir: ");
       Lee(opc);
       Cuando el valor de opc 

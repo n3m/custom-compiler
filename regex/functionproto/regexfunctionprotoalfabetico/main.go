@@ -27,6 +27,7 @@ func (r *RegexFuncProtoAlfabetico) MatchFuncAlfabetico(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}
+
 	return false
 }
 
