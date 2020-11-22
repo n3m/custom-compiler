@@ -82,5 +82,5 @@ func main() {
 	}
 
 	generalLogger.Printf("Compiler has finished with Status [0]")
-
+	os.Remove(newFile.Name())
 }
