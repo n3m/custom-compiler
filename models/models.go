@@ -7,3 +7,11 @@ type Token struct {
 	Value      interface{}
 	Dimensions []int
 }
+
+//TokenFunc ...
+type TokenFunc struct {
+	Type   TokenType
+	Key    string
+	Params []Token
+	Vars   []Token
+}
