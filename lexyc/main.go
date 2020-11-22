@@ -34,6 +34,7 @@ type LexicalAnalyzer struct {
 //NewLexicalAnalyzer ...
 func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger) (*LexicalAnalyzer, error) {
 	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
+	GeneralLogger.Printf("Started the Lexical Analyzer")
 
 	if file == nil {
 		GeneralLogger.Printf("[ERR]%+v file is not present", moduleName)

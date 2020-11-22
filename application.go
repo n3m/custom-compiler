@@ -60,8 +60,17 @@ func main() {
 	}
 	defer newFile.Close()
 
+	tempFile, err := os.Open(newFile.Name())
+	if err != nil {
+		generalLogger.Printf("Error while opening second file! (%+v)", err.Error())
+		panic(err)
+	} else {
+		generalLogger.Printf("File opened")
+	}
+	defer tempFile.Close()
+
 	/*Analyzers*/
-	reader := helpers.GetScannerFromFile(newFile)
+	reader := helpers.GetScannerFromFile(tempFile)
 	generalLogger.Printf("Created Scanner from to File")
 
 	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger)
@@ -72,7 +81,7 @@ func main() {
 		generalLogger.Printf("Created Lexical Analyzer")
 	}
 
-	debugMode := false
+	debugMode := true
 	err = lex.Analyze(debugMode)
 	if err != nil {
 		generalLogger.Printf("Error while analyzing! (%+v)", err.Error())
@@ -82,5 +91,5 @@ func main() {
 	}
 
 	generalLogger.Printf("Compiler has finished with Status [0]")
-	os.Remove(newFile.Name())
+	os.Remove(tempFile.Name())
 }
