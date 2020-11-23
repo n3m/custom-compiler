@@ -1,6 +1,10 @@
-Semantico:
-    Operaciones
-    Error en parametros: n-1
+TODO:
+    Verificar si variable local ya existe de manera global y/o local. (Mandar Error)
+    Verificar tipos de datos en expresiones de operaciones [Mandar Error]
+    Verificar el uso correcto de parametros: [Error en parametros: n-1]
+    Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
+    Verificar que no se este tratando de dar valor a una constante
+
 
 Compilador:
     Generador de Codigo Maquina
