@@ -50,7 +50,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				}
 
 				if l.Context == "Global" {
-					l.VariableStorage = append(l.VariableStorage, symbol)
+					l.VariableStorage = append(l.VariableStorage, &symbol)
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
@@ -95,7 +95,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				}
 
 				if l.Context == "Global" {
-					l.VariableStorage = append(l.VariableStorage, symbol)
+					l.VariableStorage = append(l.VariableStorage, &symbol)
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
@@ -140,7 +140,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				}
 
 				if l.Context == "Global" {
-					l.VariableStorage = append(l.VariableStorage, symbol)
+					l.VariableStorage = append(l.VariableStorage, &symbol)
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
@@ -185,7 +185,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				}
 
 				if l.Context == "Global" {
-					l.VariableStorage = append(l.VariableStorage, symbol)
+					l.VariableStorage = append(l.VariableStorage, &symbol)
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
@@ -211,7 +211,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.ALFABETICO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
@@ -238,7 +238,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableEntero.MatchVariableEnteroCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.ENTERO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
@@ -265,7 +265,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableLogico.MatchVariableLogicoCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.LOGICO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
@@ -292,7 +292,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableReal.MatchVariableRealCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.REAL, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)

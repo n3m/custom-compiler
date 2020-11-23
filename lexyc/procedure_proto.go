@@ -42,7 +42,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
-			l.FunctionStorage = append(l.FunctionStorage, models.TokenFunc{Key: procName, Params: params})
+			l.FunctionStorage = append(l.FunctionStorage, &models.TokenFunc{Key: procName, Params: params})
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 			if debug {

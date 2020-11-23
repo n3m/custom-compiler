@@ -28,9 +28,9 @@ type LexicalAnalyzer struct {
 	BlockQueue       []models.BlockType
 	OpQueue          []models.TokenComp
 	NamesQueue       []string
-	ConstantStorage  []models.Token
-	VariableStorage  []models.Token
-	FunctionStorage  []models.TokenFunc
+	ConstantStorage  []*models.Token
+	VariableStorage  []*models.Token
+	FunctionStorage  []*models.TokenFunc
 	Context          string
 }
 
@@ -73,8 +73,8 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		CurrentBlockType: models.NULLBLOCK,
 		OpQueue:          []models.TokenComp{},
 		NamesQueue:       []string{},
-		ConstantStorage:  []models.Token{},
-		VariableStorage:  []models.Token{},
+		ConstantStorage:  []*models.Token{},
+		VariableStorage:  []*models.Token{},
 		Context:          "Global",
 	}, nil
 }
@@ -114,7 +114,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		currentLine = strings.TrimSpace(currentLine)
 
 		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
-		log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
+		// log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
 		/* StartsWith */
 
@@ -205,7 +205,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			funcProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
 			if funcProto == nil {
-				l.FunctionStorage = append(l.FunctionStorage, symbol)
+				l.FunctionStorage = append(l.FunctionStorage, &symbol)
 			} else {
 				l.CompareFunction(currentLine, lineIndex, funcProto, &symbol)
 			}
@@ -272,7 +272,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
 			if procProto == nil {
-				l.FunctionStorage = append(l.FunctionStorage, symbol)
+				l.FunctionStorage = append(l.FunctionStorage, &symbol)
 			} else {
 				l.CompareFunction(currentLine, lineIndex, procProto, &symbol)
 			}
@@ -841,7 +841,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		lineIndex++
 	}
 
-	// l.Print()
+	l.Print()
 	return nil
 }
 
@@ -1092,12 +1092,12 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key string) *models.Token {
 	for _, symbol := range l.ConstantStorage {
 		if symbol.Key == key {
-			return &symbol
+			return symbol
 		}
 	}
 	for _, symbol := range l.VariableStorage {
 		if symbol.Key == key {
-			return &symbol
+			return symbol
 		}
 	}
 
@@ -1125,7 +1125,7 @@ func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key st
 func (l *LexicalAnalyzer) FindFunction(currentLine string, lineIndex int64, key string) *models.TokenFunc {
 	for _, symbol := range l.FunctionStorage {
 		if symbol.Key == key {
-			return &symbol
+			return symbol
 		}
 	}
 	// l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for function name: "+key, currentLine)
@@ -1205,7 +1205,9 @@ func (l *LexicalAnalyzer) Print() {
 	log.SetFlags(0)
 	if len(l.ConstantStorage) > 0 {
 		log.Print("Constants: ")
-		pprnt.Print(l.ConstantStorage)
+		for _, each := range l.ConstantStorage {
+			pprnt.Print(*each)
+		}
 		log.Print("\n")
 	} else {
 		log.Println("Constants: 0")
@@ -1213,7 +1215,9 @@ func (l *LexicalAnalyzer) Print() {
 
 	if len(l.VariableStorage) > 0 {
 		log.Print("Variables: ")
-		pprnt.Print(l.VariableStorage)
+		for _, each := range l.VariableStorage {
+			pprnt.Print(*each)
+		}
 		log.Print("\n")
 	} else {
 		log.Println("Variables: 0")
@@ -1221,7 +1225,9 @@ func (l *LexicalAnalyzer) Print() {
 
 	if len(l.FunctionStorage) > 0 {
 		log.Print("Functions: ")
-		pprnt.Print(l.FunctionStorage)
+		for _, each := range l.FunctionStorage {
+			pprnt.Print(*each)
+		}
 		log.Print("\n")
 	} else {
 		log.Println("Functions: 0")
