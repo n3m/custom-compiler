@@ -5,6 +5,5 @@ TODO:
     Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
     Verificar que no se este tratando de dar valor a una constante
 
-
 Compilador:
     Generador de Codigo Maquina
