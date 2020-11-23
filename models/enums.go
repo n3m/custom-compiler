@@ -95,3 +95,23 @@ func VarTypeToTokenType(varType string) TokenType {
 	}
 	return funcType
 }
+
+//ConstTypeToTokenType ...
+func ConstTypeToTokenType(constType TokenComp) TokenType {
+	var funcType TokenType
+	switch constType {
+	case CTEENT:
+		funcType = ENTERO
+		break
+	case CTEREAL:
+		funcType = REAL
+		break
+	case CTEALFA:
+		funcType = ALFABETICO
+		break
+	case CTELOG:
+		funcType = LOGICO
+		break
+	}
+	return funcType
+}

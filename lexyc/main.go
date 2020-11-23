@@ -27,9 +27,11 @@ type LexicalAnalyzer struct {
 	ParentBlockType  models.BlockType
 	BlockQueue       []models.BlockType
 	OpQueue          []models.TokenComp
+	NamesQueue       []string
 	ConstantStorage  []models.Token
 	VariableStorage  []models.Token
 	FunctionStorage  []models.TokenFunc
+	Context          string
 }
 
 //NewLexicalAnalyzer ...
@@ -70,8 +72,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		BlockQueue:       []models.BlockType{},
 		CurrentBlockType: models.NULLBLOCK,
 		OpQueue:          []models.TokenComp{},
+		NamesQueue:       []string{},
 		ConstantStorage:  []models.Token{},
 		VariableStorage:  []models.Token{},
+		Context:          "Global",
 	}, nil
 }
 
@@ -158,6 +162,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}
 
+			l.Context = procedureGroups[1]
+
 			symbol := models.TokenFunc{Key: procedureGroups[1]}
 
 			params := strings.Join(procedureGroups[2:], "")
@@ -181,7 +187,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					token = append(token, []string{
 						",", helpers.DELIMITADOR,
 					}...)
-					token = append(token, l.AnalyzeType(v)...)
+					token = append(token, l.AnalyzeType("", 0, v)...)
 
 					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
 				}
@@ -224,6 +230,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}
 
+			l.Context = funcionGroups[1]
 			symbol := models.TokenFunc{Key: funcionGroups[1]}
 
 			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
@@ -244,7 +251,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					token = append(token, []string{
 						",", helpers.DELIMITADOR,
 					}...)
-					token = append(token, l.AnalyzeType(v)...)
+					token = append(token, l.AnalyzeType("", 0, v)...)
 
 					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
 				}
@@ -335,6 +342,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			l.Context = "Global"
 			foundSomething = true
 		}
 
@@ -368,6 +376,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			l.Context = "Global"
 			foundSomething = true
 		}
 
@@ -432,14 +441,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 
 			groups := helpers.GetGroupMatches(currentLine, helpers.HASTAQUEREGEXP)
 			if len(groups) > 0 {
 				params := groups[0]
-				l.AnalyzeParams(params)
+				l.AnalyzeParams(currentLine, lineIndex, params)
 			} else {
 				l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
 			}
+
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 
 			/* End Analyze Params*/
 
@@ -476,9 +488,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 			for i, str := range params {
 				str = strings.TrimSpace(str)
-				token := l.AnalyzeType(str)
+				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
 					token = append(token, []string{",", helpers.DELIMITADOR}...)
 					l.OpQueue = append(l.OpQueue, models.DELIM)
@@ -489,6 +502,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.AnalyzeOpQueue(currentLine, lineIndex)
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
@@ -514,9 +528,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 			for i, str := range params {
 				str = strings.TrimSpace(str)
-				token := l.AnalyzeType(str)
+				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
 					token = append(token, []string{",", helpers.DELIMITADOR}...)
 					l.OpQueue = append(l.OpQueue, models.DELIM)
@@ -527,6 +542,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.AnalyzeOpQueue(currentLine, lineIndex)
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			if !l.ExpectNoNone() {
 				l.LogError(lineIndex, "N/A", "N/A", "One of the parameters introduced is not valid", currentLine)
 			}
@@ -552,8 +568,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 			params := l.R.RegexLee.GroupsLee(currentLine)
-			l.AnalyzeParams(params[0])
+			l.AnalyzeParams(currentLine, lineIndex, params[0])
+
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 
 			if !l.ExpectIdent(currentLine, lineIndex) {
 				l.LogError(lineIndex, "N/A", "N/A", "Expected <Ident> in parameters", currentLine)
@@ -600,9 +619,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 			groups := helpers.GetGroupMatches(currentLine, helpers.SIREGEXP)
 			params := groups[0]
-			l.AnalyzeParams(params)
+			l.AnalyzeParams(currentLine, lineIndex, params)
+
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				")", helpers.DELIMITADOR,
@@ -674,9 +696,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
 			params := l.R.RegexRegresa.GroupsRegresa(currentLine)[0]
-			l.AnalyzeParams(params)
+			l.AnalyzeParams(currentLine, lineIndex, params)
 
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
@@ -762,6 +786,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			l.BlockQueue = append(l.BlockQueue, models.PROGRAMBLOCK)
 
+			l.Context = "Programa"
 			foundSomething = true
 		}
 
@@ -775,6 +800,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if ok {
 				l.BlockQueue = newArr
 			}
+
+			l.Context = "Global"
 			foundSomething = true
 		}
 
@@ -794,6 +821,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.CurrentBlockType == models.VARIABLEBLOCK {
 			l.NextVariable(currentLine, lineIndex, debug)
+			// l.Print()
 		}
 
 		if l.CurrentBlockType == models.FUNCTIONPROTOBLOCK {
@@ -814,12 +842,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	}
 
 	// l.Print()
-
 	return nil
 }
 
 //AnalyzeParams ...
-func (l *LexicalAnalyzer) AnalyzeParams(params string) {
+func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, params string) {
 	condiciones := l.R.RegexOperatorLogico.V1.Split(params, -1)
 	condicionadores := l.R.RegexOperatorLogico.GroupsOpLogico(params)
 	for i, condicion := range condiciones {
@@ -834,7 +861,7 @@ func (l *LexicalAnalyzer) AnalyzeParams(params string) {
 				token := []string{
 					aritmetico,
 				}
-				token = l.AnalyzeType(aritmetico)
+				token = l.AnalyzeType(currentLine, lineIndex, aritmetico)
 
 				if len(token) > 0 {
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
@@ -854,21 +881,24 @@ func (l *LexicalAnalyzer) AnalyzeParams(params string) {
 }
 
 //AnalyzeType ...
-func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
+func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line string) []string {
 	token := []string{line}
 	if l.R.RegexCustom.MatchCteAlfa(line) {
 		token = append(token, helpers.CONSTANTEALFABETICA)
 		l.OpQueue = append(l.OpQueue, models.CTEALFA)
+		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCallEnd(line) {
-		token = l.AnalyzeType(line[:len(line)-1])
+		token = l.AnalyzeType("", 0, line[:len(line)-1])
 		token = append(token, []string{")", helpers.DELIMITADOR}...)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
-	} else if l.R.RegexConstanteEntera.MatchEnteraConstant(line) {
-		token = append(token, helpers.CONSTANTEENTERA)
-		l.OpQueue = append(l.OpQueue, models.CTEENT)
 	} else if l.R.RegexConstanteReal.MatchRealConstant(line) {
 		token = append(token, helpers.CONSTANTEREAL)
 		l.OpQueue = append(l.OpQueue, models.CTEREAL)
+		l.NamesQueue = append(l.NamesQueue, line)
+	} else if l.R.RegexConstanteEntera.MatchEnteraConstant(line) {
+		token = append(token, helpers.CONSTANTEENTERA)
+		l.OpQueue = append(l.OpQueue, models.CTEENT)
+		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCall(line) {
 		groups := strings.Split(line, "(")
 		l.OpQueue = append(l.OpQueue, models.ID)
@@ -877,8 +907,9 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 			groups[0], helpers.IDENTIFICADOR,
 			"(", helpers.DELIMITADOR,
 		}
+		l.NamesQueue = append(l.NamesQueue, groups[0])
 		if len(groups) > 1 {
-			token = append(token, l.AnalyzeType(line[1:])...)
+			token = append(token, l.AnalyzeType("", 0, line[1:])...)
 		}
 		token = append(token, []string{
 			")", helpers.DELIMITADOR,
@@ -892,13 +923,18 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 			groups[0], helpers.IDENTIFICADOR,
 			"(", helpers.DELIMITADOR,
 		}
+		l.NamesQueue = append(l.NamesQueue, groups[0])
 		if len(groups) > 1 {
-			token = append(token, l.AnalyzeType(groups[1])...)
+			token = append(token, l.AnalyzeType("", 0, groups[1])...)
 		}
 	} else {
 		groups := l.R.RegexVar.GroupsVar(line)
 		token = []string{groups[0], helpers.IDENTIFICADOR}
 		l.OpQueue = append(l.OpQueue, models.ID)
+		l.NamesQueue = append(l.NamesQueue, groups[0])
+		if lineIndex != 0 {
+			l.FindSymbol(currentLine, lineIndex, groups[0])
+		}
 		if len(groups) > 1 {
 			for _, group := range groups[1:] {
 				if len(group) > 2 {
@@ -910,6 +946,10 @@ func (l *LexicalAnalyzer) AnalyzeType(line string) []string {
 					l.OpQueue = append(l.OpQueue, models.BRACK)
 					l.OpQueue = append(l.OpQueue, models.ID)
 					l.OpQueue = append(l.OpQueue, models.BRACK)
+					l.NamesQueue = append(l.NamesQueue, group[1:len(group)-1])
+					if lineIndex != 0 {
+						l.FindSymbol(currentLine, lineIndex, group[1:len(group)-1])
+					}
 				}
 			}
 		}
@@ -998,6 +1038,56 @@ func (l *LexicalAnalyzer) AnalyzeOpQueue(currentLine string, lineIndex int64) {
 	}
 }
 
+//AnalyzeFuncQueue ...
+func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) {
+	noVars := 0
+	noBracks := 0
+	var function *models.TokenFunc
+	currentFunction := models.TokenFunc{}
+	for _, item := range l.OpQueue {
+		switch item {
+		case models.BRACK:
+			if function != nil {
+				noBracks++
+			}
+			break
+		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
+			if function != nil {
+				if noBracks < 2 {
+					currentFunction.Params = append(currentFunction.Params, models.Token{
+						Type: models.ConstTypeToTokenType(item),
+					})
+				}
+			}
+			noVars++
+			break
+		case models.ID:
+			if function == nil {
+				function = l.FindFunction(currentLine, lineIndex, l.NamesQueue[noVars])
+				if function != nil {
+					currentFunction = *function
+					currentFunction.Params = []models.Token{}
+				}
+			} else {
+				if noBracks < 2 {
+					symbol := l.FindSymbol(currentLine, lineIndex, l.NamesQueue[noVars])
+					if symbol != nil {
+						currentFunction.Params = append(currentFunction.Params, *symbol)
+					}
+				}
+			}
+			noVars++
+			break
+		case models.OPARIT, models.OPASIG, models.OPLOG, models.OPREL:
+			break
+		}
+	}
+
+	if function != nil {
+		l.CompareFunction(currentLine, lineIndex, function, &currentFunction)
+	}
+}
+
 //FindSymbol Returns value for given key if found in symbol table
 func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key string) *models.Token {
 	for _, symbol := range l.ConstantStorage {
@@ -1008,6 +1098,23 @@ func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key st
 	for _, symbol := range l.VariableStorage {
 		if symbol.Key == key {
 			return &symbol
+		}
+	}
+
+	if l.Context != "Global" {
+		// fmt.Println("Finding " + key + " in " + l.Context)
+		function := l.FindFunction(currentLine, lineIndex, l.Context)
+		if function != nil {
+			for _, symbol := range function.Params {
+				if symbol.Key == key {
+					return &symbol
+				}
+			}
+			for _, symbol := range function.Vars {
+				if symbol.Key == key {
+					return &symbol
+				}
+			}
 		}
 	}
 	l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for name: "+key, currentLine)
@@ -1021,7 +1128,7 @@ func (l *LexicalAnalyzer) FindFunction(currentLine string, lineIndex int64, key 
 			return &symbol
 		}
 	}
-	l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for function name: "+key, currentLine)
+	// l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for function name: "+key, currentLine)
 	return nil
 }
 

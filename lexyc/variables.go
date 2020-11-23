@@ -1,6 +1,7 @@
 package lexyc
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -47,7 +48,17 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
-				l.VariableStorage = append(l.VariableStorage, symbol)
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
+				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"alfabetico", helpers.PALABRARESERVADA}))
@@ -82,7 +93,17 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
-				l.VariableStorage = append(l.VariableStorage, symbol)
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
+				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"entero", helpers.PALABRARESERVADA}))
@@ -117,7 +138,17 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
-				l.VariableStorage = append(l.VariableStorage, symbol)
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
+				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"logico", helpers.PALABRARESERVADA}))
@@ -152,7 +183,17 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
-				l.VariableStorage = append(l.VariableStorage, symbol)
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
+				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"real", helpers.PALABRARESERVADA}))
