@@ -111,6 +111,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			continue
 		}
 
+		log.Printf("> Line: [%+v] CurrentBlock: %+v", lineIndex, l.CurrentBlockType)
+
 		currentLine = strings.TrimSpace(currentLine)
 
 		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
@@ -148,6 +150,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		//Procedure
 		if l.R.RegexProcedure.StartsWithProcedure(currentLine, lineIndex) {
+			// if l.CurrentBlockType != models.NULLBLOCK {
+			// 	l.CurrentBlockType = models.NULLBLOCK
+			// }
 			l.GL.Println()
 
 			if len(l.BlockQueue) > 0 {
@@ -668,6 +673,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			foundSomething = true
 		}
+
 		//Switch: Otro
 		if l.R.RegexConditionSwitch.StartsWithOtro(currentLine, lineIndex) {
 			if len(l.BlockQueue) == 0 {

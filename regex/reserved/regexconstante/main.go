@@ -30,7 +30,7 @@ func NewRegexConstante(EL, LL, GL *log.Logger) (*RegexConstante, error) {
 		Keyword: "constantes",
 		V1:      regexp.MustCompile("^(?i)constantes"),
 		V2:      regexp.MustCompile("^(?i)consta"),
-		V3:      regexp.MustCompile("^(?i)con"),
+		V3:      regexp.MustCompile("^(?i)cons"),
 		GL:      GL,
 		EL:      EL,
 		LL:      LL,

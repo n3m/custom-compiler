@@ -49,7 +49,7 @@ func (r *RegexConditionSwitch) StartsWithSea(str string, lineIndex int64) bool {
 		return true
 	}
 
-	if r.V2.MatchString(str) {
+	if r.V1i.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordV1, "")
@@ -75,11 +75,11 @@ func (r *RegexConditionSwitch) StartsWithSea(str string, lineIndex int64) bool {
 //StartsWithOtro ...
 func (r *RegexConditionSwitch) StartsWithOtro(str string, lineIndex int64) bool {
 
-	if r.V1.MatchString(str) {
+	if r.V2.MatchString(str) {
 		return true
 	}
 
-	if r.V2.MatchString(str) {
+	if r.V2i.MatchString(str) {
 		strData := strings.Split(str, " ")
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordV2, "")
@@ -108,7 +108,7 @@ func (r *RegexConditionSwitch) StartsWithSeaNoCheck(str string) bool {
 		return true
 	}
 
-	if r.V2.MatchString(str) {
+	if r.V1i.MatchString(str) {
 		return true
 	}
 
@@ -117,11 +117,11 @@ func (r *RegexConditionSwitch) StartsWithSeaNoCheck(str string) bool {
 
 //StartsWithOtroNoCheck ...
 func (r *RegexConditionSwitch) StartsWithOtroNoCheck(str string) bool {
-	if r.V1.MatchString(str) {
+	if r.V2.MatchString(str) {
 		return true
 	}
 
-	if r.V2.MatchString(str) {
+	if r.V2i.MatchString(str) {
 		return true
 	}
 
