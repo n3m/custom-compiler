@@ -3,6 +3,7 @@ package lexyc
 import (
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"go-custom-compiler/helpers"
@@ -27,7 +28,8 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		if l.R.RegexConstanteEntera.MatchEnteraConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.ENTERO, Key: constantData[0], Value: constantData[1]})
+			value, _ := strconv.Atoi(constantData[1])
+			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.ENTERO, Key: constantData[0], Value: value})
 			l.GL.Printf("%+v[CONSTANT] Entero Found > %+v", funcName, currentLine)
 
 			if debug {
@@ -46,7 +48,8 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		if l.R.RegexConstanteReal.MatchRealConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.REAL, Key: constantData[0], Value: constantData[1]})
+			value, _ := strconv.ParseFloat(constantData[1], 64)
+			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.REAL, Key: constantData[0], Value: value})
 			l.GL.Printf("%+v[CONSTANT] Real Found > %+v", funcName, currentLine)
 
 			if debug {
@@ -65,7 +68,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		if l.R.RegexConstanteAlfabetica.MatchAlfabeticaConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.ALFABETICO, Key: constantData[0], Value: constantData[1]})
+			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.ALFABETICO, Key: constantData[0], Value: constantData[1]})
 			l.GL.Printf("%+v[CONSTANT] Alfabetico Found > %+v", funcName, currentLine)
 
 			if debug {
@@ -84,7 +87,8 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		if l.R.RegexConstanteLogica.MatchLogicaConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.LOGICO, Key: constantData[0], Value: constantData[1]})
+			value := constantData[1] == "verdadero"
+			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.LOGICO, Key: constantData[0], Value: value})
 			l.GL.Printf("%+v[CONSTANT] Logico Found > %+v", funcName, currentLine)
 			if debug {
 				log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
@@ -103,7 +107,7 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
 			value := constantData[1]
-			l.ConstantStorage = append(l.ConstantStorage, models.Token{Type: models.LOGICO, Key: constantData[0], Value: value})
+			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.LOGICO, Key: constantData[0], Value: value})
 
 			// regexEntero := regexp.MustCompile(`([0-9]+|\-[0-9]+)`)
 			// regexReal := regexp.MustCompile(`(([0-9]+|\-[0-9]+)\.([0-9]+)|([0-9]+|\-[0-9]+)e[0-9]+)`)

@@ -20,14 +20,19 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 		currentLine = strings.TrimSpace(currentLine)
 
 		funcType := ""
+		var tokenFuncType models.TokenType
 		if l.R.RegexFunctionProtoAlfabetico.MatchFuncAlfabetico(currentLine) {
 			funcType = "Alfabetico"
+			tokenFuncType = models.ALFABETICO
 		} else if l.R.RegexFunctionProtoEntero.MatchFuncEntero(currentLine) {
 			funcType = "Entero"
+			tokenFuncType = models.ENTERO
 		} else if l.R.RegexFunctionProtoReal.MatchFuncReal(currentLine) {
 			funcType = "Real"
+			tokenFuncType = models.REAL
 		} else if l.R.RegexFunctionProtoLogico.MatchFuncLogico(currentLine) {
 			funcType = "Logico"
+			tokenFuncType = models.LOGICO
 		}
 
 		if funcType != "" {
@@ -48,6 +53,9 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 				funcType, helpers.PALABRARESERVADA,
 				";", helpers.DELIMITADOR,
 			}))
+			paramType := models.VarTypeToTokenType(funcParamType)
+			params := []models.Token{{Type: paramType, Key: funcParamName}}
+			l.FunctionStorage = append(l.FunctionStorage, &models.TokenFunc{Type: tokenFuncType, Key: funcName, Params: params})
 			return
 		}
 

@@ -26,9 +26,12 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 				"(", helpers.DELIMITADOR,
 			}))
 
+			paramType := models.VarTypeToTokenType(procParamType)
+			params := []models.Token{}
 			vars := strings.Split(procParamVars, ", ")
 			for i, procParamVar := range vars {
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
+				params = append(params, models.Token{Type: paramType, Key: procParamVar})
 				if i != len(vars)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}
@@ -39,6 +42,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 				")", helpers.DELIMITADOR,
 				";", helpers.DELIMITADOR,
 			}))
+			l.FunctionStorage = append(l.FunctionStorage, &models.TokenFunc{Key: procName, Params: params})
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 			if debug {

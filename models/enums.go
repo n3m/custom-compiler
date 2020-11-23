@@ -1,5 +1,7 @@
 package models
 
+import "strings"
+
 //BlockType ...
 type BlockType string
 
@@ -73,3 +75,43 @@ const (
 	//NONE ...
 	NONE TokenComp = "NONE"
 )
+
+//VarTypeToTokenType ...
+func VarTypeToTokenType(varType string) TokenType {
+	var funcType TokenType
+	switch strings.TrimSpace(varType) {
+	case "Entero", "entero":
+		funcType = ENTERO
+		break
+	case "Real", "real":
+		funcType = REAL
+		break
+	case "Alfabetico", "alfabetico":
+		funcType = ALFABETICO
+		break
+	case "Logico", "logico":
+		funcType = LOGICO
+		break
+	}
+	return funcType
+}
+
+//ConstTypeToTokenType ...
+func ConstTypeToTokenType(constType TokenComp) TokenType {
+	var funcType TokenType
+	switch constType {
+	case CTEENT:
+		funcType = ENTERO
+		break
+	case CTEREAL:
+		funcType = REAL
+		break
+	case CTEALFA:
+		funcType = ALFABETICO
+		break
+	case CTELOG:
+		funcType = LOGICO
+		break
+	}
+	return funcType
+}

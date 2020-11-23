@@ -1,6 +1,7 @@
 package lexyc
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -28,16 +29,35 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 		if l.R.RegexVariableAlfabetico.MatchVariableAlfabetico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
-				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
 				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				symbol := models.Token{Type: models.ALFABETICO, Key: groups[0]}
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
 				for _, group := range groups[1:] {
+					dim := l.FindSymbol(currentLine, lineIndex, group)
+					if dim != nil {
+						if dim.Type != models.ENTERO {
+							l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+string(dim.Type)+" for dimension", currentLine)
+						} else {
+							symbol.Dimensions = append(symbol.Dimensions, dim.Value.(int))
+						}
+					}
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
 				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, &symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
 				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
@@ -54,16 +74,35 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 		if l.R.RegexVariableEntero.MatchVariableEntero(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
-				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
 				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				symbol := models.Token{Type: models.ENTERO, Key: groups[0]}
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
 				for _, group := range groups[1:] {
+					dim := l.FindSymbol(currentLine, lineIndex, group)
+					if dim != nil {
+						if dim.Type != models.ENTERO {
+							l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+string(dim.Type)+" for dimension", currentLine)
+						} else {
+							symbol.Dimensions = append(symbol.Dimensions, dim.Value.(int))
+						}
+					}
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
 				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, &symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
 				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
@@ -80,16 +119,35 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 		if l.R.RegexVariableLogico.MatchVariableLogico(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
-				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
 				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				symbol := models.Token{Type: models.LOGICO, Key: groups[0]}
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
 				for _, group := range groups[1:] {
+					dim := l.FindSymbol(currentLine, lineIndex, group)
+					if dim != nil {
+						if dim.Type != models.ENTERO {
+							l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+string(dim.Type)+" for dimension", currentLine)
+						} else {
+							symbol.Dimensions = append(symbol.Dimensions, dim.Value.(int))
+						}
+					}
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
 				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, &symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
 				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
@@ -106,16 +164,35 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 		if l.R.RegexVariableReal.MatchVariableReal(currentLine) {
 			_, variableData := getVariablesFromString(currentLine)
 			for index, name := range variableData {
-				l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
 				groups := helpers.GetGroupMatches(name, helpers.ARRAYREGEXP)
+				symbol := models.Token{Type: models.REAL, Key: groups[0]}
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{groups[0], helpers.IDENTIFICADOR}))
 				for _, group := range groups[1:] {
+					dim := l.FindSymbol(currentLine, lineIndex, group)
+					if dim != nil {
+						if dim.Type != models.ENTERO {
+							l.LogError(lineIndex, "N/A", "UNEXPECTED", "Unexpected "+string(dim.Type)+" for dimension", currentLine)
+						} else {
+							symbol.Dimensions = append(symbol.Dimensions, dim.Value.(int))
+						}
+					}
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"[", helpers.DELIMITADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{group, helpers.IDENTIFICADOR}))
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"]", helpers.DELIMITADOR}))
 				}
 				if index != len(variableData)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
+				}
+
+				if l.Context == "Global" {
+					l.VariableStorage = append(l.VariableStorage, &symbol)
+				} else {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						fmt.Println(function)
+						function.Vars = append(function.Vars, symbol)
+						fmt.Println(function)
+					}
 				}
 			}
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{":", helpers.DELIMITADOR}))
@@ -134,7 +211,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ALFABETICO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.ALFABETICO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Alfabetico Found > %+v", funcName, currentLine)
@@ -161,7 +238,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableEntero.MatchVariableEnteroCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.ENTERO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.ENTERO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Entero Found > %+v", funcName, currentLine)
@@ -188,7 +265,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableLogico.MatchVariableLogicoCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.LOGICO, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.LOGICO, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Logico Found > %+v", funcName, currentLine)
@@ -215,7 +292,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 
 			if l.R.RegexVariableReal.MatchVariableRealCaseless(typeOfData) {
 				for _, name := range variableData {
-					l.VariableStorage = append(l.VariableStorage, models.Token{Type: models.REAL, Key: name})
+					l.VariableStorage = append(l.VariableStorage, &models.Token{Type: models.REAL, Key: name})
 				}
 
 				l.GL.Printf("%+v[VARIABLE] Real Found > %+v", funcName, currentLine)
