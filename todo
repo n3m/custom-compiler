@@ -1,9 +1,25 @@
 TODO:
-    Verificar si variable local ya existe de manera global y/o local. (Mandar Error)
-    Verificar tipos de datos en expresiones de operaciones [Mandar Error]
-    Verificar el uso correcto de parametros: [Error en parametros: n-1]
-    Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
-    Verificar que no se este tratando de dar valor a una constante
+
+    ALAN:
+        Verificar si variable local ya existe de manera global y/o local. (Mandar Error)
+        Verificar que no se este tratando de dar valor a una constante
+
+    ALAN:
+        Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error]
+
+    ALAN:
+        Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
+    
+    GUILLE:
+        Verificar el uso correcto de parametros: [Error en parametros: n-1]
+        Verificar que se manden el numero de argumentos esperados por funcion
+
+        Verificar que si quieres usar una funcion o procedimiento antes de su declaración, checar si tiene prototipo, si no tiene mandar Error.
+        Verificar que si quieres usar una funcion o procedimiento donde solo esta el prototipo y no la declaracion completa, mandar Error
+
+    GUILLE:
+        Verificar que el codigo contenga un PROGRAMA (main)
+        Parar Compilación a los 20 errores que no recuperar
 
 Compilador:
     Generador de Codigo Maquina
