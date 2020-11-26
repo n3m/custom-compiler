@@ -111,7 +111,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			continue
 		}
 
-		log.Printf("> Line: [%+v] CurrentBlock: %+v", lineIndex, l.CurrentBlockType)
+		// log.Printf("> Line: [%+v] CurrentBlock: %+v", lineIndex, l.CurrentBlockType)
 
 		currentLine = strings.TrimSpace(currentLine)
 
@@ -847,7 +847,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		lineIndex++
 	}
 
-	l.Print()
+	// l.Print()
 	return nil
 }
 
@@ -873,14 +873,17 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 				}
 				if k < len(aritmeticadores) {
+					l.OpQueue = append(l.OpQueue, models.OPARIT)
 					l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{aritmeticadores[k], helpers.OPERADORARITMETICO}))
 				}
 			}
 			if j < len(relacionadores) {
+				l.OpQueue = append(l.OpQueue, models.OPREL)
 				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{relacionadores[j], helpers.OPERADORRELACIONAL}))
 			}
 		}
 		if i < len(condicionadores) {
+			l.OpQueue = append(l.OpQueue, models.OPLOG)
 			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{condicionadores[i], helpers.OPERADORLOGICO}))
 		}
 	}
@@ -1044,13 +1047,52 @@ func (l *LexicalAnalyzer) AnalyzeOpQueue(currentLine string, lineIndex int64) {
 	}
 }
 
+// OperationTokenType ...
+func (l *LexicalAnalyzer) OperationTokenType(first, operator, second models.TokenComp, noVars int, currentLine string, lineIndex int64) models.Token {
+	if operator == models.OPLOG || operator == models.OPREL {
+		return models.Token{Type: models.LOGICO}
+	}
+
+	result := models.Token{}
+	switch first {
+	case models.ID:
+		symbol := l.FindSymbol(currentLine, lineIndex, l.NamesQueue[noVars])
+		if symbol != nil {
+			result = models.Token{Type: symbol.Type}
+		}
+		break
+	case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
+		result = models.Token{Type: models.ConstTypeToTokenType(first)}
+		break
+	}
+	return result
+}
+
 //AnalyzeFuncQueue ...
 func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) {
 	noVars := 0
 	noBracks := 0
 	var function *models.TokenFunc
 	currentFunction := models.TokenFunc{}
-	for _, item := range l.OpQueue {
+	for i := 0; i < len(l.OpQueue); i++ {
+		item := l.OpQueue[i]
+		if function == nil && item != models.ID {
+			if item == models.CTEALFA || item == models.CTEENT || item == models.CTELOG || item == models.CTEREAL {
+				noVars++
+			}
+			continue
+		}
+		if function != nil && i+1 < len(l.OpQueue) {
+			next := l.OpQueue[i+1]
+			if next == models.OPARIT || next == models.OPASIG || next == models.OPLOG || next == models.OPREL {
+				result := l.OperationTokenType(item, next, l.OpQueue[i+2], noVars, currentLine, lineIndex)
+				if result.Type != "" {
+					currentFunction.Params = append(currentFunction.Params, result)
+					i += 2
+					continue
+				}
+			}
+		}
 		switch item {
 		case models.BRACK:
 			if function != nil {
@@ -1083,8 +1125,6 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 				}
 			}
 			noVars++
-			break
-		case models.OPARIT, models.OPASIG, models.OPLOG, models.OPREL:
 			break
 		}
 	}
@@ -1156,7 +1196,7 @@ func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, m
 	for i, param := range current.Params {
 		currentParams = append(currentParams, string(param.Type))
 		currentSignature += string(param.Type)
-		if i < len(model.Params)-1 {
+		if i < len(current.Params)-1 {
 			currentSignature += ","
 		}
 		if i < len(modelParams) && modelParams[i] != currentParams[i] {
