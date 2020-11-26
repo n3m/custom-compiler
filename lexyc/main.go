@@ -169,7 +169,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.Context = procedureGroups[1]
 
-			symbol := models.TokenFunc{Key: procedureGroups[1]}
+			symbol := models.TokenFunc{Key: procedureGroups[1], IsDefined: true}
 
 			params := strings.Join(procedureGroups[2:], "")
 			groups := strings.Split(params, ";")
@@ -212,7 +212,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if funcProto == nil {
 				l.FunctionStorage = append(l.FunctionStorage, &symbol)
 			} else {
-				l.CompareFunction(currentLine, lineIndex, funcProto, &symbol)
+				l.CompareFunction(currentLine, lineIndex, funcProto, &symbol, false)
 			}
 
 			foundSomething = true
@@ -236,7 +236,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.Context = funcionGroups[1]
-			symbol := models.TokenFunc{Key: funcionGroups[1]}
+			symbol := models.TokenFunc{Key: funcionGroups[1], IsDefined: true}
 
 			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
 			groups := strings.Split(params, ";")
@@ -279,7 +279,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if procProto == nil {
 				l.FunctionStorage = append(l.FunctionStorage, &symbol)
 			} else {
-				l.CompareFunction(currentLine, lineIndex, procProto, &symbol)
+				l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
 			}
 
 			foundSomething = true
@@ -847,6 +847,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		lineIndex++
 	}
 
+	l.VerifyFunctions()
 	// l.Print()
 	return nil
 }
@@ -917,6 +918,9 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 			"(", helpers.DELIMITADOR,
 		}
 		l.NamesQueue = append(l.NamesQueue, groups[0])
+		if function := l.FindFunction(currentLine, lineIndex, groups[0]); function == nil {
+			l.LogError(lineIndex, "N/A", "Undeclared function", "Could not find any reference for function: "+groups[0], currentLine)
+		}
 		if len(groups) > 1 {
 			token = append(token, l.AnalyzeType("", 0, line[1:])...)
 		}
@@ -933,6 +937,9 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 			"(", helpers.DELIMITADOR,
 		}
 		l.NamesQueue = append(l.NamesQueue, groups[0])
+		if function := l.FindFunction(currentLine, lineIndex, groups[0]); function == nil {
+			l.LogError(lineIndex, "N/A", "Undeclared function", "Could not find any reference for function: "+groups[0], currentLine)
+		}
 		if len(groups) > 1 {
 			token = append(token, l.AnalyzeType("", 0, groups[1])...)
 		}
@@ -1130,7 +1137,7 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 	}
 
 	if function != nil {
-		l.CompareFunction(currentLine, lineIndex, function, &currentFunction)
+		l.CompareFunction(currentLine, lineIndex, function, &currentFunction, true)
 	}
 }
 
@@ -1179,7 +1186,12 @@ func (l *LexicalAnalyzer) FindFunction(currentLine string, lineIndex int64, key 
 }
 
 //CompareFunction Compares both given TokenFunc params
-func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, model, current *models.TokenFunc) {
+func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, model, current *models.TokenFunc, isCall bool) {
+	if isCall {
+		model.Calls = append(model.Calls, models.Line{CurrentLine: currentLine, LineIndex: lineIndex})
+	} else {
+		model.IsDefined = true
+	}
 	modelParams := []string{}
 	modelSignature := "("
 	for i, param := range model.Params {
@@ -1212,6 +1224,21 @@ func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, m
 	}
 
 	l.LogError(lineIndex, "N/A", "UNEXPECTED", "Mismatch in "+model.Key+" Want: "+modelSignature+" Have: "+currentSignature, currentLine)
+}
+
+//VerifyFunctions ...
+func (l *LexicalAnalyzer) VerifyFunctions() {
+	for _, function := range l.FunctionStorage {
+		if len(function.Calls) > 0 {
+			if !function.IsDefined {
+				for _, call := range function.Calls {
+					l.LogError(call.LineIndex, "N/A", "UNDEFINED", "Trying to use a function that only has prototype and is not defined", call.CurrentLine)
+				}
+			}
+		} else {
+			l.LogError(0, "N/A", "WARNING", fmt.Sprintf("Function %v was declared but never used", function.Key), "")
+		}
+	}
 }
 
 //LogError ...
