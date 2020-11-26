@@ -32,6 +32,8 @@ type LexicalAnalyzer struct {
 	VariableStorage  []*models.Token
 	FunctionStorage  []*models.TokenFunc
 	Context          string
+	HasMain          bool
+	ErrorsCount      int
 }
 
 //NewLexicalAnalyzer ...
@@ -793,6 +795,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.BlockQueue = append(l.BlockQueue, models.PROGRAMBLOCK)
 
 			l.Context = "Programa"
+			l.HasMain = true
 			foundSomething = true
 		}
 
@@ -836,6 +839,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.CurrentBlockType == models.PROCEDUREPROTOBLOCK {
 			l.NextProcedureProto(currentLine, lineIndex, debug)
+		}
+
+		if l.ErrorsCount >= 20 {
+			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
+			break
 		}
 
 		if !foundSomething {
@@ -1228,6 +1236,9 @@ func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, m
 
 //VerifyFunctions ...
 func (l *LexicalAnalyzer) VerifyFunctions() {
+	if !l.HasMain {
+		l.LogError(0, "N/A", "UNDEFINED", "Could not find any main definition", "")
+	}
 	for _, function := range l.FunctionStorage {
 		if len(function.Calls) > 0 {
 			if !function.IsDefined {
@@ -1247,6 +1258,7 @@ func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
+	l.ErrorsCount++
 }
 
 //LogErrorGeneral ...

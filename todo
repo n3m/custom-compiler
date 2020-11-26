@@ -11,15 +11,18 @@ TODO:
         Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
     
     GUILLE:
-        Verificar el uso correcto de parametros: [Error en parametros: n-1]
-        Verificar que se manden el numero de argumentos esperados por funcion
+        Verificar el uso correcto de parametros: [Error en parametros: n-1] (ya)
+        Verificar que se manden el numero de argumentos esperados por funcion (ya)
 
-        Verificar que si quieres usar una funcion o procedimiento antes de su declaración, checar si tiene prototipo, si no tiene mandar Error.
-        Verificar que si quieres usar una funcion o procedimiento donde solo esta el prototipo y no la declaracion completa, mandar Error
+        Verificar que si quieres usar una funcion o procedimiento antes de su declaración, checar si tiene prototipo, si no tiene mandar Error. (ya)
+        Verificar que si quieres usar una funcion o procedimiento donde solo esta el prototipo y no la definición, mandar Error (ya)
 
     GUILLE:
-        Verificar que el codigo contenga un PROGRAMA (main)
-        Parar Compilación a los 20 errores que no recuperar
+        Verificar que el codigo contenga un PROGRAMA (main) (ya)
+        Parar Compilación a los 20 errores que no recuperar (ya)
+
+    Verificar las llamadas a función en una línea
+    Verificar si se le trata de dar un nombre reservado a una variable
 
 Compilador:
     Generador de Codigo Maquina
