@@ -1,7 +1,6 @@
 package lexyc
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -54,9 +53,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
-						fmt.Println(function)
 						function.Vars = append(function.Vars, symbol)
-						fmt.Println(function)
 					}
 				}
 			}
@@ -99,9 +96,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
-						fmt.Println(function)
 						function.Vars = append(function.Vars, symbol)
-						fmt.Println(function)
 					}
 				}
 			}
@@ -144,9 +139,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
-						fmt.Println(function)
 						function.Vars = append(function.Vars, symbol)
-						fmt.Println(function)
 					}
 				}
 			}
@@ -189,9 +182,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 				} else {
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
-						fmt.Println(function)
 						function.Vars = append(function.Vars, symbol)
-						fmt.Println(function)
 					}
 				}
 			}
