@@ -2,9 +2,12 @@ package main
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 
 	"go-custom-compiler/helpers"
 	"go-custom-compiler/lexyc"
+	"go-custom-compiler/object"
 	"go-custom-compiler/recreate"
 )
 
@@ -90,6 +93,28 @@ func main() {
 		generalLogger.Printf("File analyzed correctly")
 	}
 
-	generalLogger.Printf("Compiler has finished with Status [0]")
+	/*Object Code*/
+	fileName := filepath.Base(path)
+	ejeFile := strings.ReplaceAll(fileName, filepath.Ext(fileName), ".eje")
+	objectCodeLogger, objectCodeFile, err := helpers.CreateLogger(ejeFile, false)
+	defer objectCodeFile.Close()
+
+	objectCode, err := object.NewCodeGenerator(lex, objectCodeLogger)
+	if err != nil {
+		generalLogger.Printf("Error while creating a new Object Code Generator! (%+v)", err.Error())
+		panic(err)
+	} else {
+		generalLogger.Printf("Created Object Code Generator")
+	}
+
+	err = objectCode.Generate()
+	if err != nil {
+		generalLogger.Printf("Error while generating object code! (%+v)", err.Error())
+		panic(err)
+	} else {
+		generalLogger.Printf("Object Code generated correctly")
+	}
+
+	generalLogger.Printf("Compiler has finished with Status [%v]", lex.Status)
 	os.Remove(tempFile.Name())
 }

@@ -42,8 +42,8 @@ const (
 	LOGICO = "LOGICO"
 	//REAL ...
 	REAL = "REAL"
-	// UNDEFINED ...
-	UNDEFINED = "UNDEFINED"
+	// INDEFINIDO ...
+	INDEFINIDO = "INDEFINIDO"
 )
 
 //TokenComp ...
@@ -95,7 +95,7 @@ func VarTypeToTokenType(varType string) TokenType {
 		funcType = LOGICO
 		break
 	default:
-		funcType = UNDEFINED
+		funcType = INDEFINIDO
 		break
 	}
 	return funcType
@@ -118,7 +118,7 @@ func ConstTypeToTokenType(constType TokenComp) TokenType {
 		funcType = LOGICO
 		break
 	default:
-		funcType = UNDEFINED
+		funcType = INDEFINIDO
 		break
 	}
 	return funcType
