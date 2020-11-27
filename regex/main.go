@@ -45,6 +45,7 @@ import (
 	"go-custom-compiler/regex/reserved/regexprocedure"
 	"go-custom-compiler/regex/reserved/regexprocedureproto"
 	"go-custom-compiler/regex/reserved/regexprograma"
+	_regexreseved "go-custom-compiler/regex/reserved/regexreserved"
 	"go-custom-compiler/regex/reserved/regexvariable"
 	_regexvar "go-custom-compiler/regex/variable/regexvar"
 	"go-custom-compiler/regex/variable/regexvaralfabetico"
@@ -122,6 +123,8 @@ type CustomRegex struct {
 	//Programa
 	RegexPrograma    *regexprograma.RegexPrograma
 	RegexFinPrograma *regexfinprograma.RegexFinPrograma
+	//Reserved
+	RegexReserved *_regexreseved.RegexReserved
 
 	EL *log.Logger
 	LL *log.Logger
@@ -209,10 +212,14 @@ func NewRegex(EL *log.Logger, LL *log.Logger, GL *log.Logger) (*CustomRegex, err
 	finprogramaBuilder, _ := regexfinprograma.NewRegexFinPrograma(EL, LL, GL)
 	programaBuilder, _ := regexprograma.NewRegexPrograma(EL, LL, GL)
 
+	//Reserved
+	reservedBuilder, _ := _regexreseved.NewRegexReserved(EL, LL, GL)
+
 	return &CustomRegex{
 		//Reserved
 		RegexConstante: constanteBuilder,
 		RegexVariable:  variableBuilder,
+		RegexReserved:  reservedBuilder,
 		//Constante
 		RegexConstanteDefault:    constdefaultBuilder,
 		RegexConstanteAlfabetica: constalfabeticaBuilder,

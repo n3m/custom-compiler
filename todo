@@ -22,7 +22,7 @@ TODO:
         Parar Compilación a los 20 errores que no recuperar (ya)
 
     Verificar las llamadas a función en una línea (ya)
-    Verificar si se le trata de dar un nombre reservado a una variable
+    Verificar si se le trata de dar un nombre reservado a una variable (ya)
 
 Compilador:
     Generador de Codigo Maquina

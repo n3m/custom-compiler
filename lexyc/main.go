@@ -1179,6 +1179,11 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 
 //FindSymbol Returns value for given key if found in symbol table
 func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key string) *models.Token {
+	if l.R.RegexReserved.IsReserved(key) {
+		l.LogError(lineIndex, "N/A", "INVALID", fmt.Sprintf("Can not use %v (reserved) as name", key), currentLine)
+		return nil
+	}
+
 	for _, symbol := range l.ConstantStorage {
 		if symbol.Key == key {
 			return symbol
