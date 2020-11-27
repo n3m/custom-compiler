@@ -23,7 +23,7 @@ func NewRegexCustomFunction(EL, LL, GL *log.Logger) (*RegexCustomFunction, error
 
 	return &RegexCustomFunction{
 		Keyword:        "CustomFunction",
-		CustomFunction: regexp.MustCompile(`^([a-zA-Z]+[a-zA-Z0-9](\s*)*)\((.*)\)`),
+		CustomFunction: regexp.MustCompile(`^([a-zA-Z]+[a-zA-Z0-9])\((.*)\)`),
 		ENDSWITH:       regexp.MustCompile(`;$`),
 
 		GL: GL,
@@ -42,12 +42,31 @@ func (r *RegexCustomFunction) MatchPC(str string, lineIndex int64) bool {
 }
 
 //MatchCustomFunction ...
-func (r *RegexCustomFunction) MatchCustomFunction(str string, lineIndex int64) bool {
+func (r *RegexCustomFunction) MatchCustomFunction(str string) bool {
 	if r.CustomFunction.MatchString(str) {
 		return true
 	}
 
 	return false
+}
+
+//GroupsCustomFunction ...
+func (r *RegexCustomFunction) GroupsCustomFunction(str string) []string {
+	groups := []string{}
+	if !r.MatchCustomFunction(str) {
+		return groups
+	}
+
+	matched := r.CustomFunction.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
 }
 
 //LogError ...

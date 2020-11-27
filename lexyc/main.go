@@ -815,8 +815,36 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//Custom Functions
-		if l.R.RegexCustomFunction.MatchCustomFunction(currentLine, lineIndex) {
+		if l.R.RegexCustomFunction.MatchCustomFunction(currentLine) && !foundSomething {
 			l.GL.Printf("%+v Found 'Custom Function' instruction [Line: %+v]", funcName, lineIndex)
+			currentLine = strings.TrimSuffix(currentLine, ";")
+			groupsFunction := l.R.RegexCustomFunction.GroupsCustomFunction(currentLine)
+
+			l.OpQueue = []models.TokenComp{models.ID, models.BRACK}
+			l.NamesQueue = []string{groupsFunction[0]}
+			token := []string{
+				groupsFunction[0], helpers.IDENTIFICADOR,
+				"(", helpers.DELIMITADOR,
+			}
+			if len(groupsFunction) > 0 {
+				params := strings.Split(groupsFunction[1], ",")
+				for i, param := range params {
+					param = strings.TrimSpace(param)
+					token = append(token, l.AnalyzeType("", 0, param)...)
+					if i < len(params)-1 {
+						l.OpQueue = append(l.OpQueue, models.DELIM)
+						token = append(token, []string{",", helpers.DELIMITADOR}...)
+					}
+				}
+			}
+			l.OpQueue = append(l.OpQueue, models.BRACK)
+			token = append(token, []string{
+				")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR,
+			}...)
+
+			l.AnalyzeFuncQueue(currentLine, lineIndex)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 			foundSomething = true
 		}
 
