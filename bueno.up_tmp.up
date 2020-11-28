@@ -44,7 +44,6 @@ Fin de Funcion;
 
 Funcion FacIter(n:Entero):Entero
 Variables Facto:Entero;
-Log1, Log2:Logico;
 Inicio
 Facto:=1;
 Desde el valor de i:=n hasta 2 decr 1
@@ -162,6 +161,8 @@ Lee(alfa);
 Imprime("Dame tu Apellido: ");
 Lee(beta);
 Imprimenl("Hola ", Concat(alfa, beta), " ya la pasaste!!!");
+Fin de programa.
+;
 Fin de programa.
 programa.
 rograma.

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 
 	"go-custom-compiler/helpers"
@@ -911,28 +912,18 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: typeOfAssigment, Key: varToAssingData, Value: assignToAnalyze}
+				if typeOfAssigment != models.INDEFINIDO {
+					curToken := &models.Token{Type: typeOfAssigment, Key: varToAssingData, Value: assignToAnalyze}
 
-				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
-					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
-				}
-				/*CHECK END*/
-				/* CHECK IF ASSIGN CORRECT FOR VAR */
-				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
-					if curToken.Type != data.Type {
-						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+					if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+						log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
 					}
-				}
-
-				function := l.FindFunction(currentLine, lineIndex, l.Context)
-				if function != nil {
-					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+					/*CHECK END*/
+					/* CHECK IF ASSIGN CORRECT FOR VAR */
+					if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 						if curToken.Type != data.Type {
 							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
@@ -940,8 +931,28 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
+
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+							if curToken.Type != data.Type {
+								log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+							}
+						}
+					}
+				} else {
+					log.Printf("[ERR] Attempted to assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign an invalid expression to a defined variable", currentLine)
 				}
+
 				/*CHECK END*/
+				foundSomething = true
+
 			}
 
 			if !foundSomething {
@@ -1057,12 +1068,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 }
 
 //ValidateOperation ...
-func (l *LexicalAnalyzer) ValidateOperation() {
-
+func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?)*$`)
+	return regCheck.MatchString(assignStr)
 }
 
 //GetOperationTypeFromAssignment ...
 func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string) models.TokenType {
+	if l.isAValidOperation(assignStr) {
+
+	}
+
 	return models.INDEFINIDO
 }
 
