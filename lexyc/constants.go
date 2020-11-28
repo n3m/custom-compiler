@@ -103,7 +103,24 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 		if l.R.RegexConstanteAlfabetica.MatchAlfabeticaConstantDeclaration(currentLine) {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
-			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.ALFABETICO, Key: constantData[0], Value: constantData[1]})
+			newToken := &models.Token{Type: models.ALFABETICO, Key: constantData[0], Value: constantData[1]}
+
+			/* CHECK Verificar si variable local ya existe de manera global y/o local. (Mandar Error)*/
+			if test := l.DoesTheTokenExistsInGlobalVariables(newToken); test {
+				log.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of variable", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInGlobalConstants(newToken); test {
+				log.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			/* CHECK END */
+
+			l.ConstantStorage = append(l.ConstantStorage, newToken)
 			l.GL.Printf("%+v[CONSTANT] Alfabetico Found > %+v", funcName, currentLine)
 
 			if debug {
