@@ -1,0 +1,54 @@
+constantes PI:=3.141592;
+	MAX:=30;
+
+variables i, j, k, n:Entero;
+          Alfa, Beta:Alfabetico;
+Funcion FacRec(n:Entero):Entero;
+Funcion FacIter(n:Entero):Entero;
+Procedimiento Selecciona()
+variables opc:alfabetico;
+Inicio
+   Repetir
+      Imprime("Dame un numero: ");
+      lee(n);
+      Imprime("Factorial R]ecursivo I]nteractivo S]alir: ");
+      Lee(opc);
+      Cuando el valor de opc 
+      Inicio
+         Sea "R", "r": imprimenl("Factorial Recursivo de ", n, " es= ", FacRec(n));
+         Sea "I", "i": imprimenl("Factorial Iterativo de ", n, " es= ", FacIter(n));
+         Otro: Si (opc <> "S" y opc <> "s") hacer 
+                  Imprimenl("Opcion Invalida!!!");
+      Fin;
+   hasta que (opc = "S" o opc = "s");
+Fin de Procedimiento;
+
+Funcion FacRec(n:entero):Entero
+Inicio
+   Si (n < 2) hacer 
+      regresa(1);
+   sino
+      regresa(FacRec(n-1)*n);
+Fin de Funcion;
+
+Funcion FacIter(n:Entero):Entero
+Variables Facto:Entero;
+Inicio
+  Facto:=1;
+  Desde el valor de i:=n hasta 2 decr 1 
+     Facto:=Facto*i;
+  regresa (Facto);
+Fin de Funcion;
+
+Programa
+   limpia;
+   k:=3;
+   Selecciona();
+   Imprime("Dame tu nombre: ");
+   Lee(Alfa);
+   Imprime("Dame tu Apellido: ");
+   Beta:="Villalvazo";
+   Imprimenl(Beta);
+   Imprimenl(k);
+   
+Fin de programa.

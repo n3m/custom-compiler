@@ -30,7 +30,7 @@ func NewRegexRegresa(EL, LL, GL *log.Logger) (*RegexRegresa, error) {
 		Regresa:   regexp.MustCompile(`^((?i)regresa)(\s*)\(.+\)(\s*);$`),
 		RegresaV2: regexp.MustCompile(`^((?i)regresa)(\s*)\(.+\)(\s*)`),
 		ENDSWITH:  regexp.MustCompile(`;$`),
-		V3:        regexp.MustCompile(`(?m)[rR]egresa\((.*)\)`),
+		V3:        regexp.MustCompile(`(?m)[rR]egresa\s*\((.*)\)`),
 
 		GL: GL,
 		EL: EL,
