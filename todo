@@ -27,17 +27,22 @@ TODO:
     Falta en sea los casos (ya)
     Falta en cuando el id (ya)
     Falta en cuando imprimir lex (ya)
-    Falta en desde la sentencia completa
+    Falta en desde la sentencia completa (ya)
+    Falta en desde validación en asignación
     Falta en desde imprimir lex (ya)
     Falta en asignación imprimir lex (ya)
     Falta en limpia imprimir lex (ya)
     Falta en programa imprimir lex (ya)
     Falta en fin de programa imprimir lex (ya)
+    Falta en interrumpe imprimir lex (ya)
+    Falta en continua la sentencia completa (no hace verificación de typo)
+    Falta en continua imprimir lex (ya)
+    Falta en analizador léxico imprimir ";" solo cuando exista
 
 Compilador:
     Generador de Codigo Maquina
 
 Extras:
-    Verificar extensión del archivo
+    Verificar extensión del archivo (DONE)
     Generar los nombres de los loggers a partir del nombre original
     Verificar en "cuando el valor de" el tipo del ID y los casos sea el mismo
