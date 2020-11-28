@@ -909,7 +909,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK END*/
 			} else {
 				//TEMP CASE TO UNCHECKED EXPRESSION
-				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze)
+				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
 				if typeOfAssigment != models.INDEFINIDO {
@@ -1074,9 +1074,41 @@ func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
 }
 
 //GetOperationTypeFromAssignment ...
-func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string) models.TokenType {
+func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, lineindex int64) models.TokenType {
 	if l.isAValidOperation(assignStr) {
+		curStr := assignStr
+		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
+		operationParameters := test.Split(curStr, -1)
+		log.Printf("TEST PARAMS> %+v", operationParameters)
 
+		paramTypes := []models.TokenType{}
+		for _, eachParam := range operationParameters {
+			match := false
+			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
+				paramTypes = append(paramTypes, models.ALFABETICO)
+				match = true
+			}
+			if !match && l.R.RegexCustom.MatchCteEnt(eachParam) {
+				paramTypes = append(paramTypes, models.ENTERO)
+				match = true
+			}
+			if !match && l.R.RegexCustom.MatchCteReal(eachParam) {
+				paramTypes = append(paramTypes, models.REAL)
+				match = true
+			}
+			if !match && l.R.RegexCustom.MatchCteLog(eachParam, lineindex) {
+				paramTypes = append(paramTypes, models.LOGICO)
+				match = true
+			}
+			if !match && l.R.RegexCustom.MatchIdent(eachParam) {
+
+				//checar si variable o funcion o constante
+
+				// paramTypes = append(paramTypes, models.LOGICO)
+				match = true
+			}
+		}
+		log.Printf("TEST TYPES> %+v", paramTypes)
 	}
 
 	return models.INDEFINIDO
