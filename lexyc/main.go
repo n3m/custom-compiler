@@ -1321,10 +1321,10 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 			aritmeticos := l.R.RegexOperatorAritmetico.V1.Split(relacion, -1)
 			aritmeticadores := l.R.RegexOperatorAritmetico.GroupsOpAritmetico(relacion)
 			for k, aritmetico := range aritmeticos {
-				token := []string{
-					aritmetico,
+				token := []string{}
+				if aritmetico != "" {
+					token = l.AnalyzeType(currentLine, lineIndex, aritmetico)
 				}
-				token = l.AnalyzeType(currentLine, lineIndex, aritmetico)
 
 				if len(token) > 0 {
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
