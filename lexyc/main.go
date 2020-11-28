@@ -773,11 +773,30 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		//Interrumpe
 		if l.R.RegexSystem.MatchInterrumpe(currentLine, lineIndex) {
+			token := []string{"interrumpe", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			} else {
+				token = append(token, []string{";", helpers.DELIMITADOR}...)
 			}
 
 			l.GL.Printf("%+v Found 'Interrumpe' instruction [Line: %+v]", funcName, lineIndex)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+			foundSomething = true
+		}
+
+		//Continua
+		if l.R.RegexSystem.MatchContinua(currentLine) {
+			token := []string{"continua", helpers.PALABRARESERVADA}
+			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			} else {
+				token = append(token, []string{";", helpers.DELIMITADOR}...)
+			}
+
+			l.GL.Printf("%+v Found 'Continua' instruction [Line: %+v]", funcName, lineIndex)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
