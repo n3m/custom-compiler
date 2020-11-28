@@ -19,6 +19,8 @@ type RegexSystem struct {
 	W2_1     *regexp.Regexp
 	W2_2     *regexp.Regexp
 
+	Continua *regexp.Regexp
+
 	ENDSWITH *regexp.Regexp
 
 	EL *log.Logger
@@ -43,6 +45,8 @@ func NewRegexSystem(EL, LL, GL *log.Logger) (*RegexSystem, error) {
 		W2_1:     regexp.MustCompile(`^((?i)limp)(\s*)`),
 		W2_2:     regexp.MustCompile(`^((?i)li)(\s*)`),
 
+		Continua: regexp.MustCompile(`(?m)[cC]ontinua`),
+
 		GL: GL,
 		EL: EL,
 		LL: LL,
@@ -56,6 +60,11 @@ func (r *RegexSystem) MatchPC(str string, lineIndex int64) bool {
 	}
 
 	return false
+}
+
+//MatchContinua ...
+func (r *RegexSystem) MatchContinua(str string) bool {
+	return r.Continua.MatchString(str)
 }
 
 //MatchInterrumpe ...

@@ -180,7 +180,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			groups := strings.Split(params, ";")
 			for i, group := range groups {
 				if i > 0 {
-					token = append(token, []string{";", helpers.DELIMITADOR}...)
+					token = append(token, ";", helpers.DELIMITADOR)
 				}
 				groupVars := strings.Split(group, ":")
 
@@ -188,29 +188,22 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 				vars := strings.Split(groupVars[0], ",")
 				if vars[0] != "" {
-					token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
+					token = append(token, vars[0], helpers.IDENTIFICADOR)
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
 				}
 
 				for _, v := range vars[1:] {
-					v = strings.TrimSpace(v)
-					token = append(token, []string{
-						",", helpers.DELIMITADOR,
-					}...)
+					token = append(token, ",", helpers.DELIMITADOR)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
 				}
 				if vars[0] != "" {
-					token = append(token, []string{
-						":", helpers.DELIMITADOR,
-						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA,
-					}...)
+					token = append(token, ":", helpers.DELIMITADOR,
+						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
 				}
 			}
-			token = append(token, []string{
-				")", helpers.DELIMITADOR,
-			}...)
+			token = append(token, ")", helpers.DELIMITADOR)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			funcProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
@@ -247,7 +240,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			groups := strings.Split(params, ";")
 			for i, group := range groups {
 				if i > 0 {
-					token = append(token, []string{";", helpers.DELIMITADOR}...)
+					token = append(token, ";", helpers.DELIMITADOR)
 				}
 				groupVars := strings.Split(group, ":")
 				vars := strings.Split(groupVars[0], ",")
@@ -255,26 +248,19 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 				symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
 
-				token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
+				token = append(token, vars[0], helpers.IDENTIFICADOR)
 				for _, v := range vars[1:] {
-					v = strings.TrimSpace(v)
-					token = append(token, []string{
-						",", helpers.DELIMITADOR,
-					}...)
+					token = append(token, ",", helpers.DELIMITADOR)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
 				}
-				token = append(token, []string{
-					":", helpers.DELIMITADOR,
-					strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA,
-				}...)
+				token = append(token, ":", helpers.DELIMITADOR,
+					strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
 			}
-			token = append(token, []string{
-				")", helpers.DELIMITADOR,
+			token = append(token, ")", helpers.DELIMITADOR,
 				":", helpers.DELIMITADOR,
-				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA,
-			}...)
+				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
@@ -500,10 +486,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			for i, str := range params {
-				str = strings.TrimSpace(str)
 				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
-					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					token = append(token, ",", helpers.DELIMITADOR)
 					l.OpQueue = append(l.OpQueue, models.DELIM)
 				}
 				if len(token) > 0 {
@@ -540,10 +525,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			for i, str := range params {
-				str = strings.TrimSpace(str)
 				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
-					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					token = append(token, ",", helpers.DELIMITADOR)
 					l.OpQueue = append(l.OpQueue, models.DELIM)
 				}
 				if len(token) > 0 {
@@ -617,9 +601,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			groups := l.R.RegexConditionCuando.GroupsCuando(currentLine)
 			if len(groups) > 0 {
-				token = append(token, []string{
-					groups[0], helpers.IDENTIFICADOR,
-				}...)
+				token = append(token, groups[0], helpers.IDENTIFICADOR)
 				l.FindSymbol(currentLine, lineIndex, groups[0])
 				if len(groups) > 1 {
 					l.LogError(lineIndex, "N/A", "UNEXPECTED", fmt.Sprintf("Cuando statement has more than just an ID: %v", groups[1]), currentLine)
@@ -696,15 +678,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
 			params := strings.Split(seaCases[0], ",")
 			for i, param := range params {
-				param = strings.TrimSpace(param)
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 				if i < len(params)-1 {
-					token = append(token, []string{",", helpers.DELIMITADOR}...)
+					token = append(token, ",", helpers.DELIMITADOR)
 				}
 			}
 
 			l.AnalyzeSwitchQueue(currentLine, lineIndex)
-			token = append(token, []string{":", helpers.DELIMITADOR}...)
+			token = append(token, ":", helpers.DELIMITADOR)
 			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
@@ -760,24 +741,72 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Analyze
 			l.GL.Printf("%+v Found 'Desde' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+			token := []string{
 				"desde", helpers.PALABRARESERVADA,
 				"el", helpers.PALABRARESERVADA,
 				"valor", helpers.PALABRARESERVADA,
 				"de", helpers.PALABRARESERVADA,
-				"hasta", helpers.PALABRARESERVADA,
-			}))
+			}
+
+			groups := l.R.RegexLoopDesde.GroupsDesde(currentLine)
+			if len(groups) > 0 {
+				if l.R.RegexAsignacion.MatchAsignacion(groups[0], 0) {
+					sides := strings.Split(groups[0], ":=")
+					token = append(token, l.AnalyzeType(currentLine, lineIndex, sides[0])...)
+					token = append(token, ":=", helpers.OPERADORASIGNACION)
+					token = append(token, l.AnalyzeType(currentLine, lineIndex, sides[1])...)
+				} else {
+					l.LogError(lineIndex, "N/A", "UNEXPECTED", fmt.Sprintf("Expected asignación found %v", groups[0]), currentLine)
+				}
+
+				token = append(token, "hasta", helpers.PALABRARESERVADA)
+				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+				operations := l.R.RegexLoopDesde.GroupsDesdeOperacion(groups[1])
+				if len(operations) > 0 {
+					operations[0] = strings.TrimPrefix(operations[0], "(")
+					operations[0] = strings.TrimSuffix(operations[0], ")")
+					token = l.AnalyzeType(currentLine, lineIndex, operations[0])
+					token = append(token, operations[1], helpers.PALABRARESERVADA)
+					token = append(token, l.AnalyzeType(currentLine, lineIndex, operations[2])...)
+					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+				} else {
+					groups[1] = strings.TrimPrefix(groups[1], "(")
+					groups[1] = strings.TrimSuffix(groups[1], ")")
+					l.AnalyzeParams(currentLine, lineIndex, groups[1])
+
+				}
+			}
 
 			foundSomething = true
 		}
 
 		//Interrumpe
 		if l.R.RegexSystem.MatchInterrumpe(currentLine, lineIndex) {
+			token := []string{"interrumpe", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			} else {
+				token = append(token, ";", helpers.DELIMITADOR)
 			}
 
 			l.GL.Printf("%+v Found 'Interrumpe' instruction [Line: %+v]", funcName, lineIndex)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+			foundSomething = true
+		}
+
+		//Continua
+		if l.R.RegexSystem.MatchContinua(currentLine) {
+			token := []string{"continua", helpers.PALABRARESERVADA}
+			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
+				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			} else {
+				token = append(token, ";", helpers.DELIMITADOR)
+			}
+
+			l.GL.Printf("%+v Found 'Continua' instruction [Line: %+v]", funcName, lineIndex)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
@@ -815,12 +844,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssignData, assignToAnalyze, lineIndex)
 
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
-			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-				varToAssignData, helpers.IDENTIFICADOR,
-				":=", helpers.OPERADORASIGNACION,
-			}))
-			l.AnalyzeParams(currentLine, lineIndex, assignToAnalyze)
-			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			if l.CurrentBlockType != models.CONSTANTBLOCK {
+				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+					varToAssignData, helpers.IDENTIFICADOR,
+					":=", helpers.OPERADORASIGNACION,
+				}))
+				l.AnalyzeParams(currentLine, lineIndex, assignToAnalyze)
+				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
+			}
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -1081,19 +1112,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if len(groupsFunction) > 1 {
 				params := strings.Split(groupsFunction[1], ",")
 				for i, param := range params {
-					param = strings.TrimSpace(param)
 					token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 					if i < len(params)-1 {
 						l.OpQueue = append(l.OpQueue, models.DELIM)
-						token = append(token, []string{",", helpers.DELIMITADOR}...)
+						token = append(token, ",", helpers.DELIMITADOR)
 					}
 				}
 			}
 			l.OpQueue = append(l.OpQueue, models.BRACK)
-			token = append(token, []string{
-				")", helpers.DELIMITADOR,
-				";", helpers.DELIMITADOR,
-			}...)
+			token = append(token, ")", helpers.DELIMITADOR,
+				";", helpers.DELIMITADOR)
 
 			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
@@ -1199,8 +1227,6 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 			aritmeticos := l.R.RegexOperatorAritmetico.V1.Split(relacion, -1)
 			aritmeticadores := l.R.RegexOperatorAritmetico.GroupsOpAritmetico(relacion)
 			for k, aritmetico := range aritmeticos {
-				aritmetico = strings.TrimPrefix(aritmetico, " ")
-				aritmetico = strings.TrimSuffix(aritmetico, " ")
 				token := []string{
 					aritmetico,
 				}
@@ -1228,6 +1254,7 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 
 //AnalyzeType ...
 func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line string) []string {
+	line = strings.TrimSpace(line)
 	token := []string{line}
 	if l.R.RegexCustom.MatchCteAlfa(line) {
 		token = append(token, helpers.CONSTANTEALFABETICA)
@@ -1235,7 +1262,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCallEnd(line) {
 		token = l.AnalyzeType(currentLine, lineIndex, line[:len(line)-1])
-		token = append(token, []string{")", helpers.DELIMITADOR}...)
+		token = append(token, ")", helpers.DELIMITADOR)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexConstanteReal.MatchRealConstant(line) {
 		token = append(token, helpers.CONSTANTEREAL)
@@ -1260,9 +1287,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		if len(groups) > 1 {
 			token = append(token, l.AnalyzeType("", 0, line[1:])...)
 		}
-		token = append(token, []string{
-			")", helpers.DELIMITADOR,
-		}...)
+		token = append(token, ")", helpers.DELIMITADOR)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexFunction.MatchFunctionCall2(line) {
 		groups := strings.Split(line, "(")
@@ -1290,11 +1315,9 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		if len(groups) > 1 {
 			for _, group := range groups[1:] {
 				if len(group) > 2 {
-					token = append(token, []string{
-						"[", helpers.DELIMITADOR,
-						group[1 : len(group)-1], helpers.IDENTIFICADOR,
-						"]", helpers.DELIMITADOR,
-					}...)
+					token = append(token, "[", helpers.DELIMITADOR,
+						group[1:len(group)-1], helpers.IDENTIFICADOR,
+						"]", helpers.DELIMITADOR)
 					l.OpQueue = append(l.OpQueue, models.BRACK)
 					l.OpQueue = append(l.OpQueue, models.ID)
 					l.OpQueue = append(l.OpQueue, models.BRACK)
