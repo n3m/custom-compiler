@@ -852,6 +852,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
+				log.Printf("LOG")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -888,6 +889,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
+				log.Printf("ENT")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -923,6 +925,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
+				log.Printf("ALFA")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -958,6 +961,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
+				log.Printf("REAL")
 
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -994,6 +998,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else {
+				log.Printf(" ELSE")
 				//TEMP CASE TO UNCHECKED EXPRESSION
 				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, currentLine, lineIndex)
 
@@ -1058,6 +1063,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !foundSomething {
 				l.GL.Printf("%+v Found 'Unknown Assign [`%+v`]' instruction [Line: %+v] ", funcName, assignToAnalyze, lineIndex)
 			}
+			log.Printf("%+v", 13)
 
 			foundSomething = true
 		}
@@ -1173,7 +1179,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(assignStr)
 }
 
@@ -1182,10 +1188,11 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 	if l.isAValidOperation(assignStr) {
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
+		log.Printf("%+v", 1)
 		operationParameters := test.Split(curStr, -1)
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
-
+		log.Printf("%+v", 1)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
@@ -1198,6 +1205,7 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
+		log.Printf("%+v", 2)
 
 		paramTypes := []models.TokenType{}
 		for _, eachParam := range operationParameters {
@@ -1370,12 +1378,14 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		}
 	} else {
 		groups := l.R.RegexVar.GroupsVar(line)
+
 		token = []string{groups[0], helpers.IDENTIFICADOR}
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.NamesQueue = append(l.NamesQueue, groups[0])
 		if lineIndex != 0 {
 			l.FindSymbol(currentLine, lineIndex, groups[0])
 		}
+
 		if len(groups) > 1 {
 			for _, group := range groups[1:] {
 				if len(group) > 2 {
