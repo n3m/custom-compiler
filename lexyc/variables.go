@@ -290,7 +290,7 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 		}
 
 		if l.R.RegexVariableDefault.MatchVariableDefault(currentLine) {
-			log.Printf("BACKEND WARNING > ENTERED DEFAUL VARIABLE CASE")
+			log.Printf("BACKEND WARNING > ENTERED DEFAULT VARIABLE CASE")
 			typeOfData, variableData := getVariablesFromString(currentLine)
 
 			if l.R.RegexVariableAlfabetico.MatchVariableAlfabeticoCaseless(typeOfData) {

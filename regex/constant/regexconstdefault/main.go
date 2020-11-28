@@ -18,8 +18,8 @@ func NewRegexConstDefault() (*RegexConstDefault, error) {
 	}, nil
 }
 
-//MatchVariableDefault ...
-func (r *RegexConstDefault) MatchVariableDefault(str string) bool {
+//MatchConstantDefault ...
+func (r *RegexConstDefault) MatchConstantDefault(str string) bool {
 	if r.V1.MatchString(str) {
 		return true
 	}

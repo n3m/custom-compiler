@@ -140,7 +140,24 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
 			value := constantData[1] == "verdadero"
-			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.LOGICO, Key: constantData[0], Value: value})
+			newToken := &models.Token{Type: models.LOGICO, Key: constantData[0], Value: value}
+
+			/* CHECK Verificar si variable local ya existe de manera global y/o local. (Mandar Error)*/
+			if test := l.DoesTheTokenExistsInGlobalVariables(newToken); test {
+				log.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of variable", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInGlobalConstants(newToken); test {
+				log.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			/* CHECK END */
+
+			l.ConstantStorage = append(l.ConstantStorage, newToken)
 			l.GL.Printf("%+v[CONSTANT] Logico Found > %+v", funcName, currentLine)
 			if debug {
 				log.Printf("[CONSTANT] Logico Found > %+v", currentLine)
@@ -155,7 +172,9 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			return
 		}
 
-		if l.R.RegexConstanteDefault.MatchVariableDefault(currentLine) {
+		if l.R.RegexConstanteDefault.MatchConstantDefault(currentLine) {
+			log.Printf("BACKEND WARNING > ENTERED DEFAULT CONSTANT CASE")
+
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
 			value := constantData[1]
