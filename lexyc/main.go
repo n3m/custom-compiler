@@ -994,11 +994,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				groupsFunction[0], helpers.IDENTIFICADOR,
 				"(", helpers.DELIMITADOR,
 			}
-			if len(groupsFunction) > 0 {
+			if len(groupsFunction) > 1 {
 				params := strings.Split(groupsFunction[1], ",")
 				for i, param := range params {
 					param = strings.TrimSpace(param)
-					token = append(token, l.AnalyzeType("", 0, param)...)
+					token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 					if i < len(params)-1 {
 						l.OpQueue = append(l.OpQueue, models.DELIM)
 						token = append(token, []string{",", helpers.DELIMITADOR}...)
@@ -1103,7 +1103,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		l.OpQueue = append(l.OpQueue, models.CTEALFA)
 		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCallEnd(line) {
-		token = l.AnalyzeType("", 0, line[:len(line)-1])
+		token = l.AnalyzeType(currentLine, lineIndex, line[:len(line)-1])
 		token = append(token, []string{")", helpers.DELIMITADOR}...)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexConstanteReal.MatchRealConstant(line) {
