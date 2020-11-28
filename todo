@@ -5,7 +5,7 @@ TODO:
         Verificar que no se este tratando de dar valor a una constante (DONE)
 
     ALAN:
-        Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error]
+        Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error] (IN PROGRESS)
 
     ALAN:
         Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene (DONE)

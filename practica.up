@@ -5,6 +5,7 @@ variables i, j, k, n:Entero;
           Alfa, Beta:Alfabetico;
 Funcion FacRec(n:Entero):Entero;
 Funcion FacIter(n:Entero):Entero;
+
 Procedimiento Selecciona()
 variables opc:alfabetico;
 Inicio
