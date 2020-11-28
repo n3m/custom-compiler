@@ -15,17 +15,6 @@ func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalVariables(token *models.Toke
 	return false
 }
 
-//RetrieveGlobalVarIfExists ...
-func (l *LexicalAnalyzer) RetrieveGlobalVarIfExists(token *models.Token) *models.Token {
-	for _, each := range l.VariableStorage {
-		if each.Key == token.Key {
-
-			return each
-		}
-	}
-	return nil
-}
-
 //DoesTheTokenExistsInGlobalConstants ...
 func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalConstants(token *models.Token) bool {
 	for _, each := range l.ConstantStorage {
@@ -68,7 +57,24 @@ func (l *LexicalAnalyzer) RetrieveLocalVariableIfExists(token *models.Token, fun
 	return nil
 }
 
-//IsAssignmentDataTypeCorrect ...
-func (l *LexicalAnalyzer) IsAssignmentDataTypeCorrect() bool {
-	return true
+//RetrieveGlobalVarIfExists ...
+func (l *LexicalAnalyzer) RetrieveGlobalVarIfExists(token *models.Token) *models.Token {
+	for _, each := range l.VariableStorage {
+		if each.Key == token.Key {
+
+			return each
+		}
+	}
+	return nil
+}
+
+//RetrieveGlobalConstantIfExists ...
+func (l *LexicalAnalyzer) RetrieveGlobalConstantIfExists(token *models.Token) *models.Token {
+	for _, each := range l.ConstantStorage {
+		if each.Key == token.Key {
+
+			return each
+		}
+	}
+	return nil
 }
