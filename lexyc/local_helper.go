@@ -8,7 +8,6 @@ import (
 func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalVariables(token *models.Token) bool {
 	for _, each := range l.VariableStorage {
 		if each.Key == token.Key {
-
 			return true
 		}
 	}
@@ -73,6 +72,17 @@ func (l *LexicalAnalyzer) RetrieveGlobalConstantIfExists(token *models.Token) *m
 	for _, each := range l.ConstantStorage {
 		if each.Key == token.Key {
 
+			return each
+		}
+	}
+	return nil
+}
+
+//RetrieveFunctionOrProcedureIfExists ...
+func (l *LexicalAnalyzer) RetrieveFunctionOrProcedureIfExists(token *models.Token) *models.TokenFunc {
+	for _, each := range l.FunctionStorage {
+
+		if each.Key == token.Key {
 			return each
 		}
 	}

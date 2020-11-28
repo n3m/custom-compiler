@@ -841,8 +841,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
 			assignToAnalyze = strings.TrimSpace(assignToAnalyze)
 
-			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssignData, assignToAnalyze, lineIndex)
-
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
 			if l.CurrentBlockType != models.CONSTANTBLOCK {
 				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
@@ -852,6 +850,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.AnalyzeParams(currentLine, lineIndex, assignToAnalyze)
 				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			}
+
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -959,6 +958,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
+
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -995,7 +995,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK END*/
 			} else {
 				//TEMP CASE TO UNCHECKED EXPRESSION
-				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, lineIndex)
+				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, currentLine, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
 				if typeOfAssigment != models.INDEFINIDO {
@@ -1029,6 +1029,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 						}
 					}
 
+					/* CHECK IF ASSIGN CORRECT FOR VAR */
 					function := l.FindFunction(currentLine, lineIndex, l.Context)
 					if function != nil {
 						if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
@@ -1040,6 +1041,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							}
 						}
 					}
+					/*CHECK END*/
 
 				} else {
 					log.Printf("[ERR] Attempted to assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
@@ -1171,17 +1173,31 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(assignStr)
 }
 
 //GetOperationTypeFromAssignment ...
-func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, lineindex int64) models.TokenType {
+func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, currentLine string, lineIndex int64) models.TokenType {
 	if l.isAValidOperation(assignStr) {
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
 		operationParameters := test.Split(curStr, -1)
-		log.Printf("TEST PARAMS> %+v", operationParameters)
+
+		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
+
+		for i := 0; i < len(operationParameters); i++ {
+			str := operationParameters[i]
+			str = strings.TrimSpace(str)
+
+			if testCor.MatchString(str) {
+				data := testCor.Split(str, -1)
+				str = data[0]
+			}
+
+			str = strings.TrimSpace(str)
+			operationParameters[i] = str
+		}
 
 		paramTypes := []models.TokenType{}
 		for _, eachParam := range operationParameters {
@@ -1198,16 +1214,64 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, linei
 				paramTypes = append(paramTypes, models.REAL)
 				match = true
 			}
-			if !match && l.R.RegexCustom.MatchCteLog(eachParam, lineindex) {
+			if !match && l.R.RegexCustom.MatchCteLog(eachParam, lineIndex) {
 				paramTypes = append(paramTypes, models.LOGICO)
 				match = true
 			}
 			if !match && l.R.RegexCustom.MatchIdent(eachParam) {
+				if !match {
+					if data := l.RetrieveGlobalConstantIfExists(&models.Token{Key: eachParam}); data != nil {
+						paramTypes = append(paramTypes, data.Type)
+						match = true
+					}
+				}
+				if !match {
+					if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: eachParam}); data != nil {
+						paramTypes = append(paramTypes, data.Type)
+						match = true
+					}
+				}
+				if !match {
+					function := l.FindFunction(currentLine, lineIndex, l.Context)
+					if function != nil {
+						if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: eachParam}, function); data != nil {
+							paramTypes = append(paramTypes, data.Type)
+							match = true
+						}
+					}
+				}
+				if !match {
+					if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: eachParam}); data != nil {
+						paramTypes = append(paramTypes, data.Type)
+						match = true
+					}
+				}
+				if !match {
+					if data := l.RetrieveFunctionOrProcedureIfExists(&models.Token{Key: eachParam}); data != nil {
+						paramTypes = append(paramTypes, data.Type)
+						match = true
+					}
+				}
 
-				//checar si variable o funcion o constante
-
-				// paramTypes = append(paramTypes, models.LOGICO)
 				match = true
+			}
+		}
+
+		if len(paramTypes) > 0 {
+			valid := true
+			firstMatch := paramTypes[0]
+			for _, each := range paramTypes {
+				if each != firstMatch {
+					valid = false
+				}
+
+				if !valid {
+					break
+				}
+			}
+
+			if valid {
+				return firstMatch
 			}
 		}
 		log.Printf("TEST TYPES> %+v", paramTypes)

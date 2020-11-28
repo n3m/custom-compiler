@@ -46,6 +46,7 @@ Inicio
   Facto:=1;
   Desde el valor de i:=n hasta 2 decr 1 
      Facto:=Facto*i;
+   Facto:=vector[MAX]
 Fin de Funcion;
 
 Funcion VolCil(radio, altura: Real):Real
