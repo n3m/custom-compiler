@@ -35,7 +35,7 @@ TODO:
     Falta en programa imprimir lex (ya)
     Falta en fin de programa imprimir lex (ya)
     Falta en interrumpe imprimir lex (ya)
-    Falta en continua la sentencia completa (no hace verificación de typo)
+    Falta en continua la sentencia completa (no hace verificación de typo) (DUDA)
     Falta en continua imprimir lex (ya)
     Falta en analizador léxico imprimir ";" solo cuando exista
 

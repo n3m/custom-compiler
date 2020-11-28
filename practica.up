@@ -3,6 +3,7 @@ constantes PI:=3.141592;
 
 variables i, j, k, n:Entero;
           Alfa, Beta:Alfabetico;
+          
 Funcion FacRec(n:Entero):Entero;
 Funcion FacIter(n:Entero):Entero;
 
