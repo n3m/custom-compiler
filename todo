@@ -8,7 +8,7 @@ TODO:
         Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error]
 
     ALAN:
-        Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene
+        Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene (PARTIAL)
     
     GUILLE:
         Verificar el uso correcto de parametros: [Error en parametros: n-1] (ya)
@@ -28,4 +28,4 @@ Compilador:
     Generador de Codigo Maquina
 
 Extras:
-    Verificar extensión del archivo    
+    Verificar extensión del archivo    (DONE)

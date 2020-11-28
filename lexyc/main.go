@@ -765,8 +765,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
 			assignToAnalyze = strings.TrimSpace(assignToAnalyze)
 
-			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssingData, assignToAnalyze, lineIndex)
-
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -803,7 +801,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 				}
 				/*CHECK END*/
-
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -911,9 +908,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK END*/
 			} else {
 				//TEMP CASE TO UNCHECKED EXPRESSION
+				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.INDEFINIDO, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: typeOfAssigment, Key: varToAssingData, Value: assignToAnalyze}
+
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -1055,6 +1054,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	l.VerifyFunctions()
 	// l.Print()
 	return nil
+}
+
+//ValidateOperation ...
+func (l *LexicalAnalyzer) ValidateOperation() {
+
+}
+
+//GetOperationTypeFromAssignment ...
+func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string) models.TokenType {
+	return models.INDEFINIDO
 }
 
 //AnalyzeParams ...

@@ -2,7 +2,6 @@ package lexyc
 
 import (
 	"go-custom-compiler/models"
-	"log"
 )
 
 //DoesTheTokenExistsInGlobalVariables ...
@@ -31,10 +30,18 @@ func (l *LexicalAnalyzer) RetrieveGlobalVarIfExists(token *models.Token) *models
 func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalConstants(token *models.Token) bool {
 	for _, each := range l.ConstantStorage {
 		if each.Key == token.Key {
-			log.Printf("\t\t\t TEST EGC > '%+v' == '%+v' :: true", each.Key, token.Key)
 			return true
 		}
-		log.Printf("\t\t\t TEST EGC > '%+v' == '%+v' :: false", each.Key, token.Key)
+	}
+	return false
+}
+
+//DoesTheTokenExistsInFunctionsStorage ...
+func (l *LexicalAnalyzer) DoesTheTokenExistsInFunctionsStorage(token *models.Token) bool {
+	for _, each := range l.FunctionStorage {
+		if each.Key == token.Key {
+			return true
+		}
 	}
 	return false
 }

@@ -44,6 +44,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
 			}
+			if test := l.DoesTheTokenExistsInFunctionsStorage(newToken); test {
+				log.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of function as constant", currentLine)
+			}
 			/* CHECK END */
 
 			l.ConstantStorage = append(l.ConstantStorage, newToken)
@@ -82,6 +88,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
 			}
+			if test := l.DoesTheTokenExistsInFunctionsStorage(newToken); test {
+				log.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of function as constant", currentLine)
+			}
 			/* CHECK END */
 
 			l.ConstantStorage = append(l.ConstantStorage, newToken)
@@ -117,6 +129,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInFunctionsStorage(newToken); test {
+				log.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of function as constant", currentLine)
 			}
 			/* CHECK END */
 
@@ -154,6 +172,12 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInFunctionsStorage(newToken); test {
+				log.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of function as constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of function as constant", currentLine)
 			}
 			/* CHECK END */
 

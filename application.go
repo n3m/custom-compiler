@@ -25,6 +25,10 @@ func main() {
 	}
 	path := os.Args[1]
 
+	if !strings.HasSuffix(path, ".up") && !strings.HasSuffix(path, ".UP") {
+		panic("File is not a SOURCE CODE File")
+	}
+
 	/* Create Loggers */
 	errLogger, errFile, err := helpers.CreateLogger("error_data.err", false)
 	defer errFile.Close()
