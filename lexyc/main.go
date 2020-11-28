@@ -759,24 +759,190 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			currentLine = strings.TrimSpace(currentLine)
 			data := strings.Split(currentLine, ":=")
+			varToAssingData := data[0]
+			varToAssingData = strings.TrimSpace(varToAssingData)
 			assignToAnalyze := data[1]
 			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
+			assignToAnalyze = strings.TrimSpace(assignToAnalyze)
+
+			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssingData, assignToAnalyze, lineIndex)
 
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
-			}
-			if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
+
+				/*CHECK NO ASSIGN TO CONSTANT*/
+				curToken := &models.Token{Type: models.LOGICO, Key: varToAssingData, Value: assignToAnalyze}
+				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
+				}
+				/*CHECK END*/
+
+				/* CHECK IF ASSIGN CORRECT FOR VAR */
+				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
+					if curToken.Type != data.Type {
+						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+					}
+				}
+
+				function := l.FindFunction(currentLine, lineIndex, l.Context)
+				if function != nil {
+					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+				}
+				/*CHECK END*/
+
+			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
-			}
-			if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
+
+				/*CHECK NO ASSIGN TO CONSTANT*/
+				curToken := &models.Token{Type: models.ENTERO, Key: varToAssingData, Value: assignToAnalyze}
+				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
+				}
+				/*CHECK END*/
+				/* CHECK IF ASSIGN CORRECT FOR VAR */
+				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
+					if curToken.Type != data.Type {
+						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+					}
+				}
+
+				function := l.FindFunction(currentLine, lineIndex, l.Context)
+				if function != nil {
+					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+				}
+				/*CHECK END*/
+			} else if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
-			}
-			if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
+
+				/*CHECK NO ASSIGN TO CONSTANT*/
+				curToken := &models.Token{Type: models.ALFABETICO, Key: varToAssingData, Value: assignToAnalyze}
+				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
+				}
+				/*CHECK END*/
+				/* CHECK IF ASSIGN CORRECT FOR VAR */
+				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
+					if curToken.Type != data.Type {
+						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+					}
+				}
+
+				function := l.FindFunction(currentLine, lineIndex, l.Context)
+				if function != nil {
+					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+				}
+				/*CHECK END*/
+			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
+
+				/*CHECK NO ASSIGN TO CONSTANT*/
+				curToken := &models.Token{Type: models.REAL, Key: varToAssingData, Value: assignToAnalyze}
+				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
+				}
+				/*CHECK END*/
+				/* CHECK IF ASSIGN CORRECT FOR VAR */
+				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
+					if curToken.Type != data.Type {
+						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+					}
+				}
+
+				function := l.FindFunction(currentLine, lineIndex, l.Context)
+				if function != nil {
+					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+				}
+				/*CHECK END*/
+			} else {
+				//TEMP CASE TO UNCHECKED EXPRESSION
+
+				/*CHECK NO ASSIGN TO CONSTANT*/
+				curToken := &models.Token{Type: models.INDEFINIDO, Key: varToAssingData, Value: assignToAnalyze}
+				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
+					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
+				}
+				/*CHECK END*/
+				/* CHECK IF ASSIGN CORRECT FOR VAR */
+				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
+					if curToken.Type != data.Type {
+						log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+					}
+				}
+
+				function := l.FindFunction(currentLine, lineIndex, l.Context)
+				if function != nil {
+					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+				}
+				/*CHECK END*/
 			}
 
 			if !foundSomething {

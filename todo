@@ -1,8 +1,8 @@
 TODO:
 
     ALAN:
-        Verificar si variable local ya existe de manera global y/o local. (Mandar Error)
-        Verificar que no se este tratando de dar valor a una constante
+        Verificar si variable local ya existe de manera global y/o local. (Mandar Error) (DONE)
+        Verificar que no se este tratando de dar valor a una constante (DONE)
 
     ALAN:
         Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error]
