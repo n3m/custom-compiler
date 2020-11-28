@@ -29,7 +29,24 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
 			value, _ := strconv.Atoi(constantData[1])
-			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.ENTERO, Key: constantData[0], Value: value})
+			newToken := &models.Token{Type: models.ENTERO, Key: constantData[0], Value: value}
+
+			/* CHECK Verificar si variable local ya existe de manera global y/o local. (Mandar Error)*/
+			if test := l.DoesTheTokenExistsInGlobalVariables(newToken); test {
+				log.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of variable", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInGlobalConstants(newToken); test {
+				log.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			/* CHECK END */
+
+			l.ConstantStorage = append(l.ConstantStorage, newToken)
 			l.GL.Printf("%+v[CONSTANT] Entero Found > %+v", funcName, currentLine)
 
 			if debug {
@@ -49,7 +66,25 @@ func (l *LexicalAnalyzer) NextConstant(currentLine string, lineIndex int64, debu
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			constantData := strings.Split(currentLine, ":=")
 			value, _ := strconv.ParseFloat(constantData[1], 64)
-			l.ConstantStorage = append(l.ConstantStorage, &models.Token{Type: models.REAL, Key: constantData[0], Value: value})
+
+			newToken := &models.Token{Type: models.REAL, Key: constantData[0], Value: value}
+
+			/* CHECK Verificar si variable local ya existe de manera global y/o local. (Mandar Error)*/
+			if test := l.DoesTheTokenExistsInGlobalVariables(newToken); test {
+				log.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of variable at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of variable", currentLine)
+			}
+			if test := l.DoesTheTokenExistsInGlobalConstants(newToken); test {
+				log.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Found redeclaration of constant at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of constant", currentLine)
+			}
+			/* CHECK END */
+
+			l.ConstantStorage = append(l.ConstantStorage, newToken)
 			l.GL.Printf("%+v[CONSTANT] Real Found > %+v", funcName, currentLine)
 
 			if debug {
