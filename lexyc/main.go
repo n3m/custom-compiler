@@ -23,6 +23,7 @@ type LexicalAnalyzer struct {
 	TEST *log.Logger
 
 	//TEST
+	Status           int
 	CurrentBlockType models.BlockType
 	ParentBlockType  models.BlockType
 	BlockQueue       []models.BlockType
@@ -70,6 +71,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		GL:   GeneralLogger,
 		TEST: TestLogger,
 
+		Status:           0,
 		ParentBlockType:  models.NULLBLOCK,
 		BlockQueue:       []models.BlockType{},
 		CurrentBlockType: models.NULLBLOCK,
@@ -871,7 +873,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		if l.ErrorsCount >= 20 {
 			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
-			break
+			l.Status = -1
+			return nil
 		}
 
 		if !foundSomething {
