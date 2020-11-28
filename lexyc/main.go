@@ -1186,10 +1186,17 @@ func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
 //GetOperationTypeFromAssignment ...
 func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, currentLine string, lineIndex int64) models.TokenType {
 	if l.isAValidOperation(assignStr) {
+
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
 		log.Printf("%+v", 1)
 		operationParameters := test.Split(curStr, -1)
+		paramTypes := []models.TokenType{}
+
+		t1 := regexp.MustCompile(`(\^|\/)`)
+		if t1.MatchString(curStr) {
+			paramTypes = append(paramTypes, models.REAL)
+		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
 		log.Printf("%+v", 1)
@@ -1207,7 +1214,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 		}
 		log.Printf("%+v", 2)
 
-		paramTypes := []models.TokenType{}
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
