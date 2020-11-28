@@ -90,10 +90,10 @@ func (cG *CodeGenerator) printFunctionToken(token *models.TokenFunc) {
 	cG.OCL.Println(strings.Join(tokenProp, ","))
 
 	for _, funcParam := range token.Params {
-		cG.printToken(&funcParam, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcParam, "V", []string{"I", "I", "0", "0"})
 	}
 	for _, funcVar := range token.Vars {
-		cG.printToken(&funcVar, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcVar, "V", []string{"I", "I", "0", "0"})
 	}
 
 	return

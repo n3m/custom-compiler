@@ -27,11 +27,11 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			}))
 
 			paramType := models.VarTypeToTokenType(procParamType)
-			params := []models.Token{}
+			params := []*models.Token{}
 			vars := strings.Split(procParamVars, ", ")
 			for i, procParamVar := range vars {
 				l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{procParamVar, helpers.IDENTIFICADOR}))
-				params = append(params, models.Token{Type: paramType, Key: procParamVar})
+				params = append(params, &models.Token{Type: paramType, Key: procParamVar})
 				if i != len(vars)-1 {
 					l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{",", helpers.DELIMITADOR}))
 				}

@@ -54,7 +54,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 				";", helpers.DELIMITADOR,
 			}))
 			paramType := models.VarTypeToTokenType(funcParamType)
-			params := []models.Token{{Type: paramType, Key: funcParamName}}
+			params := []*models.Token{{Type: paramType, Key: funcParamName}}
 			l.FunctionStorage = append(l.FunctionStorage, &models.TokenFunc{Type: tokenFuncType, Key: funcName, Params: params})
 			return
 		}

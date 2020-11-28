@@ -42,6 +42,7 @@ Fin de Funcion;
 
 Funcion FacIter(n:Entero):Entero
 Variables Facto:Entero;
+         Log1, Log2:Logico;
 Inicio
   Facto:=1;
   Desde el valor de i:=n hasta 2 decr 1 

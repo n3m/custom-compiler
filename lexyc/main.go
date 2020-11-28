@@ -188,7 +188,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				vars := strings.Split(groupVars[0], ",")
 				if vars[0] != "" {
 					token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
-					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: vars[0]})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
 				}
 
 				for _, v := range vars[1:] {
@@ -198,7 +198,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}...)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
-					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
 				}
 				if vars[0] != "" {
 					token = append(token, []string{
@@ -252,7 +252,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				vars := strings.Split(groupVars[0], ",")
 
 				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
-				symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: vars[0]})
+				symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
 
 				token = append(token, []string{vars[0], helpers.IDENTIFICADOR}...)
 				for _, v := range vars[1:] {
@@ -262,7 +262,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}...)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
-					symbol.Params = append(symbol.Params, models.Token{Type: paramType, Key: v})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
 				}
 				token = append(token, []string{
 					":", helpers.DELIMITADOR,
@@ -1133,7 +1133,7 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 			if next == models.OPARIT || next == models.OPASIG || next == models.OPLOG || next == models.OPREL {
 				result := l.OperationTokenType(item, next, l.OpQueue[i+2], noVars, currentLine, lineIndex)
 				if result.Type != "" {
-					currentFunction.Params = append(currentFunction.Params, result)
+					currentFunction.Params = append(currentFunction.Params, &result)
 					i += 2
 					continue
 				}
@@ -1148,7 +1148,7 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
 			if function != nil {
 				if noBracks < 2 {
-					currentFunction.Params = append(currentFunction.Params, models.Token{
+					currentFunction.Params = append(currentFunction.Params, &models.Token{
 						Type: models.ConstTypeToTokenType(item),
 					})
 				}
@@ -1160,13 +1160,13 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 				function = l.FindFunction(currentLine, lineIndex, l.NamesQueue[noVars])
 				if function != nil {
 					currentFunction = *function
-					currentFunction.Params = []models.Token{}
+					currentFunction.Params = []*models.Token{}
 				}
 			} else {
 				if noBracks < 2 {
 					symbol := l.FindSymbol(currentLine, lineIndex, l.NamesQueue[noVars])
 					if symbol != nil {
-						currentFunction.Params = append(currentFunction.Params, *symbol)
+						currentFunction.Params = append(currentFunction.Params, symbol)
 					}
 				}
 			}
@@ -1204,12 +1204,12 @@ func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key st
 		if function != nil {
 			for _, symbol := range function.Params {
 				if symbol.Key == key {
-					return &symbol
+					return symbol
 				}
 			}
 			for _, symbol := range function.Vars {
 				if symbol.Key == key {
-					return &symbol
+					return symbol
 				}
 			}
 		}
@@ -1232,7 +1232,7 @@ func (l *LexicalAnalyzer) FindFunction(currentLine string, lineIndex int64, key 
 //CompareFunction Compares both given TokenFunc params
 func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, model, current *models.TokenFunc, isCall bool) {
 	if isCall {
-		model.Calls = append(model.Calls, models.Line{CurrentLine: currentLine, LineIndex: lineIndex})
+		model.Calls = append(model.Calls, &models.Line{CurrentLine: currentLine, LineIndex: lineIndex})
 	} else {
 		model.IsDefined = true
 	}

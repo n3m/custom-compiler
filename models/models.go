@@ -18,8 +18,8 @@ type Line struct {
 type TokenFunc struct {
 	Type      TokenType
 	Key       string
-	Params    []Token
-	Vars      []Token
+	Params    []*Token
+	Vars      []*Token
 	IsDefined bool
-	Calls     []Line
+	Calls     []*Line
 }

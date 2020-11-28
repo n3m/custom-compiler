@@ -44,6 +44,7 @@ Fin de Funcion;
 
 Funcion FacIter(n:Entero):Entero
 Variables Facto:Entero;
+Log1, Log2:Logico;
 Inicio
 Facto:=1;
 Desde el valor de i:=n hasta 2 decr 1
@@ -158,6 +159,13 @@ Imprimenl("Es el radio= ", r, " mayor que Altura= ", s, " ? ", Compara(r, s, 2))
 LeeVecmat();
 Imprime("Dame tu nombre: ");
 Lee(alfa);
+Imprime("Dame tu Apellido: ");
+Lee(beta);
+Imprimenl("Hola ", Concat(alfa, beta), " ya la pasaste!!!");
+Fin de programa.
+;
+Fin de programa.
+
 Imprime("Dame tu Apellido: ");
 Lee(beta);
 Imprimenl("Hola ", Concat(alfa, beta), " ya la pasaste!!!");

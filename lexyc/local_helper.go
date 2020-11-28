@@ -1,11 +1,14 @@
 package lexyc
 
-import "go-custom-compiler/models"
+import (
+	"go-custom-compiler/models"
+)
 
 //DoesTheTokenExistsInGlobalVariables ...
 func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalVariables(token *models.Token) bool {
 	for _, each := range l.VariableStorage {
 		if each.Key == token.Key {
+
 			return true
 		}
 	}
@@ -25,6 +28,7 @@ func (l *LexicalAnalyzer) DoesTheTokenExistsInGlobalConstants(token *models.Toke
 //DoesTheTokenExistsInLocalVariables ...
 func (l *LexicalAnalyzer) DoesTheTokenExistsInLocalVariables(token *models.Token, function *models.TokenFunc) bool {
 	for _, each := range function.Vars {
+
 		if each.Key == token.Key {
 			return true
 		}
