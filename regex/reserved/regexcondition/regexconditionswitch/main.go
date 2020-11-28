@@ -15,6 +15,7 @@ type RegexConditionSwitch struct {
 	V1i       *regexp.Regexp
 	V2        *regexp.Regexp
 	V2i       *regexp.Regexp
+	Groups    *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -32,10 +33,11 @@ func NewRegexConditionSwitch(EL, LL, GL *log.Logger) (*RegexConditionSwitch, err
 	return &RegexConditionSwitch{
 		KeywordV1: "Sea",
 		KeywordV2: "Otro:",
-		V1:        regexp.MustCompile(`^(\s*)((?i)Sea)(\s*)`),
-		V1i:       regexp.MustCompile(`^(\s*)((?i)Sea)(\s*)`),
-		V2:        regexp.MustCompile(`^(\s*)((?i)Otro)(\s*)`),
-		V2i:       regexp.MustCompile(`^(\s*)((?i)Otro)(\s*)`),
+		V1:        regexp.MustCompile(`^(\s*)((?i)[sS]ea)(\s*)`),
+		V1i:       regexp.MustCompile(`^(\s*)((?i)[sS]ea)(\s*)`),
+		V2:        regexp.MustCompile(`^(\s*)((?i)[oO]tro)(\s*)`),
+		V2i:       regexp.MustCompile(`^(\s*)((?i)[oO]tro)(\s*)`),
+		Groups:    regexp.MustCompile(`(?m)[sS]ea (.*):`),
 		EL:        EL,
 		LL:        LL,
 		GL:        GL,
@@ -126,6 +128,25 @@ func (r *RegexConditionSwitch) StartsWithOtroNoCheck(str string) bool {
 	}
 
 	return false
+}
+
+//GroupsSea ...
+func (r *RegexConditionSwitch) GroupsSea(str string) []string {
+	groups := []string{}
+	if !r.StartsWithSea(str, 0) {
+		return groups
+	}
+
+	matched := r.Groups.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
 }
 
 //r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)

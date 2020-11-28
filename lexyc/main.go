@@ -608,7 +608,25 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Created a CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"cuando", helpers.PALABRARESERVADA}))
+			token := []string{
+				"cuando", helpers.PALABRARESERVADA,
+				"el", helpers.PALABRARESERVADA,
+				"valor", helpers.PALABRARESERVADA,
+				"de", helpers.PALABRARESERVADA,
+			}
+			groups := l.R.RegexConditionCuando.GroupsCuando(currentLine)
+			if len(groups) > 0 {
+				token = append(token, []string{
+					groups[0], helpers.IDENTIFICADOR,
+				}...)
+				l.FindSymbol(currentLine, lineIndex, groups[0])
+				if len(groups) > 1 {
+					l.LogError(lineIndex, "N/A", "UNEXPECTED", fmt.Sprintf("Cuando statement has more than just an ID: %v", groups[1]), currentLine)
+				}
+			} else {
+				l.LogError(lineIndex, "N/A", "UNEXPECTED", "Missing ID for cuando statement", currentLine)
+			}
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
@@ -671,9 +689,23 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			//TODO: Get Params
+			token := []string{"sea", helpers.PALABRARESERVADA}
 
+			l.OpQueue = []models.TokenComp{}
+			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
+			params := strings.Split(seaCases[0], ",")
+			for i, param := range params {
+				param = strings.TrimSpace(param)
+				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
+				if i < len(params)-1 {
+					token = append(token, []string{",", helpers.DELIMITADOR}...)
+				}
+			}
+
+			l.AnalyzeSwitchQueue(currentLine, lineIndex)
+			token = append(token, []string{":", helpers.DELIMITADOR}...)
 			l.GL.Printf("%+v Found 'Sea' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sea", helpers.PALABRARESERVADA}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
 			foundSomething = true
 		}
@@ -690,7 +722,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 
 			l.GL.Printf("%+v Found 'Otro' instruction for CUANDOBLOCK [Line: %+v]", funcName, lineIndex)
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"otro", helpers.PALABRARESERVADA}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"otro", helpers.PALABRARESERVADA,
+				":", helpers.DELIMITADOR,
+			}))
 
 			foundSomething = true
 		}
@@ -724,7 +759,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Analyze
 			l.GL.Printf("%+v Found 'Desde' instruction [Line: %+v]", funcName, lineIndex)
 
-			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"desde", helpers.PALABRARESERVADA}))
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"desde", helpers.PALABRARESERVADA,
+				"el", helpers.PALABRARESERVADA,
+				"valor", helpers.PALABRARESERVADA,
+				"de", helpers.PALABRARESERVADA,
+				"hasta", helpers.PALABRARESERVADA,
+			}))
 
 			foundSomething = true
 		}
@@ -748,6 +789,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.GL.Printf("%+v Found 'Limpia' instruction [Line: %+v]", funcName, lineIndex)
 
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"limpia", helpers.PALABRARESERVADA,
+				";", helpers.DELIMITADOR,
+			}))
+
 			foundSomething = true
 		}
 
@@ -759,20 +805,27 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			currentLine = strings.TrimSpace(currentLine)
 			data := strings.Split(currentLine, ":=")
-			varToAssingData := data[0]
-			varToAssingData = strings.TrimSpace(varToAssingData)
+			varToAssignData := data[0]
+			varToAssignData = strings.TrimSpace(varToAssignData)
 			assignToAnalyze := data[1]
 			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
 			assignToAnalyze = strings.TrimSpace(assignToAnalyze)
 
-			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssingData, assignToAnalyze, lineIndex)
+			log.Printf("\t\tTEST ASSIGN > %+v := %+v [[%+v]]", varToAssignData, assignToAnalyze, lineIndex)
 
+			l.FindSymbol(currentLine, lineIndex, varToAssignData)
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				varToAssignData, helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+			}))
+			l.AnalyzeParams(currentLine, lineIndex, assignToAnalyze)
+			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.LOGICO, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: models.LOGICO, Key: varToAssignData, Value: assignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -809,7 +862,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.ENTERO, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: models.ENTERO, Key: varToAssignData, Value: assignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -844,7 +897,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.ALFABETICO, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: models.ALFABETICO, Key: varToAssignData, Value: assignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -879,7 +932,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.REAL, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: models.REAL, Key: varToAssignData, Value: assignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -913,7 +966,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				//TEMP CASE TO UNCHECKED EXPRESSION
 
 				/*CHECK NO ASSIGN TO CONSTANT*/
-				curToken := &models.Token{Type: models.INDEFINIDO, Key: varToAssingData, Value: assignToAnalyze}
+				curToken := &models.Token{Type: models.INDEFINIDO, Key: varToAssignData, Value: assignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
 					log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
@@ -961,6 +1014,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.BlockQueue = []models.BlockType{}
 			}
 			l.BlockQueue = append(l.BlockQueue, models.PROGRAMBLOCK)
+			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{"Programa", helpers.PALABRARESERVADA}))
 
 			l.Context = "Programa"
 			l.HasMain = true
@@ -977,6 +1031,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if ok {
 				l.BlockQueue = newArr
 			}
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				"Fin", helpers.PALABRARESERVADA,
+				"de", helpers.PALABRARESERVADA,
+				"programa", helpers.PALABRARESERVADA,
+				".", helpers.DELIMITADOR,
+			}))
 
 			l.Context = "Global"
 			foundSomething = true
@@ -1346,6 +1406,19 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 	}
 }
 
+//AnalyzeSwitchQueue ...
+func (l *LexicalAnalyzer) AnalyzeSwitchQueue(currentLine string, lineIndex int64) {
+	for _, item := range l.OpQueue {
+		switch item {
+		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
+			break
+		default:
+			l.LogError(lineIndex, "N/A", "UNEXPECTED", fmt.Sprintf("Sea statement expecting constant found %v", item), currentLine)
+			break
+		}
+	}
+}
+
 //FindSymbol Returns value for given key if found in symbol table
 func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key string) *models.Token {
 	if l.R.RegexReserved.IsReserved(key) {
@@ -1379,6 +1452,8 @@ func (l *LexicalAnalyzer) FindSymbol(currentLine string, lineIndex int64, key st
 				}
 			}
 		}
+	} else {
+		return nil
 	}
 	l.LogError(lineIndex, "N/A", "Undeclared name", "Could not find any reference for name: "+key, currentLine)
 	return nil

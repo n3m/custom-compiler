@@ -9,6 +9,7 @@
 *.err
 *.lex
 *.log
+*.eje
 
 # Test binary, built with `go test -c`
 *.test

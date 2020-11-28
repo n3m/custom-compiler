@@ -16,6 +16,7 @@ type RegexConditionCuando struct {
 	V4      *regexp.Regexp
 	V5      *regexp.Regexp
 	V6      *regexp.Regexp
+	Groups  *regexp.Regexp
 
 	EL *log.Logger
 	LL *log.Logger
@@ -38,6 +39,7 @@ func NewRegexConditionCuando(EL, LL, GL *log.Logger) (*RegexConditionCuando, err
 		V4:      regexp.MustCompile(`^(\s*)((?i)Cuando)`),
 		V5:      regexp.MustCompile(`^(\s*)((?i)Cuan)`),
 		V6:      regexp.MustCompile(`^(\s*)((?i)Cua)`),
+		Groups:  regexp.MustCompile(`(?m)Cuando el valor de\s+([\w]+)(.*)`),
 		EL:      EL,
 		LL:      LL,
 		GL:      GL,
@@ -170,6 +172,25 @@ func (r *RegexConditionCuando) StartsWithCuandoNoCheck(str string) bool {
 
 	return false
 
+}
+
+//GroupsCuando ...
+func (r *RegexConditionCuando) GroupsCuando(str string) []string {
+	groups := []string{}
+	if !r.StartsWithCuando(str, 0) {
+		return groups
+	}
+
+	matched := r.Groups.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
 }
 
 //r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
