@@ -44,6 +44,14 @@ func (cG *CodeGenerator) Generate() error {
 		cG.printFunctionToken(function)
 	}
 
+	for label, line := range cG.LA.HashTable.Labels {
+		cG.OCL.Printf("%v,I,I,%v,0,#,", label, line)
+	}
+	cG.OCL.Println("@")
+	for _, line := range cG.LA.HashTable.Lines {
+		cG.OCL.Println(line)
+	}
+
 	return nil
 }
 
@@ -88,7 +96,7 @@ func (cG *CodeGenerator) printFunctionToken(token *models.TokenFunc) {
 	tokenProp = append(tokenProp, tokenType)
 	tokenProp = append(tokenProp, functionType)
 
-	tokenDefinition := "0" //TODO
+	tokenDefinition := token.HashTableLineIndex
 	tokenProp = append(tokenProp, tokenDefinition)
 	tokenProp = append(tokenProp, "0,#,")
 

@@ -36,6 +36,8 @@ type LexicalAnalyzer struct {
 	Context          string
 	HasMain          bool
 	ErrorsCount      int
+
+	HashTable *HashTable
 }
 
 //NewLexicalAnalyzer ...
@@ -64,6 +66,11 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 	ErrorLogger.Printf("# Linea | # Columna | Error | Descripcion | Linea del Error")
 	ErrorLogger.Printf("=============================================================")
 
+	HT, err := NewHashTable()
+	if err != nil {
+		GeneralLogger.Printf("[ERR]%+v %+v", moduleName, err.Error())
+		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
+	}
 	return &LexicalAnalyzer{
 		File: file,
 		R:    R,
@@ -81,6 +88,8 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		ConstantStorage:  []*models.Token{},
 		VariableStorage:  []*models.Token{},
 		Context:          "Global",
+
+		HashTable: HT,
 	}, nil
 }
 
@@ -174,7 +183,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.Context = procedureGroups[1]
 
-			symbol := models.TokenFunc{Key: procedureGroups[1], IsDefined: true}
+			symbol := models.TokenFunc{
+				Key:                procedureGroups[1],
+				IsDefined:          true,
+				HashTableLineIndex: l.HashTable.GetLine(),
+			}
 
 			params := strings.Join(procedureGroups[2:], "")
 			groups := strings.Split(params, ";")
@@ -234,7 +247,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.Context = funcionGroups[1]
-			symbol := models.TokenFunc{Key: funcionGroups[1], IsDefined: true}
+			symbol := models.TokenFunc{
+				Key:                funcionGroups[1],
+				IsDefined:          true,
+				HashTableLineIndex: l.HashTable.GetLine(),
+			}
 
 			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
 			groups := strings.Split(params, ";")
@@ -481,6 +498,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = "OPR 0, 20"
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
@@ -510,6 +528,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			//Imprime
+			l.HashTable.CurrentOp = ""
 			foundSomething = true
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
@@ -520,6 +539,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = "OPR 0, 20"
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
@@ -547,6 +567,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = ""
 			foundSomething = true
 		}
 
@@ -1081,6 +1102,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.Context = "Programa"
 			l.HasMain = true
+			l.HashTable.Labels["_P"] = l.HashTable.GetLine()
 			foundSomething = true
 		}
 
@@ -1518,6 +1540,10 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 		item := l.OpQueue[i]
 		if function == nil && item != models.ID {
 			if item == models.CTEALFA || item == models.CTEENT || item == models.CTELOG || item == models.CTEREAL {
+				l.HashTable.AddNextLine(fmt.Sprintf("LIT %v, 0", l.NamesQueue[noVars]))
+				if l.HashTable.CurrentOp != "" {
+					l.HashTable.AddNextOp()
+				}
 				noVars++
 			}
 			continue
@@ -1673,6 +1699,9 @@ func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, m
 		match = false
 	}
 	if match {
+		if !isCall {
+			model.HashTableLineIndex = current.HashTableLineIndex
+		}
 		return
 	}
 
