@@ -23,6 +23,9 @@ type RegexLoopDesde struct {
 	WTest5 *regexp.Regexp
 	WTest6 *regexp.Regexp
 
+	Groups          *regexp.Regexp
+	GroupsOperacion *regexp.Regexp
+
 	EL *log.Logger
 	LL *log.Logger
 	GL *log.Logger
@@ -50,9 +53,13 @@ func NewRegexLoopDesde(EL, LL, GL *log.Logger) (*RegexLoopDesde, error) {
 		WTest3: regexp.MustCompile(`((?i)valor)`),
 		WTest4: regexp.MustCompile(`((?i)de)`),
 		WTest5: regexp.MustCompile(`((?i)hasta)`),
-		EL:     EL,
-		LL:     LL,
-		GL:     GL,
+
+		Groups:          regexp.MustCompile(`(?m)[dD]esde el valor de (.*) hasta (.*)`),
+		GroupsOperacion: regexp.MustCompile(`(?m)(.*)\s(decr|incr)\s(.*)`),
+
+		EL: EL,
+		LL: LL,
+		GL: GL,
 	}, nil
 }
 
@@ -94,6 +101,44 @@ func (r *RegexLoopDesde) StartsWithDesdeNoCheck(str string) bool {
 
 	return false
 
+}
+
+//GroupsDesde ...
+func (r *RegexLoopDesde) GroupsDesde(str string) []string {
+	groups := []string{}
+	if !r.StartsWithDesde(str, 0) {
+		return groups
+	}
+
+	matched := r.Groups.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
+}
+
+//GroupsDesdeOperacion ...
+func (r *RegexLoopDesde) GroupsDesdeOperacion(str string) []string {
+	groups := []string{}
+	if !r.GroupsOperacion.MatchString(str) {
+		return groups
+	}
+
+	matched := r.GroupsOperacion.FindAllStringSubmatch(str, -1)
+	for _, m := range matched {
+		for _, group := range m[1:] {
+			if group != "" {
+				groups = append(groups, group)
+			}
+		}
+	}
+
+	return groups
 }
 
 //r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword), str)
