@@ -35,10 +35,10 @@ func NewCodeGenerator(lexicalAnalyzer *lexyc.LexicalAnalyzer, objectCodeLogger *
 func (cG *CodeGenerator) Generate() error {
 
 	for _, globalVariable := range cG.LA.VariableStorage {
-		cG.printToken(globalVariable, "V", []string{})
+		cG.printToken(globalVariable, "V", "")
 	}
 	for _, globalConstant := range cG.LA.ConstantStorage {
-		cG.printToken(globalConstant, "V", []string{})
+		cG.printToken(globalConstant, "C", "")
 	}
 	for _, function := range cG.LA.FunctionStorage {
 		cG.printFunctionToken(function)
@@ -47,10 +47,12 @@ func (cG *CodeGenerator) Generate() error {
 	return nil
 }
 
-func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, definition []string) {
+func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, context string) {
 	tokenProp := []string{}
 	tokenProp = append(tokenProp, token.Key)
-	tokenProp = append(tokenProp, definition...)
+	if context != "" {
+		tokenProp = append(tokenProp, []string{"I", "I", "0", "0"}...)
+	}
 
 	tokenProp = append(tokenProp, tokenType)
 
@@ -64,6 +66,9 @@ func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, defin
 		tokenProp = append(tokenProp, dimension)
 	}
 
+	if context != "" {
+		tokenProp = append(tokenProp, context)
+	}
 	tokenProp = append(tokenProp, "#,")
 
 	cG.OCL.Println(strings.Join(tokenProp, ","))
@@ -90,10 +95,10 @@ func (cG *CodeGenerator) printFunctionToken(token *models.TokenFunc) {
 	cG.OCL.Println(strings.Join(tokenProp, ","))
 
 	for _, funcParam := range token.Params {
-		cG.printToken(funcParam, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcParam, "V", token.Key)
 	}
 	for _, funcVar := range token.Vars {
-		cG.printToken(funcVar, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcVar, "V", token.Key)
 	}
 
 	return
