@@ -258,61 +258,67 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
 			funcionGroups := helpers.GetGroupMatches(currentLine, helpers.FUNCIONREGEXP)
-			token := []string{
-				funcionGroups[0], helpers.PALABRARESERVADA,
-				funcionGroups[1], helpers.IDENTIFICADOR,
-				"(", helpers.DELIMITADOR,
-			}
 
-			l.Context = funcionGroups[1]
-			symbol := models.TokenFunc{
-				Key:                funcionGroups[1],
-				IsDefined:          true,
-				HashTableLineIndex: l.HashTable.GetLine(),
-			}
-
-			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
-			groups := strings.Split(params, ";")
-			for i, group := range groups {
-				if i > 0 {
-					token = append(token, ";", helpers.DELIMITADOR)
+			if l.R.RegexFunction.ValidateFunction(currentLine) {
+				token := []string{
+					funcionGroups[0], helpers.PALABRARESERVADA,
+					funcionGroups[1], helpers.IDENTIFICADOR,
+					"(", helpers.DELIMITADOR,
 				}
-				groupVars := strings.Split(group, ":")
-				vars := strings.Split(groupVars[0], ",")
 
-				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
-				symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
-
-				token = append(token, vars[0], helpers.IDENTIFICADOR)
-				for _, v := range vars[1:] {
-					token = append(token, ",", helpers.DELIMITADOR)
-					token = append(token, l.AnalyzeType("", 0, v)...)
-
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+				l.Context = funcionGroups[1]
+				symbol := models.TokenFunc{
+					Key:                funcionGroups[1],
+					IsDefined:          true,
+					HashTableLineIndex: l.HashTable.GetLine(),
 				}
-				token = append(token, ":", helpers.DELIMITADOR,
-					strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
-			}
-			token = append(token, ")", helpers.DELIMITADOR,
-				":", helpers.DELIMITADOR,
-				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA)
-			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
-			funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
-			symbol.Type = funcType
+				params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
+				groups := strings.Split(params, ";")
+				for i, group := range groups {
+					if i > 0 {
+						token = append(token, ";", helpers.DELIMITADOR)
+					}
+					groupVars := strings.Split(group, ":")
+					vars := strings.Split(groupVars[0], ",")
 
-			procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
-			if procProto == nil {
-				l.FunctionStorage = append(l.FunctionStorage, &symbol)
+					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+
+					token = append(token, vars[0], helpers.IDENTIFICADOR)
+					for _, v := range vars[1:] {
+						token = append(token, ",", helpers.DELIMITADOR)
+						token = append(token, l.AnalyzeType("", 0, v)...)
+
+						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+					}
+					token = append(token, ":", helpers.DELIMITADOR,
+						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
+				}
+				token = append(token, ")", helpers.DELIMITADOR,
+					":", helpers.DELIMITADOR,
+					funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA)
+				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+				funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
+				symbol.Type = funcType
+
+				procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
+				if procProto == nil {
+					l.FunctionStorage = append(l.FunctionStorage, &symbol)
+				} else {
+					l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
+				}
+
+				if function := l.FindFunction("", 0, funcionGroups[1]); function != nil {
+					for _, params := range function.Params {
+						l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
+					}
+				}
 			} else {
-				l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
+				l.LogError(lineIndex, 0, "FUNCTION DECLARATION", "Function declaration is not complete", currentLine)
 			}
 
-			if function := l.FindFunction("", 0, funcionGroups[1]); function != nil {
-				for _, params := range function.Params {
-					l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
-				}
-			}
 			foundSomething = true
 		}
 
