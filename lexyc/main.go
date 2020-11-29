@@ -30,6 +30,7 @@ type LexicalAnalyzer struct {
 	BlockQueue       []models.BlockType
 	OpQueue          []models.TokenComp
 	NamesQueue       []string
+	OperatorsQueue   []string
 	ConstantStorage  []*models.Token
 	VariableStorage  []*models.Token
 	FunctionStorage  []*models.TokenFunc
@@ -85,6 +86,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		CurrentBlockType: models.NULLBLOCK,
 		OpQueue:          []models.TokenComp{},
 		NamesQueue:       []string{},
+		OperatorsQueue:   []string{},
 		ConstantStorage:  []*models.Token{},
 		VariableStorage:  []*models.Token{},
 		Context:          "Global",
@@ -226,6 +228,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.CompareFunction(currentLine, lineIndex, funcProto, &symbol, false)
 			}
 
+			if function := l.FindFunction("", 0, procedureGroups[1]); function != nil {
+				for _, params := range function.Params {
+					l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
+				}
+			}
 			foundSomething = true
 		}
 
@@ -290,6 +297,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
 			}
 
+			if function := l.FindFunction("", 0, funcionGroups[1]); function != nil {
+				for _, params := range function.Params {
+					l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
+				}
+			}
 			foundSomething = true
 		}
 
@@ -455,6 +467,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 
 			groups := helpers.GetGroupMatches(currentLine, helpers.HASTAQUEREGEXP)
 			if len(groups) > 0 {
@@ -502,6 +515,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 			for i, str := range params {
 				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
@@ -544,6 +558,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 			for i, str := range params {
 				token := l.AnalyzeType(currentLine, lineIndex, str)
 				if i != len(params)-1 {
@@ -586,6 +601,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 			params := l.R.RegexLee.GroupsLee(currentLine)
 			l.AnalyzeParams(currentLine, lineIndex, params[0])
 
@@ -629,6 +645,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if len(groups) > 0 {
 				token = append(token, groups[0], helpers.IDENTIFICADOR)
 				l.FindSymbol(currentLine, lineIndex, groups[0])
+
+				l.HashTable.CurrentBlock = fmt.Sprintf("LOD %v, 0", groups[0])
+
 				if len(groups) > 1 {
 					l.LogError(lineIndex, "N/A", "UNEXPECTED", fmt.Sprintf("Cuando statement has more than just an ID: %v", groups[1]), currentLine)
 				}
@@ -656,6 +675,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 			groups := helpers.GetGroupMatches(currentLine, helpers.SIREGEXP)
 			params := groups[0]
 			l.AnalyzeParams(currentLine, lineIndex, params)
@@ -667,6 +687,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"hacer", helpers.PALABRARESERVADA,
 			}))
 
+			l.AnalyzeObjectCodeQueue()
+			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", l.HashTable.GetNextLabel()))
 			foundSomething = true
 		}
 
@@ -700,15 +722,27 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//TODO: Get Params
 			token := []string{"sea", helpers.PALABRARESERVADA}
 
+			if l.HashTable.Statements > 0 {
+				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			}
+
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
 			params := strings.Split(seaCases[0], ",")
+			tag := l.HashTable.GetNextLabel()
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
+				l.HashTable.AddNextBlock()
+				l.HashTable.AddNextLine(fmt.Sprintf("LIT %v, 0", param))
+				l.HashTable.AddNextLine("OPR 0, 14")
+				l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", tag))
 				if i < len(params)-1 {
 					token = append(token, ",", helpers.DELIMITADOR)
 				}
 			}
+			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			l.HashTable.AddPreviousLabelInLine()
+			l.HashTable.Statements++
 
 			l.AnalyzeSwitchQueue(currentLine, lineIndex)
 			token = append(token, ":", helpers.DELIMITADOR)
@@ -735,6 +769,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				":", helpers.DELIMITADOR,
 			}))
 
+			if l.HashTable.Statements > 0 {
+				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			}
 			foundSomething = true
 		}
 
@@ -750,6 +787,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 			params := l.R.RegexRegresa.GroupsRegresa(currentLine)[0]
 			l.AnalyzeParams(currentLine, lineIndex, params)
 
@@ -759,9 +797,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
-			l.HashTable.CurrentOp = "OPR 0, 1"
-			l.HashTable.AddNextOp()
-			l.HashTable.CurrentOp = ""
+			l.AnalyzeObjectCodeQueue()
+			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
+			l.HashTable.AddNextLine("OPR 0, 1")
 			foundSomething = true
 		}
 
@@ -873,6 +911,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			assignToAnalyze := data[1]
 			assignToAnalyze = strings.TrimSuffix(assignToAnalyze, ";")
 			assignToAnalyze = strings.TrimSpace(assignToAnalyze)
+
+			l.OpQueue = []models.TokenComp{}
+			l.NamesQueue = []string{}
+			l.OperatorsQueue = []string{}
 
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
 			if l.CurrentBlockType != models.CONSTANTBLOCK {
@@ -1098,6 +1140,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			log.Printf("%+v", 13)
 
+			if l.Context != "Global" {
+				l.AnalyzeObjectCodeQueue()
+				l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", varToAssignData))
+			}
 			foundSomething = true
 		}
 
@@ -1352,16 +1398,19 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 				}
 				if k < len(aritmeticadores) {
 					l.OpQueue = append(l.OpQueue, models.OPARIT)
+					l.OperatorsQueue = append(l.OperatorsQueue, aritmeticadores[k])
 					l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{aritmeticadores[k], helpers.OPERADORARITMETICO}))
 				}
 			}
 			if j < len(relacionadores) {
 				l.OpQueue = append(l.OpQueue, models.OPREL)
+				l.OperatorsQueue = append(l.OperatorsQueue, relacionadores[j])
 				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{relacionadores[j], helpers.OPERADORRELACIONAL}))
 			}
 		}
 		if i < len(condicionadores) {
 			l.OpQueue = append(l.OpQueue, models.OPLOG)
+			l.OperatorsQueue = append(l.OperatorsQueue, condicionadores[i])
 			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{condicionadores[i], helpers.OPERADORLOGICO}))
 		}
 	}
@@ -1627,6 +1676,8 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	noNames := -1
 	function := ""
 	noBracks := 0
+	noOperators := 0
+	operator := ""
 	localOperation := l.HashTable.CurrentOp
 	if l.HashTable.CurrentOp == "OPR 0, 21" {
 		l.HashTable.CurrentOp = "OPR 0, 20"
@@ -1645,6 +1696,7 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 		case models.CALL:
 			noNames++
 			function = l.NamesQueue[noNames]
+			l.HashTable.AddNextLine(fmt.Sprintf("LOD %v, 0", l.HashTable.GetNextLabel()))
 			break
 		case models.PARAM:
 			operation = "LOD %v, 0"
@@ -1656,13 +1708,20 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 			if function != "" && noBracks >= 2 {
 				l.HashTable.CurrentOp = localOperation
 				l.HashTable.AddNextLine(fmt.Sprintf("CAL %v, 0", function))
-				if l.HashTable.CurrentOp != "" {
+				if funcDef := l.FindFunction("", 0, function); funcDef != nil && funcDef.Type != "" {
+					l.HashTable.AddLabelInLine()
 					l.HashTable.AddNextLine(fmt.Sprintf("LOD %v, 0", function))
+				}
+				if l.HashTable.CurrentOp != "" {
 					l.HashTable.AddNextOp()
 				}
 				function = ""
 				noBracks = 0
 			}
+			break
+		case models.OPARIT, models.OPLOG, models.OPREL:
+			operator = l.HashTable.GetOperationFromOperator(l.OperatorsQueue[noOperators])
+			noOperators++
 			break
 		}
 		if i >= len(l.OpQueue)-1 {
@@ -1676,6 +1735,10 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 			l.HashTable.AddNextLine(fmt.Sprintf(operation, l.NamesQueue[noNames]))
 			if l.HashTable.CurrentOp != "" {
 				l.HashTable.AddNextOp()
+			}
+			if operator != "" {
+				l.HashTable.AddNextLine(operator)
+				operator = ""
 			}
 		}
 	}

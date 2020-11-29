@@ -82,6 +82,26 @@ const (
 	NONE TokenComp = "NONE"
 )
 
+//ObjectCodeOperations ...
+var ObjectCodeOperations map[string]string = map[string]string{
+	"+":    "2",
+	"-":    "3",
+	"*":    "4",
+	"/":    "5",
+	"%":    "6",
+	"^":    "7",
+	"decr": "8",
+	"<":    "9",
+	">":    "10",
+	"<=":   "11",
+	">=":   "12",
+	"<>":   "13",
+	"=":    "14",
+	"o":    "15",
+	"y":    "16",
+	"no":   "17",
+}
+
 //VarTypeToTokenType ...
 func VarTypeToTokenType(varType string) TokenType {
 	var funcType TokenType
