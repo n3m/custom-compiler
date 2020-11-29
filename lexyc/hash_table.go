@@ -1,6 +1,9 @@
 package lexyc
 
-import "fmt"
+import (
+	"fmt"
+	"go-custom-compiler/models"
+)
 
 //HashTable ...
 type HashTable struct {
@@ -10,7 +13,9 @@ type HashTable struct {
 	Lines  []string
 	Labels map[string]string
 
-	CurrentOp string
+	CurrentOp    string
+	CurrentBlock string
+	Statements   int
 }
 
 //NewHashTable ...
@@ -21,6 +26,16 @@ func NewHashTable() (*HashTable, error) {
 //GetLine ...
 func (h *HashTable) GetLine() string {
 	return fmt.Sprintf("%v", h.LineIndex+1)
+}
+
+//GetLabel ...
+func (h *HashTable) GetLabel() string {
+	return fmt.Sprintf("_E%v", h.LabelIndex)
+}
+
+//GetPreviousLabel ...
+func (h *HashTable) GetPreviousLabel() string {
+	return fmt.Sprintf("_E%v", h.LabelIndex-1)
 }
 
 //GetNextLine ...
@@ -45,7 +60,27 @@ func (h *HashTable) AddNextLabel(line string) {
 	h.Labels[h.GetNextLabel()] = line
 }
 
+//AddLabelInLine ...
+func (h *HashTable) AddLabelInLine() {
+	h.Labels[h.GetLabel()] = h.GetLine()
+}
+
+//AddPreviousLabelInLine ...
+func (h *HashTable) AddPreviousLabelInLine() {
+	h.Labels[h.GetPreviousLabel()] = h.GetLine()
+}
+
 //AddNextOp ...
 func (h *HashTable) AddNextOp() {
 	h.Lines = append(h.Lines, h.GetNextLine()+" "+h.CurrentOp)
+}
+
+//AddNextBlock ...
+func (h *HashTable) AddNextBlock() {
+	h.Lines = append(h.Lines, h.GetNextLine()+" "+h.CurrentBlock)
+}
+
+//GetOperationFromOperator ...
+func (h *HashTable) GetOperationFromOperator(operator string) string {
+	return fmt.Sprintf("OPR 0, %v", models.ObjectCodeOperations[operator])
 }

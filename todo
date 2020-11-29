@@ -21,30 +21,50 @@ TODO:
         Verificar que el codigo contenga un PROGRAMA (main) (ya)
         Parar Compilación a los 20 errores que no recuperar (ya)
 
-        Verificar las llamadas a función en una línea (ya)
-        Verificar si se le trata de dar un nombre reservado a una variable (ya)
-
-        Falta en sea los casos (ya)
+        Falta en analizador léxico imprimir ";" solo cuando exista
+        Falta en asignación imprimir lex (ya)
+        Falta en continua imprimir lex (ya)
+        Falta en continua la sentencia completa (no hace verificación de typo) (Done)
         Falta en cuando el id (ya)
         Falta en cuando imprimir lex (ya)
+        Falta en desde imprimir lex (ya)
         Falta en desde la sentencia completa (ya)
         Falta en desde validación en asignación
-        Falta en desde imprimir lex (ya)
-        Falta en asignación imprimir lex (ya)
-        Falta en limpia imprimir lex (ya)
-        Falta en programa imprimir lex (ya)
         Falta en fin de programa imprimir lex (ya)
         Falta en interrumpe imprimir lex (ya)
-        Falta en continua la sentencia completa (no hace verificación de typo) (Done)
-        Falta en continua imprimir lex (ya)
-        Falta en analizador léxico imprimir ";" solo cuando exista
+        Falta en limpia imprimir lex (ya)
+        Falta en programa imprimir lex (ya)
+        Falta en sea los casos (ya)
+        Verificar las llamadas a función en una línea (ya)
+        Verificar si se le trata de dar un nombre reservado a una variable (ya)
+        Falta en mientras toda la sentencia 
+        Falta en sea validación de casos como constantes
+        Verificar si se le trata de dar un nombre reservado a una variable (ya)
 
 Compilador:
     Generador de Codigo Maquina
     Tabla Símbolos
-        - Error en constantes (DONE)
+        - Error en constantes (ya)
         - Error en variables locales (ya)
-        - Función/Procedimiento falta la línea donde empieza (DONE)
+        - Función/Procedimiento falta la línea donde empieza (ya)
+    Etiquetas
+    Obj:
+        - Función declaración  
+        - Llamada a función 
+        - Asignación 
+        - Lee 
+        - Immprime e Imprimenl
+        - Regresa
+            - Revisar donde se hace un regresa
+        - Cuando 
+            - sea 
+            - otro 
+        - Si (error operadores)
+        - Sino (falta)
+        - Hasta (falta)
+        - Desde (falta)
+        - Repetir (falta)
+
 
 Extras:
     Verificar extensión del archivo (DONE)
