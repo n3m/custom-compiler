@@ -1417,7 +1417,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 
 			input = strings.TrimSpace(input)
 			//DO
-			ttype := l.GetOperationTypeFromInput(input, currentLine, lineIndex)
+			ttype := l.GetOperationTypeFromAssignment(input, currentLine, lineIndex)
 			if ttype == models.INDEFINIDO {
 				log.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)

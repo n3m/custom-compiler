@@ -1,0 +1,15 @@
+Funcion Suma(a, b:Entero):Entero
+variables res:Entero
+Inicio
+Fin de Funcion
+
+Funcion Resta(a, b:Entero):Entero
+variables res:Entero
+Inicio
+Fin de Funcion
+
+Programa
+
+
+
+Fin de Programa
