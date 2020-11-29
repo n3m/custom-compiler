@@ -1414,6 +1414,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] != opTypes[1] {
 					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1436,6 +1439,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1465,6 +1471,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1496,6 +1505,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] != opTypes[1] {
 					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1515,6 +1527,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1541,6 +1556,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1586,6 +1604,20 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 		return models.LOGICO
 	}
 	if l.R.RegexCustom.MatchIdent(str) {
+
+		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
+		testFn := regexp.MustCompile(`(\((.*)\))`)
+		str = strings.TrimSpace(str)
+
+		if testCor.MatchString(str) {
+			str = testCor.ReplaceAllString(str, "")
+		}
+
+		if testFn.MatchString(str) {
+			str = testFn.ReplaceAllString(str, "")
+		}
+
+		str = strings.TrimSpace(str)
 
 		if data := l.RetrieveGlobalConstantIfExists(&models.Token{Key: str}); data != nil {
 			return data.Type
