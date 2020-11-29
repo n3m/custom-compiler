@@ -985,6 +985,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
@@ -1018,6 +1026,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
 				}
@@ -1055,6 +1071,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
@@ -1089,6 +1113,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
 				}
@@ -1138,6 +1170,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+							}
+						}
+						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+							if curToken.Type != data.Type {
+								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 							}
 						}
 					}
@@ -1516,6 +1556,15 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 			if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: str}, function); data != nil {
 				return data.Type
 			}
+			curToken := &models.Token{Key: str}
+			if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+				if curToken.Type != data.Type {
+					log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+				}
+			}
 		}
 
 		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
@@ -1595,6 +1644,15 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 						if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: eachParam}, function); data != nil {
 							paramTypes = append(paramTypes, data.Type)
 							match = true
+						}
+						curToken := &models.Token{Key: eachParam}
+						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+							if curToken.Type != data.Type {
+								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+							}
 						}
 					}
 				}

@@ -45,9 +45,31 @@ func (l *LexicalAnalyzer) DoesTheTokenExistsInLocalVariables(token *models.Token
 	return false
 }
 
+//DoesTheTokenExistsInLocalParams ...
+func (l *LexicalAnalyzer) DoesTheTokenExistsInLocalParams(token *models.Token, function *models.TokenFunc) bool {
+	for _, each := range function.Params {
+
+		if each.Key == token.Key {
+			return true
+		}
+	}
+	return false
+}
+
 //RetrieveLocalVariableIfExists ...
 func (l *LexicalAnalyzer) RetrieveLocalVariableIfExists(token *models.Token, function *models.TokenFunc) *models.Token {
 	for _, each := range function.Vars {
+
+		if each.Key == token.Key {
+			return each
+		}
+	}
+	return nil
+}
+
+//RetrieveLocalParameterIfExists ...
+func (l *LexicalAnalyzer) RetrieveLocalParameterIfExists(token *models.Token, function *models.TokenFunc) *models.Token {
+	for _, each := range function.Params {
 
 		if each.Key == token.Key {
 			return each
