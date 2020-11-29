@@ -2036,7 +2036,7 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	condicionales := stack.New()
 	relacionales := stack.New()
 	aritmeticos := stack.New()
-	// noCondicionales := 0
+	noCondicionales := 0
 	noRelacionales := 0
 	noAritmeticos := 0
 	localOperation := l.HashTable.CurrentOp
