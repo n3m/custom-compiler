@@ -1030,7 +1030,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else {
-				log.Printf(" ELSE")
 				//TEMP CASE TO UNCHECKED EXPRESSION
 				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, currentLine, lineIndex)
 
@@ -1464,7 +1463,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
-		log.Printf("%+v", 1)
 		operationParameters := test.Split(curStr, -1)
 		paramTypes := []models.TokenType{}
 
@@ -1474,7 +1472,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
-		log.Printf("%+v", 1)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
@@ -1487,8 +1484,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
-		log.Printf("%+v", 2)
-
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
