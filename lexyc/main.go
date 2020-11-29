@@ -874,6 +874,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
 			}
+
+			operations := strings.Split(l.HashTable.CurrentBlock, "#")
+			if len(operations) > 1 {
+				for _, op := range operations {
+					l.HashTable.AddNextLine(op)
+				}
+			}
+			l.HashTable.CurrentBlock = ""
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
 			l.HashTable.AddNextLine("OPR 0, 1")
