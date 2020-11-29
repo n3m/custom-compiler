@@ -105,6 +105,7 @@ func (l *LexicalAnalyzer) RetrieveFunctionOrProcedureIfExists(token *models.Toke
 	for _, each := range l.FunctionStorage {
 
 		if each.Key == token.Key {
+
 			return each
 		}
 	}

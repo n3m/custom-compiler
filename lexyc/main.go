@@ -149,6 +149,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		//Contante
 		if l.R.RegexConstante.StartsWithConstante(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
 			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"constantes", helpers.PALABRARESERVADA}))
 			foundSomething = true
@@ -156,6 +159,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		//Variable
 		if l.R.RegexVariable.StartsWithVariable(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
 			l.CurrentBlockType = models.VARIABLEBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"variables", helpers.PALABRARESERVADA}))
 			foundSomething = true
@@ -861,6 +867,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			/* CHECK */
+			if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
+				log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
+			}
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
 			l.HashTable.AddNextLine("OPR 0, 1")
@@ -1438,6 +1451,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] != opTypes[1] {
 					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1460,6 +1476,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1489,6 +1508,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1520,6 +1542,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] != opTypes[1] {
 					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1539,6 +1564,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1565,6 +1593,9 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+					continue
+				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
 					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
@@ -1582,7 +1613,14 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			}
 
 		} else {
-			everythingGood = false
+			opTypes := process(conditions)
+			if len(opTypes) == 0 {
+				everythingGood = false
+			}
+
+			if len(opTypes) > 0 && opTypes[0] == models.INDEFINIDO {
+				everythingGood = false
+			}
 		}
 	}
 
@@ -1591,7 +1629,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(AssignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((\s*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(AssignStr)
 }
 
@@ -1600,16 +1638,30 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 	if l.R.RegexCustom.MatchCteAlfa(str) {
 		return models.ALFABETICO
 	}
-	if l.R.RegexCustom.MatchCteEnt(str) {
-		return models.ENTERO
-	}
 	if l.R.RegexCustom.MatchCteReal(str) {
 		return models.REAL
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		return models.ENTERO
 	}
 	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
 		return models.LOGICO
 	}
 	if l.R.RegexCustom.MatchIdent(str) {
+
+		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
+		testFn := regexp.MustCompile(`(\((.*)\))`)
+		str = strings.TrimSpace(str)
+
+		if testCor.MatchString(str) {
+			str = testCor.ReplaceAllString(str, "")
+		}
+
+		if testFn.MatchString(str) {
+			str = testFn.ReplaceAllString(str, "")
+		}
+
+		str = strings.TrimSpace(str)
 
 		if data := l.RetrieveGlobalConstantIfExists(&models.Token{Key: str}); data != nil {
 			return data.Type
@@ -1626,12 +1678,7 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 			}
 			curToken := &models.Token{Key: str}
 			if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
-				if curToken.Type != data.Type {
-					log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-					l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
-				}
+				return data.Type
 			}
 		}
 
@@ -1663,18 +1710,23 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
+		testFn := regexp.MustCompile(`(\((.*)\))`)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
 
 			if testCor.MatchString(str) {
-				data := testCor.Split(str, -1)
-				str = data[0]
+				str = testCor.ReplaceAllString(str, "")
+			}
+
+			if testFn.MatchString(str) {
+				str = testFn.ReplaceAllString(str, "")
 			}
 
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
+
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
@@ -1715,23 +1767,15 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 						}
 						curToken := &models.Token{Key: eachParam}
 						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
-							if curToken.Type != data.Type {
-								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
-							}
+							paramTypes = append(paramTypes, data.Type)
+							match = true
 						}
 					}
 				}
 				if !match {
-					if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: eachParam}); data != nil {
-						paramTypes = append(paramTypes, data.Type)
-						match = true
-					}
-				}
-				if !match {
 					if data := l.RetrieveFunctionOrProcedureIfExists(&models.Token{Key: eachParam}); data != nil {
+						data.Calls = append(data.Calls, &models.Line{CurrentLine: currentLine, LineIndex: lineIndex})
+
 						paramTypes = append(paramTypes, data.Type)
 						match = true
 					}
@@ -1805,6 +1849,9 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 //AnalyzeType ...
 func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line string) []string {
 	line = strings.TrimSpace(line)
+	if len(line) == 0 {
+		return []string{}
+	}
 	token := []string{line}
 	if l.R.RegexCustom.MatchCteAlfa(line) {
 		token = append(token, helpers.CONSTANTEALFABETICA)

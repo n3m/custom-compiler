@@ -1,0 +1,34 @@
+Procedimiento Bienvenida():
+variables nombreDelUsuario:Alfabetico;
+Inicio
+    Lee(nombreDelUsuario);
+    imprimenl("Bienvenid@ ", nombreDelUsuario, " a la calculadora de 'Area de Paralelogramos'");
+Fin de Procedimiento;
+
+Funcion ObtenerArea():Real
+variables b, a, res:Real;
+Inicio
+    imprimenl("Introduce el valor de la base del paralelogramo:");
+    Lee(b)
+    imprimenl("Introduce el valor de la altura del paralelogramo:");
+    Lee(a);
+
+    Si (b <= 0.0 o a <= 0.0) hacer
+        regresa(0)
+
+    res := b * a;
+    imprimenl("Base: ", b, " | Altura: ", a);
+    
+    regresa(res);
+Fin de Funcion;
+
+variables result:Real;
+Programa
+    Bienvenida();
+    result := ObtenerArea();
+    Si(result = 0) hacer
+        imprimenl("Ingresaste algun valor menor o igual a 0.");
+    sino
+        imprimenl("El area del Paralelogramo es: ", result);
+        
+Fin de Programa;

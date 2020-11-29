@@ -39,6 +39,7 @@ func main() {
 	os.Remove(name + "_" + "lex_data.lex")
 	os.Remove(name + "_" + "test_data.test")
 	os.Remove(name + "_" + "process.log")
+	os.Remove(name + "_" + "tmp.up")
 
 	/* Create Loggers */
 	errLogger, errFile, err := helpers.CreateLogger(name+"_"+"error_data.err", false)
