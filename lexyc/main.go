@@ -142,13 +142,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
-		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
+		log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
 		// log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
 		/* StartsWith */
 
 		//Contante
 		if l.R.RegexConstante.StartsWithConstante(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
 			l.CurrentBlockType = models.CONSTANTBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"constantes", helpers.PALABRARESERVADA}))
 			foundSomething = true
@@ -156,6 +159,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		//Variable
 		if l.R.RegexVariable.StartsWithVariable(currentLine, lineIndex) {
+			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+			}
 			l.CurrentBlockType = models.VARIABLEBLOCK
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"variables", helpers.PALABRARESERVADA}))
 			foundSomething = true
@@ -1596,12 +1602,7 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 			}
 			curToken := &models.Token{Key: str}
 			if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
-				if curToken.Type != data.Type {
-					log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-					l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
-				}
+				return data.Type
 			}
 		}
 
@@ -1685,12 +1686,8 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 						}
 						curToken := &models.Token{Key: eachParam}
 						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
-							if curToken.Type != data.Type {
-								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
-								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
-								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
-							}
+							paramTypes = append(paramTypes, data.Type)
+							match = true
 						}
 					}
 				}

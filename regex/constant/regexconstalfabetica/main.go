@@ -14,7 +14,7 @@ func NewRegexConstAlfabetica() (*RegexConstAlfabetica, error) {
 	// var moduleName string = "[regexConstAlfabetica][NewRegexConstAlfabetica()]"
 
 	return &RegexConstAlfabetica{
-		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(\"(\w)*\");$`),
+		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)(\"(\w)*\")$`),
 	}, nil
 }
 

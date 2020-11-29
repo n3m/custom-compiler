@@ -1,7 +1,11 @@
 
+Procedimiento ImprimirNombre():
 variables nombreDelUsuario:Alfabetico;
-
-Programa
+Inicio
     Lee(nombreDelUsuario);
     imprimenl("Bienvenido ", nombreDelUsuario, " a la consola de este programa");
+Fin de Procedimiento;
+
+Programa
+    ImprimirNombre();
 Fin de Programa
