@@ -93,6 +93,12 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local variable", currentLine)
 						}
+						if test := l.DoesTheTokenExistsInLocalParams(&symbol, function); test {
+							log.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							l.GL.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local function parameter", currentLine)
+						}
 						if test := l.DoesTheTokenExistsInFunctionsStorage(&symbol); test {
 							log.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
 							l.GL.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
@@ -185,6 +191,12 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local variable", currentLine)
 						}
+						if test := l.DoesTheTokenExistsInLocalParams(&symbol, function); test {
+							log.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							l.GL.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local function parameter", currentLine)
+						}
 						if test := l.DoesTheTokenExistsInFunctionsStorage(&symbol); test {
 							log.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
 							l.GL.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
@@ -275,6 +287,12 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local variable", currentLine)
 						}
+						if test := l.DoesTheTokenExistsInLocalParams(&symbol, function); test {
+							log.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							l.GL.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local function parameter", currentLine)
+						}
 						if test := l.DoesTheTokenExistsInFunctionsStorage(&symbol); test {
 							log.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
 							l.GL.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)
@@ -363,6 +381,12 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 							l.GL.Printf("[ERR] Found redeclaration of local variable at [%+v][Line: %+v]", 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local variable", currentLine)
+						}
+						if test := l.DoesTheTokenExistsInLocalParams(&symbol, function); test {
+							log.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							l.GL.Printf("[ERR] Found redeclaration of local function parameter at [%+v][Line: %+v]", 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "REDECLARE", "Found redeclaration of local function parameter", currentLine)
 						}
 						if test := l.DoesTheTokenExistsInFunctionsStorage(&symbol); test {
 							log.Printf("[ERR] Found redeclaration of function as variable at [%+v][Line: %+v]", 0, lineIndex)

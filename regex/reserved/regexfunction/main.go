@@ -102,6 +102,12 @@ func (r *RegexFunction) StartsWithFunction(str string, lineIndex int64) bool {
 	return false
 }
 
+//ValidateFunction ...
+func (r *RegexFunction) ValidateFunction(str string) bool {
+	test := regexp.MustCompile(`([a-zA-Z][a-zA-Z0-9]+)(\s*)(\()(.*)(\)):([a-zA-Z]+)`)
+	return test.MatchString(str)
+}
+
 //StartsWithFunctionNoCheck ...
 func (r *RegexFunction) StartsWithFunctionNoCheck(str string) bool {
 	if r.V1.MatchString(str) {

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,6 +33,12 @@ func main() {
 
 	name := path
 	name = strings.Replace(name, ".", "_", -1)
+
+	/*Remove previous logs*/
+	os.Remove(name + "_" + "error_data.err")
+	os.Remove(name + "_" + "lex_data.lex")
+	os.Remove(name + "_" + "test_data.test")
+	os.Remove(name + "_" + "process.log")
 
 	/* Create Loggers */
 	errLogger, errFile, err := helpers.CreateLogger(name+"_"+"error_data.err", false)
@@ -83,7 +91,7 @@ func main() {
 	reader := helpers.GetScannerFromFile(tempFile)
 	generalLogger.Printf("Created Scanner from to File")
 
-	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger)
+	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger, errFile)
 	if err != nil {
 		generalLogger.Printf("Error while creating a new Lexical Analyzer! (%+v)", err.Error())
 		panic(err)
@@ -100,9 +108,12 @@ func main() {
 		generalLogger.Printf("File analyzed correctly")
 	}
 
-	// if lex.ErrorsCount > 0 {
-	// 	panic()
-	// }
+	/*CHECK FOR ANY ERRORS */
+	errors, err := lineCounter(errFile)
+	if (errors - 3) >= 0 {
+		generalLogger.Printf("The source code has errors! Fix them before continuing with the compilation")
+		panic("The source code has errors! Fix them before continuing with the compilation")
+	}
 
 	/*Object Code*/
 	fileName := filepath.Base(path)
@@ -128,4 +139,23 @@ func main() {
 
 	generalLogger.Printf("Compiler has finished with Status [%v]", lex.Status)
 	os.Remove(tempFile.Name())
+}
+
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }

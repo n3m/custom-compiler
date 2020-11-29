@@ -24,7 +24,7 @@ TODO:
         Falta en analizador léxico imprimir ";" solo cuando exista
         Falta en asignación imprimir lex (ya)
         Falta en continua imprimir lex (ya)
-        Falta en continua la sentencia completa (no hace verificación de typo) (Done)
+        Falta en continua la sentencia completa (no hace verificación de typo) (DONE)
         Falta en cuando el id (ya)
         Falta en cuando imprimir lex (ya)
         Falta en desde imprimir lex (ya)
@@ -40,6 +40,7 @@ TODO:
         Falta en mientras toda la sentencia 
         Falta en sea validación de casos como constantes
         Verificar si se le trata de dar un nombre reservado a una variable (ya)
+        No contar Warnings en error count (DONE)
 
 Compilador:
     Generador de Codigo Maquina

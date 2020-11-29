@@ -2,8 +2,11 @@ package lexyc
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 
@@ -20,8 +23,9 @@ type LexicalAnalyzer struct {
 	File *bufio.Scanner     //File
 	R    *regex.CustomRegex //Regex Handler
 	EL   *log.Logger        //Error Logger
-	LL   *log.Logger        //Lex Logger
-	GL   *log.Logger        //General Logger
+	EF   *os.File
+	LL   *log.Logger //Lex Logger
+	GL   *log.Logger //General Logger
 	TEST *log.Logger
 
 	//TEST
@@ -38,12 +42,13 @@ type LexicalAnalyzer struct {
 	Context          string
 	HasMain          bool
 	ErrorsCount      int
+	WarningsCount    int
 
 	HashTable *HashTable
 }
 
 //NewLexicalAnalyzer ...
-func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger) (*LexicalAnalyzer, error) {
+func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger, errFile *os.File) (*LexicalAnalyzer, error) {
 	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
 	GeneralLogger.Printf("Started the Lexical Analyzer")
 
@@ -59,6 +64,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 	if err != nil {
 		GeneralLogger.Printf("[ERR]%+v %+v", moduleName, err.Error())
 		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
+	}
+	if errFile == nil {
+		GeneralLogger.Printf("[ERR]%+v errfile is not present", moduleName)
+		return nil, fmt.Errorf("[ERR]%+v errfile is not present", moduleName)
 	}
 
 	LexLogger.Println("--------------------------------------------------------------------------------------------")
@@ -79,6 +88,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		EL:   ErrorLogger,
 		LL:   LexLogger,
 		GL:   GeneralLogger,
+		EF:   errFile,
 		TEST: TestLogger,
 
 		Status:           0,
@@ -248,61 +258,67 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.BlockQueue = append(l.BlockQueue, models.FUNCTIONBLOCK)
 			funcionGroups := helpers.GetGroupMatches(currentLine, helpers.FUNCIONREGEXP)
-			token := []string{
-				funcionGroups[0], helpers.PALABRARESERVADA,
-				funcionGroups[1], helpers.IDENTIFICADOR,
-				"(", helpers.DELIMITADOR,
-			}
 
-			l.Context = funcionGroups[1]
-			symbol := models.TokenFunc{
-				Key:                funcionGroups[1],
-				IsDefined:          true,
-				HashTableLineIndex: l.HashTable.GetLine(),
-			}
-
-			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
-			groups := strings.Split(params, ";")
-			for i, group := range groups {
-				if i > 0 {
-					token = append(token, ";", helpers.DELIMITADOR)
+			if l.R.RegexFunction.ValidateFunction(currentLine) {
+				token := []string{
+					funcionGroups[0], helpers.PALABRARESERVADA,
+					funcionGroups[1], helpers.IDENTIFICADOR,
+					"(", helpers.DELIMITADOR,
 				}
-				groupVars := strings.Split(group, ":")
-				vars := strings.Split(groupVars[0], ",")
 
-				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
-				symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
-
-				token = append(token, vars[0], helpers.IDENTIFICADOR)
-				for _, v := range vars[1:] {
-					token = append(token, ",", helpers.DELIMITADOR)
-					token = append(token, l.AnalyzeType("", 0, v)...)
-
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+				l.Context = funcionGroups[1]
+				symbol := models.TokenFunc{
+					Key:                funcionGroups[1],
+					IsDefined:          true,
+					HashTableLineIndex: l.HashTable.GetLine(),
 				}
-				token = append(token, ":", helpers.DELIMITADOR,
-					strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
-			}
-			token = append(token, ")", helpers.DELIMITADOR,
-				":", helpers.DELIMITADOR,
-				funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA)
-			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
-			funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
-			symbol.Type = funcType
+				params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
+				groups := strings.Split(params, ";")
+				for i, group := range groups {
+					if i > 0 {
+						token = append(token, ";", helpers.DELIMITADOR)
+					}
+					groupVars := strings.Split(group, ":")
+					vars := strings.Split(groupVars[0], ",")
 
-			procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
-			if procProto == nil {
-				l.FunctionStorage = append(l.FunctionStorage, &symbol)
+					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+
+					token = append(token, vars[0], helpers.IDENTIFICADOR)
+					for _, v := range vars[1:] {
+						token = append(token, ",", helpers.DELIMITADOR)
+						token = append(token, l.AnalyzeType("", 0, v)...)
+
+						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+					}
+					token = append(token, ":", helpers.DELIMITADOR,
+						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
+				}
+				token = append(token, ")", helpers.DELIMITADOR,
+					":", helpers.DELIMITADOR,
+					funcionGroups[len(funcionGroups)-1], helpers.PALABRARESERVADA)
+				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+				funcType := models.VarTypeToTokenType(funcionGroups[len(funcionGroups)-1])
+				symbol.Type = funcType
+
+				procProto := l.FindFunction(currentLine, lineIndex, symbol.Key)
+				if procProto == nil {
+					l.FunctionStorage = append(l.FunctionStorage, &symbol)
+				} else {
+					l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
+				}
+
+				if function := l.FindFunction("", 0, funcionGroups[1]); function != nil {
+					for _, params := range function.Params {
+						l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
+					}
+				}
 			} else {
-				l.CompareFunction(currentLine, lineIndex, procProto, &symbol, false)
+				l.LogError(lineIndex, 0, "FUNCTION DECLARATION", "Function declaration is not complete", currentLine)
 			}
 
-			if function := l.FindFunction("", 0, funcionGroups[1]); function != nil {
-				for _, params := range function.Params {
-					l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", params.Key))
-				}
-			}
 			foundSomething = true
 		}
 
@@ -411,7 +427,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Fin
 		if l.R.RegexFin.StartsWithFin(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
@@ -520,7 +536,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//ImprimeNL
 		if l.R.RegexIO.MatchImprimenl(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
@@ -564,7 +580,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//Imprime
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				"Imprime", helpers.PALABRARESERVADA,
@@ -608,7 +624,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Lee
 		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
@@ -803,7 +819,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Regresa
 		if l.R.RegexRegresa.MatchRegresa(currentLine, lineIndex) {
 			if !l.R.RegexRegresa.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				"Regresa", helpers.PALABRARESERVADA,
@@ -899,7 +915,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexSystem.MatchInterrumpe(currentLine, lineIndex) {
 			token := []string{"interrumpe", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			} else {
 				token = append(token, ";", helpers.DELIMITADOR)
 			}
@@ -914,7 +930,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexSystem.MatchContinua(currentLine, lineIndex) {
 			token := []string{"continua", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			} else {
 				token = append(token, ";", helpers.DELIMITADOR)
 			}
@@ -928,7 +944,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Limpia
 		if l.R.RegexSystem.MatchLimpia(currentLine, lineIndex) {
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.GL.Printf("%+v Found 'Limpia' instruction [Line: %+v]", funcName, lineIndex)
@@ -948,7 +964,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Asignación
 		if l.R.RegexAsignacion.MatchAsignacion(currentLine, lineIndex) {
 			if !l.R.RegexAsignacion.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			currentLine = strings.TrimSpace(currentLine)
@@ -1007,6 +1023,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
 						}
 					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(AssignToAnalyze) {
@@ -1040,6 +1064,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
+						}
+					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
 				}
@@ -1077,6 +1109,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
 						}
 					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+						}
+					}
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(AssignToAnalyze) {
@@ -1111,6 +1151,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
+						}
+					}
+					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+						if curToken.Type != data.Type {
+							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 						}
 					}
 				}
@@ -1160,6 +1208,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 								l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
+							}
+						}
+						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+							if curToken.Type != data.Type {
+								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
 							}
 						}
 					}
@@ -1282,8 +1338,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//TODO Contar líneas del archivo .err
-
-		if l.ErrorsCount >= 20 {
+		f, err := os.Open(l.EF.Name())
+		errors, err := lineCounter(f)
+		if (errors - 3 - l.WarningsCount) >= 20 {
 			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
 			l.Status = -1
 			return nil
@@ -1537,6 +1594,15 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 			if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: str}, function); data != nil {
 				return data.Type
 			}
+			curToken := &models.Token{Key: str}
+			if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+				if curToken.Type != data.Type {
+					log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+					l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+				}
+			}
 		}
 
 		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
@@ -1617,6 +1683,15 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 							paramTypes = append(paramTypes, data.Type)
 							match = true
 						}
+						curToken := &models.Token{Key: eachParam}
+						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
+							if curToken.Type != data.Type {
+								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
+							}
+						}
 					}
 				}
 				if !match {
@@ -1653,7 +1728,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 				return firstMatch
 			}
 		}
-		log.Printf("TEST TYPES> %+v", paramTypes)
 	}
 
 	return models.INDEFINIDO
@@ -1962,7 +2036,7 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	condicionales := stack.New()
 	relacionales := stack.New()
 	aritmeticos := stack.New()
-	noCondicionales := 0
+	// noCondicionales := 0
 	noRelacionales := 0
 	noAritmeticos := 0
 	localOperation := l.HashTable.CurrentOp
@@ -2191,6 +2265,15 @@ func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err
 	l.ErrorsCount++
 }
 
+//LogWarning ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogWarning(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
+	l.EL.Printf("%+v\t|\t%+v\t|\t[WARN] %+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
+	l.WarningsCount++
+}
+
 //LogErrorGeneral ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogErrorGeneral(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
@@ -2249,4 +2332,23 @@ func (l *LexicalAnalyzer) Print() {
 	}
 
 	log.SetFlags(log.LstdFlags)
+}
+
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }
