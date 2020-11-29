@@ -32,6 +32,12 @@ func main() {
 	name := path
 	name = strings.Replace(name, ".", "_", -1)
 
+	/*Remove previous logs*/
+	os.Remove(name + "_" + "error_data.err")
+	os.Remove(name + "_" + "lex_data.lex")
+	os.Remove(name + "_" + "est_data.test")
+	os.Remove(name + "_" + "process.log")
+
 	/* Create Loggers */
 	errLogger, errFile, err := helpers.CreateLogger(name+"_"+"error_data.err", false)
 	defer errFile.Close()
@@ -83,7 +89,7 @@ func main() {
 	reader := helpers.GetScannerFromFile(tempFile)
 	generalLogger.Printf("Created Scanner from to File")
 
-	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger)
+	lex, err := lexyc.NewLexicalAnalyzer(reader, errLogger, lexLogger, generalLogger, testLogger, errFile)
 	if err != nil {
 		generalLogger.Printf("Error while creating a new Lexical Analyzer! (%+v)", err.Error())
 		panic(err)

@@ -2,8 +2,11 @@ package lexyc
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 
@@ -20,8 +23,9 @@ type LexicalAnalyzer struct {
 	File *bufio.Scanner     //File
 	R    *regex.CustomRegex //Regex Handler
 	EL   *log.Logger        //Error Logger
-	LL   *log.Logger        //Lex Logger
-	GL   *log.Logger        //General Logger
+	EF   *os.File
+	LL   *log.Logger //Lex Logger
+	GL   *log.Logger //General Logger
 	TEST *log.Logger
 
 	//TEST
@@ -43,7 +47,7 @@ type LexicalAnalyzer struct {
 }
 
 //NewLexicalAnalyzer ...
-func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger) (*LexicalAnalyzer, error) {
+func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogger, TestLogger *log.Logger, errFile *os.File) (*LexicalAnalyzer, error) {
 	var moduleName string = "[Lexyc][NewLexicalAnalyzer()]"
 	GeneralLogger.Printf("Started the Lexical Analyzer")
 
@@ -59,6 +63,10 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 	if err != nil {
 		GeneralLogger.Printf("[ERR]%+v %+v", moduleName, err.Error())
 		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
+	}
+	if errFile == nil {
+		GeneralLogger.Printf("[ERR]%+v errfile is not present", moduleName)
+		return nil, fmt.Errorf("[ERR]%+v errfile is not present", moduleName)
 	}
 
 	LexLogger.Println("--------------------------------------------------------------------------------------------")
@@ -79,6 +87,7 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		EL:   ErrorLogger,
 		LL:   LexLogger,
 		GL:   GeneralLogger,
+		EF:   errFile,
 		TEST: TestLogger,
 
 		Status:           0,
@@ -1251,8 +1260,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//TODO Contar líneas del archivo .err
-
-		if l.ErrorsCount >= 20 {
+		f, err := os.Open(l.EF.Name())
+		errors, err := lineCounter(f)
+		if (errors - 3) >= 20 {
 			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
 			l.Status = -1
 			return nil
@@ -1622,7 +1632,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 				return firstMatch
 			}
 		}
-		log.Printf("TEST TYPES> %+v", paramTypes)
 	}
 
 	return models.INDEFINIDO
@@ -1931,7 +1940,7 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	condicionales := stack.New()
 	relacionales := stack.New()
 	aritmeticos := stack.New()
-	noCondicionales := 0
+	// noCondicionales := 0
 	noRelacionales := 0
 	localOperation := l.HashTable.CurrentOp
 	if l.HashTable.CurrentOp == "OPR 0, 21" {
@@ -2205,4 +2214,23 @@ func (l *LexicalAnalyzer) Print() {
 	}
 
 	log.SetFlags(log.LstdFlags)
+}
+
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }
