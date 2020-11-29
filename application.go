@@ -29,17 +29,20 @@ func main() {
 		panic("File is not a SOURCE CODE File")
 	}
 
+	name := path
+	name = strings.Replace(name, ".", "_", -1)
+
 	/* Create Loggers */
-	errLogger, errFile, err := helpers.CreateLogger("error_data.err", false)
+	errLogger, errFile, err := helpers.CreateLogger(name+"_"+"error_data.err", false)
 	defer errFile.Close()
 
-	lexLogger, lexFile, err := helpers.CreateLogger("lex_data.lex", false)
+	lexLogger, lexFile, err := helpers.CreateLogger(name+"_"+"lex_data.lex", false)
 	defer lexFile.Close()
 
-	testLogger, testFile, err := helpers.CreateLogger("test_data.test", false)
+	testLogger, testFile, err := helpers.CreateLogger(name+"_"+"test_data.test", false)
 	defer testFile.Close()
 
-	generalLogger, logFile, err := helpers.CreateLogger("process.log", true)
+	generalLogger, logFile, err := helpers.CreateLogger(name+"_"+"process.log", true)
 	defer logFile.Close()
 	generalLogger.Printf("<=== Compiler has started on V%+v ===>", version)
 
