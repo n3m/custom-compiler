@@ -35,22 +35,32 @@ func NewCodeGenerator(lexicalAnalyzer *lexyc.LexicalAnalyzer, objectCodeLogger *
 func (cG *CodeGenerator) Generate() error {
 
 	for _, globalVariable := range cG.LA.VariableStorage {
-		cG.printToken(globalVariable, "V", []string{})
+		cG.printToken(globalVariable, "V", "")
 	}
 	for _, globalConstant := range cG.LA.ConstantStorage {
-		cG.printToken(globalConstant, "V", []string{})
+		cG.printToken(globalConstant, "C", "")
 	}
 	for _, function := range cG.LA.FunctionStorage {
 		cG.printFunctionToken(function)
 	}
 
+	for label, line := range cG.LA.HashTable.Labels {
+		cG.OCL.Printf("%v,I,I,%v,0,#,", label, line)
+	}
+	cG.OCL.Println("@")
+	for _, line := range cG.LA.HashTable.Lines {
+		cG.OCL.Println(line)
+	}
+
 	return nil
 }
 
-func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, definition []string) {
+func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, context string) {
 	tokenProp := []string{}
 	tokenProp = append(tokenProp, token.Key)
-	tokenProp = append(tokenProp, definition...)
+	if context != "" {
+		tokenProp = append(tokenProp, []string{"I", "I", "0", "0"}...)
+	}
 
 	tokenProp = append(tokenProp, tokenType)
 
@@ -64,6 +74,9 @@ func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, defin
 		tokenProp = append(tokenProp, dimension)
 	}
 
+	if context != "" {
+		tokenProp = append(tokenProp, context)
+	}
 	tokenProp = append(tokenProp, "#,")
 
 	cG.OCL.Println(strings.Join(tokenProp, ","))
@@ -83,17 +96,17 @@ func (cG *CodeGenerator) printFunctionToken(token *models.TokenFunc) {
 	tokenProp = append(tokenProp, tokenType)
 	tokenProp = append(tokenProp, functionType)
 
-	tokenDefinition := "0" //TODO
+	tokenDefinition := token.HashTableLineIndex
 	tokenProp = append(tokenProp, tokenDefinition)
 	tokenProp = append(tokenProp, "0,#,")
 
 	cG.OCL.Println(strings.Join(tokenProp, ","))
 
 	for _, funcParam := range token.Params {
-		cG.printToken(funcParam, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcParam, "V", token.Key)
 	}
 	for _, funcVar := range token.Vars {
-		cG.printToken(funcVar, "V", []string{"I", "I", "0", "0"})
+		cG.printToken(funcVar, "V", token.Key)
 	}
 
 	return

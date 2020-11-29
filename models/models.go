@@ -16,10 +16,11 @@ type Line struct {
 
 //TokenFunc ...
 type TokenFunc struct {
-	Type      TokenType
-	Key       string
-	Params    []*Token
-	Vars      []*Token
-	IsDefined bool
-	Calls     []*Line
+	Type               TokenType
+	Key                string
+	Params             []*Token
+	Vars               []*Token
+	IsDefined          bool
+	Calls              []*Line
+	HashTableLineIndex string
 }

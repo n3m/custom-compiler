@@ -41,6 +41,10 @@ TODO:
 
 Compilador:
     Generador de Codigo Maquina
+    Tabla Símbolos
+        - Error en constantes 
+        - Error en variables locales (ya)
+        - Función/Procedimiento falta la línea donde empieza
 
 Extras:
     Verificar extensión del archivo (DONE)

@@ -46,9 +46,11 @@ Funcion FacIter(n:Entero):Entero
 Variables Facto:Entero;
 Inicio
 Facto:=1;
+Facto:= -1;
+//Facto:= -1.5e^2;
 Desde el valor de i:=n hasta 2 decr 1
 Facto:=Facto*i;
-Facto:=vector[MAX]
+//Facto:=vector[MAX]
 Fin de Funcion;
 
 Funcion VolCil(radio, altura: Real):Real
@@ -159,6 +161,12 @@ Imprimenl("Es el radio= ", r, " mayor que Altura= ", s, " ? ", Compara(r, s, 2))
 LeeVecmat();
 Imprime("Dame tu nombre: ");
 Lee(alfa);
+Imprime("Dame tu Apellido: ");
+Lee(beta);
+Imprimenl("Hola ", Concat(alfa, beta), " ya la pasaste!!!");
+Fin de programa.
+.
+alfa);
 Imprime("Dame tu Apellido: ");
 Lee(beta);
 Imprimenl("Hola ", Concat(alfa, beta), " ya la pasaste!!!");

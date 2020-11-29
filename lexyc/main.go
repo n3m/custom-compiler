@@ -36,6 +36,8 @@ type LexicalAnalyzer struct {
 	Context          string
 	HasMain          bool
 	ErrorsCount      int
+
+	HashTable *HashTable
 }
 
 //NewLexicalAnalyzer ...
@@ -64,6 +66,11 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 	ErrorLogger.Printf("# Linea | # Columna | Error | Descripcion | Linea del Error")
 	ErrorLogger.Printf("=============================================================")
 
+	HT, err := NewHashTable()
+	if err != nil {
+		GeneralLogger.Printf("[ERR]%+v %+v", moduleName, err.Error())
+		return nil, fmt.Errorf("[ERR]%+v %+v", moduleName, err.Error())
+	}
 	return &LexicalAnalyzer{
 		File: file,
 		R:    R,
@@ -81,6 +88,8 @@ func NewLexicalAnalyzer(file *bufio.Scanner, ErrorLogger, LexLogger, GeneralLogg
 		ConstantStorage:  []*models.Token{},
 		VariableStorage:  []*models.Token{},
 		Context:          "Global",
+
+		HashTable: HT,
 	}, nil
 }
 
@@ -174,7 +183,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.Context = procedureGroups[1]
 
-			symbol := models.TokenFunc{Key: procedureGroups[1], IsDefined: true}
+			symbol := models.TokenFunc{
+				Key:                procedureGroups[1],
+				IsDefined:          true,
+				HashTableLineIndex: l.HashTable.GetLine(),
+			}
 
 			params := strings.Join(procedureGroups[2:], "")
 			groups := strings.Split(params, ";")
@@ -234,7 +247,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			l.Context = funcionGroups[1]
-			symbol := models.TokenFunc{Key: funcionGroups[1], IsDefined: true}
+			symbol := models.TokenFunc{
+				Key:                funcionGroups[1],
+				IsDefined:          true,
+				HashTableLineIndex: l.HashTable.GetLine(),
+			}
 
 			params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
 			groups := strings.Split(params, ";")
@@ -481,6 +498,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = "OPR 0, 20"
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
@@ -510,6 +528,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			//Imprime
+			l.HashTable.CurrentOp = ""
 			foundSomething = true
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
@@ -520,6 +539,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = "OPR 0, 20"
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			params = strings.Split(params[len(params)-1], ",")
 			l.OpQueue = []models.TokenComp{}
@@ -547,6 +567,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.CurrentOp = ""
 			foundSomething = true
 		}
 
@@ -925,6 +946,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
+				log.Printf("LOG")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -961,6 +983,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
+				log.Printf("ENT")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -996,6 +1019,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
+				log.Printf("ALFA")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -1031,6 +1055,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
+				log.Printf("REAL")
 
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -1067,6 +1092,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else {
+				log.Printf(" ELSE")
 				//TEMP CASE TO UNCHECKED EXPRESSION
 				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, currentLine, lineIndex)
 
@@ -1131,6 +1157,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !foundSomething {
 				l.GL.Printf("%+v Found 'Unknown Assign [`%+v`]' instruction [Line: %+v] ", funcName, assignToAnalyze, lineIndex)
 			}
+			log.Printf("%+v", 13)
 
 			foundSomething = true
 		}
@@ -1148,6 +1175,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.Context = "Programa"
 			l.HasMain = true
+			l.HashTable.Labels["_P"] = l.HashTable.GetLine()
 			foundSomething = true
 		}
 
@@ -1246,7 +1274,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(assignStr)
 }
 
@@ -1297,12 +1325,20 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 //GetOperationTypeFromAssignment ...
 func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, currentLine string, lineIndex int64) models.TokenType {
 	if l.isAValidOperation(assignStr) {
+
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
+		log.Printf("%+v", 1)
 		operationParameters := test.Split(curStr, -1)
+		paramTypes := []models.TokenType{}
+
+		t1 := regexp.MustCompile(`(\^|\/)`)
+		if t1.MatchString(curStr) {
+			paramTypes = append(paramTypes, models.REAL)
+		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
-
+		log.Printf("%+v", 1)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
@@ -1315,8 +1351,8 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
+		log.Printf("%+v", 2)
 
-		paramTypes := []models.TokenType{}
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
@@ -1408,10 +1444,10 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 			aritmeticos := l.R.RegexOperatorAritmetico.V1.Split(relacion, -1)
 			aritmeticadores := l.R.RegexOperatorAritmetico.GroupsOpAritmetico(relacion)
 			for k, aritmetico := range aritmeticos {
-				token := []string{
-					aritmetico,
+				token := []string{}
+				if aritmetico != "" {
+					token = l.AnalyzeType(currentLine, lineIndex, aritmetico)
 				}
-				token = l.AnalyzeType(currentLine, lineIndex, aritmetico)
 
 				if len(token) > 0 {
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
@@ -1487,12 +1523,14 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		}
 	} else {
 		groups := l.R.RegexVar.GroupsVar(line)
+
 		token = []string{groups[0], helpers.IDENTIFICADOR}
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.NamesQueue = append(l.NamesQueue, groups[0])
 		if lineIndex != 0 {
 			l.FindSymbol(currentLine, lineIndex, groups[0])
 		}
+
 		if len(groups) > 1 {
 			for _, group := range groups[1:] {
 				if len(group) > 2 {
@@ -1625,6 +1663,10 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 		item := l.OpQueue[i]
 		if function == nil && item != models.ID {
 			if item == models.CTEALFA || item == models.CTEENT || item == models.CTELOG || item == models.CTEREAL {
+				l.HashTable.AddNextLine(fmt.Sprintf("LIT %v, 0", l.NamesQueue[noVars]))
+				if l.HashTable.CurrentOp != "" {
+					l.HashTable.AddNextOp()
+				}
 				noVars++
 			}
 			continue
@@ -1780,6 +1822,9 @@ func (l *LexicalAnalyzer) CompareFunction(currentLine string, lineIndex int64, m
 		match = false
 	}
 	if match {
+		if !isCall {
+			model.HashTableLineIndex = current.HashTableLineIndex
+		}
 		return
 	}
 
