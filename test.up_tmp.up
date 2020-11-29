@@ -1,0 +1,6 @@
+Procedimiento Selecciona()
+Iniio
+Si (i = 7) hacer
+Si (Vector[i]>Vector[j]) hacer
+Si (opc=2) hacer
+Fin de Procedimiento;
