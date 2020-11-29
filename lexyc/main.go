@@ -844,6 +844,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			/* CHECK */
+			if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
+				log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
+			}
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
 			l.HashTable.AddNextLine("OPR 0, 1")
@@ -1576,7 +1583,14 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			}
 
 		} else {
-			everythingGood = false
+			opTypes := process(conditions)
+			if len(opTypes) == 0 {
+				everythingGood = false
+			}
+
+			if len(opTypes) > 0 && opTypes[0] == models.INDEFINIDO {
+				everythingGood = false
+			}
 		}
 	}
 
