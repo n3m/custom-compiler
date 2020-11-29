@@ -888,7 +888,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
-				log.Printf("LOG")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -925,7 +924,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
-				log.Printf("ENT")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -961,7 +959,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
-				log.Printf("ALFA")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -997,7 +994,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
-				log.Printf("REAL")
 
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -1099,7 +1095,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !foundSomething {
 				l.GL.Printf("%+v Found 'Unknown Assign [`%+v`]' instruction [Line: %+v] ", funcName, assignToAnalyze, lineIndex)
 			}
-			log.Printf("%+v", 13)
 
 			foundSomething = true
 		}
@@ -1250,11 +1245,6 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 		t4 := regexp.MustCompile(`(\=)`)
 		t5 := regexp.MustCompile(`(\<)`)
 		t6 := regexp.MustCompile(`(\>)`)
-
-		// log.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
-		// l.GL.Printf("[ERR] Attempted to assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
-		// //"# Linea | # Columna | Error | Descripcion | Linea del Error"
-		// l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT ASSIGN", "Attempted to assign a value to a constant", currentLine)
 
 		if t1.MatchString(eachCondition) {
 			// A <> A  = L
