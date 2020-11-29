@@ -38,6 +38,8 @@ TODO:
     Falta en continua la sentencia completa (no hace verificación de typo) (DUDA)
     Falta en continua imprimir lex (ya)
     Falta en analizador léxico imprimir ";" solo cuando exista
+    Falta en sea validación de casos como constantes
+    Falta en mientras toda la sentencia 
 
 Compilador:
     Generador de Codigo Maquina
@@ -45,7 +47,24 @@ Compilador:
         - Error en constantes (ya)
         - Error en variables locales (ya)
         - Función/Procedimiento falta la línea donde empieza (ya)
-        - Etiquetas
+    Etiquetas
+    Obj:
+        - Función declaración  
+        - Llamada a función 
+        - Asignación 
+        - Lee 
+        - Immprime e Imprimenl
+        - Regresa
+            - Revisar donde se hace un regresa
+        - Cuando 
+            - sea 
+            - otro 
+        - Si (error operadores)
+        - Sino (falta)
+        - Hasta (falta)
+        - Desde (falta)
+        - Repetir (falta)
+
 
 Extras:
     Verificar extensión del archivo (DONE)

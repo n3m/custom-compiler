@@ -12,6 +12,7 @@ import (
 	"go-custom-compiler/regex"
 
 	"github.com/DrN3MESiS/pprnt"
+	"github.com/golang-collections/collections/stack"
 )
 
 //LexicalAnalyzer ...
@@ -1240,6 +1241,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.NextProcedureProto(currentLine, lineIndex, debug)
 		}
 
+		//TODO Contar líneas del archivo .err
+
 		if l.ErrorsCount >= 20 {
 			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
 			l.Status = -1
@@ -1677,7 +1680,11 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	function := ""
 	noBracks := 0
 	noOperators := 0
-	operator := ""
+	condicionales := stack.New()
+	relacionales := stack.New()
+	aritmeticos := stack.New()
+	noCondicionales := 0
+	noRelacionales := 0
 	localOperation := l.HashTable.CurrentOp
 	if l.HashTable.CurrentOp == "OPR 0, 21" {
 		l.HashTable.CurrentOp = "OPR 0, 20"
@@ -1688,10 +1695,16 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
 			operation = "LIT %v, 0"
 			noNames++
+			if relacionales.Len() > 0 {
+				noRelacionales++
+			}
 			break
 		case models.ID:
 			operation = "LOD %v, 0"
 			noNames++
+			if relacionales.Len() > 0 {
+				noRelacionales++
+			}
 			break
 		case models.CALL:
 			noNames++
@@ -1719,8 +1732,16 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 				noBracks = 0
 			}
 			break
-		case models.OPARIT, models.OPLOG, models.OPREL:
-			operator = l.HashTable.GetOperationFromOperator(l.OperatorsQueue[noOperators])
+		case models.OPARIT:
+			aritmeticos.Push(l.HashTable.GetOperationFromOperator(l.OperatorsQueue[noOperators]))
+			noOperators++
+			break
+		case models.OPLOG:
+			condicionales.Push(l.HashTable.GetOperationFromOperator(l.OperatorsQueue[noOperators]))
+			noOperators++
+			break
+		case models.OPREL:
+			relacionales.Push(l.HashTable.GetOperationFromOperator(l.OperatorsQueue[noOperators]))
 			noOperators++
 			break
 		}
@@ -1736,9 +1757,8 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 			if l.HashTable.CurrentOp != "" {
 				l.HashTable.AddNextOp()
 			}
-			if operator != "" {
-				l.HashTable.AddNextLine(operator)
-				operator = ""
+			if aritmeticos.Len() > 0 {
+				l.HashTable.AddNextLine(aritmeticos.Pop().(string))
 			}
 		}
 	}

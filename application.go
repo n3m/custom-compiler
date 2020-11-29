@@ -97,6 +97,10 @@ func main() {
 		generalLogger.Printf("File analyzed correctly")
 	}
 
+	// if lex.ErrorsCount > 0 {
+	// 	panic()
+	// }
+
 	/*Object Code*/
 	fileName := filepath.Base(path)
 	ejeFile := strings.ReplaceAll(fileName, filepath.Ext(fileName), ".eje")
