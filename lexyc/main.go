@@ -142,7 +142,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
-		log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
+		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
 		// log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
 		/* StartsWith */
@@ -1567,7 +1567,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(AssignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((\s*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(AssignStr)
 }
 
@@ -1634,18 +1634,23 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
+		testFn := regexp.MustCompile(`(\((.*)\))`)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
 
 			if testCor.MatchString(str) {
-				data := testCor.Split(str, -1)
-				str = data[0]
+				str = testCor.ReplaceAllString(str, "")
+			}
+
+			if testFn.MatchString(str) {
+				str = testFn.ReplaceAllString(str, "")
 			}
 
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
+
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
@@ -1692,13 +1697,9 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 					}
 				}
 				if !match {
-					if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: eachParam}); data != nil {
-						paramTypes = append(paramTypes, data.Type)
-						match = true
-					}
-				}
-				if !match {
 					if data := l.RetrieveFunctionOrProcedureIfExists(&models.Token{Key: eachParam}); data != nil {
+						data.Calls = append(data.Calls, &models.Line{CurrentLine: currentLine, LineIndex: lineIndex})
+
 						paramTypes = append(paramTypes, data.Type)
 						match = true
 					}
@@ -1772,6 +1773,9 @@ func (l *LexicalAnalyzer) AnalyzeParams(currentLine string, lineIndex int64, par
 //AnalyzeType ...
 func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line string) []string {
 	line = strings.TrimSpace(line)
+	if len(line) == 0 {
+		return []string{}
+	}
 	token := []string{line}
 	if l.R.RegexCustom.MatchCteAlfa(line) {
 		token = append(token, helpers.CONSTANTEALFABETICA)
