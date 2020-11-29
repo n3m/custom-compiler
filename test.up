@@ -1,8 +1,9 @@
 Procedimiento Selecciona()
-Iniio
+variables opc:alfabetico;
+Inicio
    Si (i = 7) hacer
    Si (Vector[i]>Vector[j]) hacer
    Si (opc=2) hacer 
+   Si (opc <> "S" y opc <> "s") hacer 
 Fin de Procedimiento;
 
-Si (opc <> "S" y opc <> "s") hacer 
