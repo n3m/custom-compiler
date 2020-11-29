@@ -636,6 +636,79 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.AnalyzeFuncQueue(currentLine, lineIndex)
 
+			/* CHECK */
+			log.Printf("\tSI PARAMS> %+v", params)
+			params = strings.TrimSpace(params)
+			testLog := regexp.MustCompile(`(y|o|(no))`)
+			conditions := testLog.Split(params, -1)
+
+			for _, eachCondition := range conditions {
+				eachCondition = strings.TrimSpace(eachCondition)
+				t1 := regexp.MustCompile(`\<\>`)
+				t2 := regexp.MustCompile(`\<\=`)
+				t3 := regexp.MustCompile(`\>\=`)
+				t4 := regexp.MustCompile(`\=`)
+				t5 := regexp.MustCompile(`\<`)
+				t6 := regexp.MustCompile(`\>`)
+
+				if t1.MatchString(eachCondition) {
+					// A <> A  = L
+					inputs := t1.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				} else if t2.MatchString(eachCondition) {
+					// E <= E = L
+					// E <= R = L
+					// R <= R = L
+					inputs := t2.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				} else if t3.MatchString(eachCondition) {
+					// E >= E = L
+					// E >= R = L
+					// R >= R = L
+					inputs := t3.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				} else if t4.MatchString(eachCondition) {
+					// E = E = L
+					// E = R = L
+					// R = R = L
+					// A = A = L
+					inputs := t4.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				} else if t5.MatchString(eachCondition) {
+					inputs := t5.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				} else if t6.MatchString(eachCondition) {
+					inputs := t6.Split(eachCondition, -1)
+					for _, input := range inputs {
+						input = strings.TrimSpace(input)
+						//DO
+					}
+
+				}
+			}
+
+			log.Printf("\tCONDITIONS> %+v", conditions)
+
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				")", helpers.DELIMITADOR,
 				"hacer", helpers.PALABRARESERVADA,
@@ -1175,6 +1248,50 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
 	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(assignStr)
+}
+
+//GetOperationTypeFromInput ...
+func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine string, lineIndex int64) models.TokenType {
+	if l.R.RegexCustom.MatchCteAlfa(str) {
+		return models.ALFABETICO
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		return models.ENTERO
+	}
+	if l.R.RegexCustom.MatchCteReal(str) {
+		return models.REAL
+	}
+	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
+		return models.LOGICO
+	}
+	if l.R.RegexCustom.MatchIdent(str) {
+
+		if data := l.RetrieveGlobalConstantIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		function := l.FindFunction(currentLine, lineIndex, l.Context)
+		if function != nil {
+			if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: str}, function); data != nil {
+				return data.Type
+			}
+		}
+
+		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		if data := l.RetrieveFunctionOrProcedureIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+	}
+
+	return models.INDEFINIDO
 }
 
 //GetOperationTypeFromAssignment ...
