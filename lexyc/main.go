@@ -1242,8 +1242,6 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 		return opTypes
 	}
 
-	log.Printf("======== > %+v (%+v)", conditions, len(conditions))
-
 	for _, eachCondition := range conditions {
 		eachCondition = strings.TrimSpace(eachCondition)
 		t1 := regexp.MustCompile(`(\<\>)`)
