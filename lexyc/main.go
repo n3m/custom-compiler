@@ -385,6 +385,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.Context = "Global"
+			operations := strings.Split(l.HashTable.CurrentBlock, "#")
+			if len(operations) > 1 {
+				for _, op := range operations {
+					l.HashTable.AddNextLine(op)
+				}
+			}
+			l.HashTable.CurrentBlock = ""
 			l.HashTable.AddNextLine("OPR 0, 1")
 			foundSomething = true
 		}
@@ -420,6 +427,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.Context = "Global"
+			operations := strings.Split(l.HashTable.CurrentBlock, "#")
+			if len(operations) > 1 {
+				for _, op := range operations {
+					l.HashTable.AddNextLine(op)
+				}
+			}
+			l.HashTable.CurrentBlock = ""
 			l.HashTable.AddNextLine("OPR 0, 1")
 			foundSomething = true
 		}
@@ -453,6 +467,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			operations := strings.Split(l.HashTable.CurrentBlock, "#")
+			if len(operations) > 1 {
+				for _, op := range operations {
+					l.HashTable.AddNextLine(op)
+				}
+			}
+			l.HashTable.CurrentBlock = ""
 			foundSomething = true
 		}
 
@@ -747,6 +768,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sino", helpers.PALABRARESERVADA}))
 
+			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+
 			foundSomething = true
 		}
 
@@ -889,23 +912,30 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					token = append(token, operations[1], helpers.PALABRARESERVADA)
 					token = append(token, l.AnalyzeType(currentLine, lineIndex, operations[2])...)
 					l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
+
+					diff := l.NamesQueue[len(l.NamesQueue)-1]
+					l.OpQueue = l.OpQueue[:len(l.OpQueue)-1]
+					l.NamesQueue = l.NamesQueue[:len(l.NamesQueue)-1]
+					l.AnalyzeObjectCodeQueue()
+					operation := "OPR 0, 10"
+					if operations[1] == "decr" {
+						operation = "OPR 0, 9"
+					}
+					l.HashTable.AddNextLine(operation)
+
+					l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", l.HashTable.GetNextLabel()))
+
+					l.HashTable.CurrentBlock = fmt.Sprintf("LOD %v, 0#", varToAssignData) + fmt.Sprintf("LIT %v, 0#", diff)
+					if operations[1] == "decr" {
+						l.HashTable.CurrentBlock += "OPR 0, 8#"
+					}
+					l.HashTable.CurrentBlock += "OPR 0, 2#" + fmt.Sprintf("STO 0, %v#", varToAssignData) +
+						fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel())
 				} else {
 					groups[1] = strings.TrimPrefix(groups[1], "(")
 					groups[1] = strings.TrimSuffix(groups[1], ")")
 					l.AnalyzeParams(currentLine, lineIndex, groups[1])
 				}
-
-				//TODO
-				fmt.Println(l.OpQueue)
-				fmt.Println(l.NamesQueue)
-				// varToAssignData := l.NamesQueue[0]
-				// l.OpQueue = l.OpQueue[1:]
-				// l.NamesQueue = l.NamesQueue[1:]
-				fmt.Println(l.OpQueue)
-				fmt.Println(l.NamesQueue)
-
-				// l.AnalyzeObjectCodeQueue()
-				// l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", varToAssignData))
 			}
 
 			foundSomething = true

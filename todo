@@ -53,6 +53,7 @@ Compilador:
     Obj:
         - Función declaración  
         - Llamada a función 
+            - Etiqueta anterior a llamada va a la línea después de la llamada
         - Asignación 
         - Lee 
         - Immprime e Imprimenl
@@ -66,8 +67,9 @@ Compilador:
             - Hasta (ya)
         - Sino (falta)
         - Desde (falta)
-            - 92 a 97 -> desde el valor de hasta 
-            - 102 a 107 -> incr/decr
+            - Error al reinciar condición
+            - 92 a 97 -> desde el valor de hasta (ya)
+            - 102 a 107 -> incr/decr (ya)
             - Sin incr/decr 
                 - incr de 1
 
