@@ -19,7 +19,7 @@ func NewRecreate() *Recreate {
 //RecreateScan ...
 func (r *Recreate) RecreateScan(file *os.File) (*os.File, error) {
 	fileExt := strings.Split(file.Name(), ".")[1]
-	logger, logFile, err := helpers.CreateLogger(file.Name()+"_tmp."+fileExt, false)
+	logger, logFile, err := helpers.CreateLogger(strings.Replace(file.Name(), ".", "_", -1)+"_tmp."+fileExt, false)
 	if err != nil {
 		return nil, fmt.Errorf("[Recreate()] > %+v", err.Error())
 	}
