@@ -3,6 +3,8 @@ package lexyc
 import (
 	"fmt"
 	"go-custom-compiler/models"
+
+	"github.com/golang-collections/collections/stack"
 )
 
 //HashTable ...
@@ -13,6 +15,7 @@ type HashTable struct {
 	Lines  []string
 	Labels map[string]string
 
+	ActiveLabels *stack.Stack
 	CurrentOp    string
 	CurrentBlock string
 	Statements   int
@@ -20,7 +23,7 @@ type HashTable struct {
 
 //NewHashTable ...
 func NewHashTable() (*HashTable, error) {
-	return &HashTable{Labels: make(map[string]string)}, nil
+	return &HashTable{Labels: make(map[string]string), ActiveLabels: stack.New()}, nil
 }
 
 //GetLine ...
