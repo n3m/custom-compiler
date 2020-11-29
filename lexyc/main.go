@@ -833,7 +833,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//Continua
-		if l.R.RegexSystem.MatchContinua(currentLine) {
+		if l.R.RegexSystem.MatchContinua(currentLine, lineIndex) {
 			token := []string{"continua", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
