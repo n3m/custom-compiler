@@ -1414,7 +1414,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] != opTypes[1] {
@@ -1439,7 +1439,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
@@ -1471,7 +1471,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
@@ -1505,7 +1505,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] != opTypes[1] {
@@ -1527,7 +1527,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
@@ -1556,7 +1556,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
 				everythingGood = false
 			} else {
-				if opTypes[0] == models.ENTERO || opTypes[0] == models.REAL && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
+				if opTypes[0] == models.ENTERO && opTypes[1] == models.ENTERO || opTypes[1] == models.REAL {
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
@@ -1594,11 +1594,11 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 	if l.R.RegexCustom.MatchCteAlfa(str) {
 		return models.ALFABETICO
 	}
-	if l.R.RegexCustom.MatchCteEnt(str) {
-		return models.ENTERO
-	}
 	if l.R.RegexCustom.MatchCteReal(str) {
 		return models.REAL
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		return models.ENTERO
 	}
 	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
 		return models.LOGICO

@@ -13,7 +13,7 @@ Inicio
     imprimenl("Introduce el valor de la altura del paralelogramo:");
     Lee(a);
 
-    Si (b <= 0 o a <= 0) hacer
+    Si (b <= 0.0 o a <= 0.0) hacer
         regresa(0)
 
     res := b * a;
