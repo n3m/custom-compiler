@@ -19,7 +19,11 @@ type RegexSystem struct {
 	W2_1     *regexp.Regexp
 	W2_2     *regexp.Regexp
 
+	Keyword3 string
 	Continua *regexp.Regexp
+	W3       *regexp.Regexp
+	W3_1     *regexp.Regexp
+	W3_2     *regexp.Regexp
 
 	ENDSWITH *regexp.Regexp
 
@@ -45,7 +49,11 @@ func NewRegexSystem(EL, LL, GL *log.Logger) (*RegexSystem, error) {
 		W2_1:     regexp.MustCompile(`^((?i)limp)(\s*)`),
 		W2_2:     regexp.MustCompile(`^((?i)li)(\s*)`),
 
+		Keyword3: "continua",
 		Continua: regexp.MustCompile(`(?m)[cC]ontinua`),
+		W3:       regexp.MustCompile(`^((?i)continua)(\s*);$`),
+		W3_1:     regexp.MustCompile(`^((?i)contin)(\s*)`),
+		W3_2:     regexp.MustCompile(`^((?i)cont)(\s*)`),
 
 		GL: GL,
 		EL: EL,
@@ -63,8 +71,50 @@ func (r *RegexSystem) MatchPC(str string, lineIndex int64) bool {
 }
 
 //MatchContinua ...
-func (r *RegexSystem) MatchContinua(str string) bool {
-	return r.Continua.MatchString(str)
+func (r *RegexSystem) MatchContinua(str string, lineIndex int64) bool {
+	if r.Continua.MatchString(str) {
+		return true
+	}
+
+	if r.W3_1.MatchString(str) {
+		wrongWord := str
+		Keyword := strings.Split(r.Keyword1, "")
+		foundTypo := false
+		if len(wrongWord) > len(r.Keyword1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+			return true
+		}
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != Keyword[i] {
+					foundTypo = true
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+				}
+			}
+		}
+		return true
+	}
+
+	if r.W3_2.MatchString(str) {
+		wrongWord := str
+		Keyword := strings.Split(r.Keyword1, "")
+		foundTypo := false
+		if len(wrongWord) > len(r.Keyword1) {
+			r.LogError(lineIndex, 0, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+			return true
+		}
+		for i, char := range wrongWord {
+			if !foundTypo {
+				if string(char) != Keyword[i] {
+					foundTypo = true
+					r.LogError(lineIndex, i, wrongWord, fmt.Sprintf("Found typo in '%+v' declaration. Correct syntax should be '%+v'", wrongWord, r.Keyword1), str)
+				}
+			}
+		}
+		return true
+	}
+
+	return false
 }
 
 //MatchInterrumpe ...
