@@ -1933,6 +1933,7 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 	aritmeticos := stack.New()
 	noCondicionales := 0
 	noRelacionales := 0
+	noAritmeticos := 0
 	localOperation := l.HashTable.CurrentOp
 	if l.HashTable.CurrentOp == "OPR 0, 21" {
 		l.HashTable.CurrentOp = "OPR 0, 20"
@@ -1943,15 +1944,17 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
 			operation = "LIT %v, 0"
 			noNames++
-			if relacionales.Len() > 0 {
-				noRelacionales++
+			noRelacionales++
+			if aritmeticos.Len() > 0 {
+				noAritmeticos++
 			}
 			break
 		case models.ID:
 			operation = "LOD %v, 0"
 			noNames++
-			if relacionales.Len() > 0 {
-				noRelacionales++
+			noRelacionales++
+			if aritmeticos.Len() > 0 {
+				noAritmeticos++
 			}
 			break
 		case models.CALL:
@@ -2005,9 +2008,19 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 			if l.HashTable.CurrentOp != "" {
 				l.HashTable.AddNextOp()
 			}
-			if aritmeticos.Len() > 0 {
-				l.HashTable.AddNextLine(aritmeticos.Pop().(string))
-			}
+		}
+		if aritmeticos.Len() > 0 && noAritmeticos > 0 {
+			l.HashTable.AddNextLine(aritmeticos.Pop().(string))
+			noAritmeticos = 0
+		}
+		if relacionales.Len() > 0 && noRelacionales >= 2 {
+			l.HashTable.AddNextLine(relacionales.Pop().(string))
+			noRelacionales = 0
+			noCondicionales++
+		}
+		if condicionales.Len() > 0 && noCondicionales >= 2 {
+			l.HashTable.AddNextLine(condicionales.Pop().(string))
+			noCondicionales = 0
 		}
 	}
 }

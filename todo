@@ -59,7 +59,7 @@ Compilador:
         - Cuando 
             - sea 
             - otro 
-        - Si (error operadores)
+        - Si (ya)
         - Sino (falta)
         - Hasta (falta)
         - Desde (falta)
