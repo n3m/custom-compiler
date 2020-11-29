@@ -5,7 +5,7 @@ TODO:
         Verificar que no se este tratando de dar valor a una constante (DONE)
 
     ALAN:
-        Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error] (IN PROGRESS)
+        Verificar tipos de datos en expresiones aritmeticas de operaciones [Mandar Error] (DONE)
 
     ALAN:
         Verificar que a las variables no se les asigne un tipo de dato que no es del que ya tiene (DONE)
@@ -21,25 +21,25 @@ TODO:
         Verificar que el codigo contenga un PROGRAMA (main) (ya)
         Parar Compilación a los 20 errores que no recuperar (ya)
 
-    Verificar las llamadas a función en una línea (ya)
-    Verificar si se le trata de dar un nombre reservado a una variable (ya)
-
-    Falta en sea los casos (ya)
-    Falta en cuando el id (ya)
-    Falta en cuando imprimir lex (ya)
-    Falta en desde la sentencia completa (ya)
-    Falta en desde validación en asignación
-    Falta en desde imprimir lex (ya)
-    Falta en asignación imprimir lex (ya)
-    Falta en limpia imprimir lex (ya)
-    Falta en programa imprimir lex (ya)
-    Falta en fin de programa imprimir lex (ya)
-    Falta en interrumpe imprimir lex (ya)
-    Falta en continua la sentencia completa (no hace verificación de typo) (DUDA)
-    Falta en continua imprimir lex (ya)
-    Falta en analizador léxico imprimir ";" solo cuando exista
-    Falta en sea validación de casos como constantes
-    Falta en mientras toda la sentencia 
+        Falta en analizador léxico imprimir ";" solo cuando exista
+        Falta en asignación imprimir lex (ya)
+        Falta en continua imprimir lex (ya)
+        Falta en continua la sentencia completa (no hace verificación de typo) (Done)
+        Falta en cuando el id (ya)
+        Falta en cuando imprimir lex (ya)
+        Falta en desde imprimir lex (ya)
+        Falta en desde la sentencia completa (ya)
+        Falta en desde validación en asignación
+        Falta en fin de programa imprimir lex (ya)
+        Falta en interrumpe imprimir lex (ya)
+        Falta en limpia imprimir lex (ya)
+        Falta en programa imprimir lex (ya)
+        Falta en sea los casos (ya)
+        Verificar las llamadas a función en una línea (ya)
+        Verificar si se le trata de dar un nombre reservado a una variable (ya)
+        Falta en mientras toda la sentencia 
+        Falta en sea validación de casos como constantes
+        Verificar si se le trata de dar un nombre reservado a una variable (ya)
 
 Compilador:
     Generador de Codigo Maquina
@@ -68,5 +68,5 @@ Compilador:
 
 Extras:
     Verificar extensión del archivo (DONE)
-    Generar los nombres de los loggers a partir del nombre original
+    Generar los nombres de los loggers a partir del nombre original (DONE)
     Verificar en "cuando el valor de" el tipo del ID y los casos sea el mismo

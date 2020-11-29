@@ -474,6 +474,13 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if len(groups) > 0 {
 				params := groups[0]
 				l.AnalyzeParams(currentLine, lineIndex, params)
+
+				if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
+					log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+					l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
+				}
 			} else {
 				l.LogError(lineIndex, "N/A", "N/A", "Instruction 'Hasta que' doesn't have params", currentLine)
 			}
@@ -683,6 +690,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.AnalyzeFuncQueue(currentLine, lineIndex)
 
+			/* CHECK */
+			if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
+				log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
+			}
+
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				")", helpers.DELIMITADOR,
 				"hacer", helpers.PALABRARESERVADA,
@@ -865,7 +880,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		}
 
 		//Continua
-		if l.R.RegexSystem.MatchContinua(currentLine) {
+		if l.R.RegexSystem.MatchContinua(currentLine, lineIndex) {
 			token := []string{"continua", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
 				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
@@ -928,7 +943,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			if l.R.RegexCustom.MatchCteLog(assignToAnalyze, lineIndex) {
-				log.Printf("LOG")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Logica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -965,7 +979,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteEnt(assignToAnalyze) {
-				log.Printf("ENT")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Entera Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -1001,7 +1014,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteAlfa(assignToAnalyze) {
-				log.Printf("ALFA")
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Alfabetica Assign' Operation [Line: %+v]", funcName, lineIndex)
 
@@ -1037,7 +1049,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else if l.R.RegexCustom.MatchCteReal(assignToAnalyze) {
-				log.Printf("REAL")
 
 				foundSomething = true
 				l.GL.Printf("%+v Found 'Real Assign' Operation [Line: %+v]", funcName, lineIndex)
@@ -1074,7 +1085,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 				/*CHECK END*/
 			} else {
-				log.Printf(" ELSE")
 				//TEMP CASE TO UNCHECKED EXPRESSION
 				typeOfAssigment := l.GetOperationTypeFromAssignment(assignToAnalyze, currentLine, lineIndex)
 
@@ -1139,7 +1149,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			if !foundSomething {
 				l.GL.Printf("%+v Found 'Unknown Assign [`%+v`]' instruction [Line: %+v] ", funcName, assignToAnalyze, lineIndex)
 			}
-			log.Printf("%+v", 13)
 
 			if l.Context != "Global" {
 				l.AnalyzeObjectCodeQueue()
@@ -1263,10 +1272,253 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 	return nil
 }
 
+//DoesTheConditionMakesSense ...
+func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine string, lineIndex int64) bool {
+	everythingGood := true
+
+	params = strings.TrimSpace(params)
+	testLog := regexp.MustCompile(`(((\s)no(\s))|((\s)y(\s))|(\s(o)\s))`)
+	conditions := testLog.Split(params, -1)
+
+	process := func(inputs []string) []models.TokenType {
+		opTypes := []models.TokenType{}
+		for _, input := range inputs {
+
+			input = strings.TrimSpace(input)
+			//DO
+			ttype := l.GetOperationTypeFromInput(input, currentLine, lineIndex)
+			if ttype == models.INDEFINIDO {
+				log.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid argument '"+input+"'", currentLine)
+				everythingGood = false
+			}
+			opTypes = append(opTypes, ttype)
+		}
+
+		return opTypes
+	}
+
+	for _, eachCondition := range conditions {
+		eachCondition = strings.TrimSpace(eachCondition)
+		t1 := regexp.MustCompile(`(\<\>)`)
+		t2 := regexp.MustCompile(`(\<\=)`)
+		t3 := regexp.MustCompile(`(\>\=)`)
+		t4 := regexp.MustCompile(`(\=)`)
+		t5 := regexp.MustCompile(`(\<)`)
+		t6 := regexp.MustCompile(`(\>)`)
+
+		if t1.MatchString(eachCondition) {
+			// A <> A  = L
+			inputs := t1.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else if t2.MatchString(eachCondition) {
+			// E <= E = L
+			// E <= R = L
+			// R <= R = L
+			inputs := t2.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
+					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else if t3.MatchString(eachCondition) {
+			// E >= E = L
+			// E >= R = L
+			// R >= R = L
+			inputs := t3.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
+					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else if t4.MatchString(eachCondition) {
+			// E = E = L
+			// E = R = L
+			// R = R = L
+			// A = A = L
+			inputs := t4.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else if t5.MatchString(eachCondition) {
+			inputs := t5.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
+					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else if t6.MatchString(eachCondition) {
+			inputs := t6.Split(eachCondition, -1)
+			opTypes := process(inputs)
+			if len(opTypes) < 2 {
+				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
+				everythingGood = false
+			} else {
+				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
+					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+				if opTypes[0] != opTypes[1] {
+					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
+					everythingGood = false
+				}
+			}
+
+		} else {
+			everythingGood = false
+		}
+	}
+
+	return everythingGood
+}
+
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(assignStr string) bool {
 	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(assignStr)
+}
+
+//GetOperationTypeFromInput ...
+func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine string, lineIndex int64) models.TokenType {
+	if l.R.RegexCustom.MatchCteAlfa(str) {
+		return models.ALFABETICO
+	}
+	if l.R.RegexCustom.MatchCteEnt(str) {
+		return models.ENTERO
+	}
+	if l.R.RegexCustom.MatchCteReal(str) {
+		return models.REAL
+	}
+	if l.R.RegexCustom.MatchCteLog(str, lineIndex) {
+		return models.LOGICO
+	}
+	if l.R.RegexCustom.MatchIdent(str) {
+
+		if data := l.RetrieveGlobalConstantIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		function := l.FindFunction(currentLine, lineIndex, l.Context)
+		if function != nil {
+			if data := l.RetrieveLocalVariableIfExists(&models.Token{Key: str}, function); data != nil {
+				return data.Type
+			}
+		}
+
+		if data := l.RetrieveGlobalVarIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+		if data := l.RetrieveFunctionOrProcedureIfExists(&models.Token{Key: str}); data != nil {
+			return data.Type
+		}
+
+	}
+
+	return models.INDEFINIDO
 }
 
 //GetOperationTypeFromAssignment ...
@@ -1275,7 +1527,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 
 		curStr := assignStr
 		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
-		log.Printf("%+v", 1)
 		operationParameters := test.Split(curStr, -1)
 		paramTypes := []models.TokenType{}
 
@@ -1285,7 +1536,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
-		log.Printf("%+v", 1)
 		for i := 0; i < len(operationParameters); i++ {
 			str := operationParameters[i]
 			str = strings.TrimSpace(str)
@@ -1298,8 +1548,6 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(assignStr string, curre
 			str = strings.TrimSpace(str)
 			operationParameters[i] = str
 		}
-		log.Printf("%+v", 2)
-
 		for _, eachParam := range operationParameters {
 			match := false
 			if !match && l.R.RegexCustom.MatchCteAlfa(eachParam) {
