@@ -42,6 +42,7 @@ type LexicalAnalyzer struct {
 	Context          string
 	HasMain          bool
 	ErrorsCount      int
+	WarningsCount    int
 
 	HashTable *HashTable
 }
@@ -418,7 +419,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Fin
 		if l.R.RegexFin.StartsWithFin(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			newArr, ok := helpers.RemoveFromQueue(l.BlockQueue, models.INITBLOCK)
@@ -520,7 +521,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//ImprimeNL
 		if l.R.RegexIO.MatchImprimenl(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
@@ -564,7 +565,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			//Imprime
 		} else if l.R.RegexIO.MatchImprime(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				"Imprime", helpers.PALABRARESERVADA,
@@ -608,7 +609,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Lee
 		if l.R.RegexIO.MatchLee(currentLine, lineIndex) {
 			if !l.R.RegexIO.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
@@ -803,7 +804,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Regresa
 		if l.R.RegexRegresa.MatchRegresa(currentLine, lineIndex) {
 			if !l.R.RegexRegresa.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 				"Regresa", helpers.PALABRARESERVADA,
@@ -877,7 +878,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexSystem.MatchInterrumpe(currentLine, lineIndex) {
 			token := []string{"interrumpe", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			} else {
 				token = append(token, ";", helpers.DELIMITADOR)
 			}
@@ -892,7 +893,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if l.R.RegexSystem.MatchContinua(currentLine, lineIndex) {
 			token := []string{"continua", helpers.PALABRARESERVADA}
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			} else {
 				token = append(token, ";", helpers.DELIMITADOR)
 			}
@@ -906,7 +907,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Limpia
 		if l.R.RegexSystem.MatchLimpia(currentLine, lineIndex) {
 			if !l.R.RegexSystem.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			l.GL.Printf("%+v Found 'Limpia' instruction [Line: %+v]", funcName, lineIndex)
@@ -926,7 +927,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//Asignación
 		if l.R.RegexAsignacion.MatchAsignacion(currentLine, lineIndex) {
 			if !l.R.RegexAsignacion.MatchPC(currentLine, lineIndex) {
-				l.LogError(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
+				l.LogWarning(lineIndex, len(currentLine)-1, ";", "Missing ';'", currentLine)
 			}
 
 			currentLine = strings.TrimSpace(currentLine)
@@ -1302,7 +1303,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		//TODO Contar líneas del archivo .err
 		f, err := os.Open(l.EF.Name())
 		errors, err := lineCounter(f)
-		if (errors - 3) >= 20 {
+		if (errors - 3 - l.WarningsCount) >= 20 {
 			l.LogError(lineIndex, "N/A", "Compilation Stop", "Too many errors...", "")
 			l.Status = -1
 			return nil
@@ -2212,6 +2213,15 @@ func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err
 	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 	l.ErrorsCount++
+}
+
+//LogWarning ...
+//"# Linea | # Columna | Error | Descripcion | Linea del Error"
+func (l *LexicalAnalyzer) LogWarning(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
+	log.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
+	l.GL.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
+	l.EL.Printf("%+v\t|\t%+v\t|\t[WARN] %+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
+	l.WarningsCount++
 }
 
 //LogErrorGeneral ...
