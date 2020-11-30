@@ -575,7 +575,9 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			// params = strings.Split(params[len(params)-1], ",")
-			params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
+			if len(params) > 0 {
+				params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
+			}
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -803,7 +805,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
 			// params := strings.Split(seaCases[0], ",")
-			params := splitAtCharRespectingQuotes(seaCases[0], ',')
+			params := []string{}
+			if len(seaCases) > 0 {
+
+				params = splitAtCharRespectingQuotes(seaCases[0], ',')
+			}
 			tag := l.HashTable.GetNextLabel()
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
@@ -2439,6 +2445,9 @@ func lineCounter(r io.Reader) (int, error) {
 }
 
 func splitAtCharRespectingQuotes(s string, char byte) []string {
+	if len(s) == 0 {
+		return []string{}
+	}
 	res := []string{}
 	var beg int
 	var inString bool

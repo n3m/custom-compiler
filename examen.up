@@ -30,6 +30,7 @@ Inicio
          Otro: Si (opc <> "S" y opc <> "s") hacer 
                   Imprimenl("Opcion Invalida!!!")
       Fin;
+
    hasta que (opc = "S" o opc = "s");
 Fin de Procedimiento;
 
