@@ -2119,11 +2119,13 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 		if function != nil && i+1 < len(l.OpQueue) {
 			next := l.OpQueue[i+1]
 			if next == models.OPARIT || next == models.OPASIG || next == models.OPLOG || next == models.OPREL {
-				result := l.OperationTokenType(item, next, l.OpQueue[i+2], noVars, currentLine, lineIndex)
-				if result.Type != "" {
-					currentFunction.Params = append(currentFunction.Params, &result)
-					i += 2
-					continue
+				if item != models.BRACK {
+					result := l.OperationTokenType(item, next, l.OpQueue[i+2], noVars, currentLine, lineIndex)
+					if result.Type != "" {
+						currentFunction.Params = append(currentFunction.Params, &result)
+						i += 2
+						continue
+					}
 				}
 			}
 		}
@@ -2131,6 +2133,13 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 		case models.BRACK:
 			if function != nil {
 				noBracks++
+				if noBracks >= 2 {
+					if function != nil {
+						l.CompareFunction(currentLine, lineIndex, function, &currentFunction, true)
+						function = nil
+					}
+					noBracks = 0
+				}
 			}
 			break
 		case models.CTEALFA, models.CTEENT, models.CTELOG, models.CTEREAL:
@@ -2164,10 +2173,6 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 			noVars++
 			break
 		}
-	}
-
-	if function != nil {
-		l.CompareFunction(currentLine, lineIndex, function, &currentFunction, true)
 	}
 }
 
