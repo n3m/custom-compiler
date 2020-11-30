@@ -33,7 +33,7 @@ func main() {
 	}
 
 	name := path
-	namewoext := strings.Split(name, ".")[1]
+	namewoext := strings.Split(name, ".")[0]
 	name = strings.Replace(name, ".", "_", -1)
 
 	/*Remove previous logs*/
@@ -42,6 +42,7 @@ func main() {
 	os.Remove(name + "_" + "test_data.test")
 	os.Remove(name + "_" + "process.log")
 	os.Remove(name + "_" + "tmp.up")
+	log.Printf("> %+v", namewoext+".eje")
 	os.Remove(namewoext + ".eje")
 
 	/* Create Loggers */
