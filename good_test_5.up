@@ -1,6 +1,7 @@
-variables nombreDelUsuario:Alfabetico;
+variables i:entero;
 
 Programa
-    Lee(nombreDelUsuario);
-    imprimenl("Bienvenido ", nombreDelUsuario, " a la consola de este programa");
+    Lee(i);
+    i:=i*2;
+    imprimenl("Resultado: ", i);
 Fin de Programa

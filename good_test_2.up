@@ -15,9 +15,6 @@ Inicio
     imprimenl("Introduce el valor de la altura del paralelogramo:");
     Lee(a);
 
-    Si (b <= 0.0 o a <= 0.0) hacer
-        regresa(0)
-
     res := b * a;
     imprimenl("Base: ", b, " | Altura: ", a);
     
@@ -26,10 +23,10 @@ Fin de Funcion;
 
 Programa
     Bienvenida();
-    Lee(result);
+    result:= ObtenerArea();
     Si(result = 0.0) hacer
         imprimenl("Ingresaste algun valor menor o igual a 0.");
     sino
-        imprimenl("El area del Paralelogramo es: ", ObtenerArea());
+        imprimenl("El area del Paralelogramo es: ", result);
         
 Fin de Programa;
