@@ -52,7 +52,7 @@ func (r *RegexAsignacion) MatchAsignacion(str string, lineIndex int64) bool {
 //LogError ...
 //"# Linea | # Columna | Error | DescripcAsignacionn | Linea del Error"
 func (r *RegexAsignacion) LogError(lineIndex int64, columnIndex interface{}, err string, descriptAsignacionn string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", descriptAsignacionn, lineIndex)
+	//log.Printf("[ERR] %+v [Line: %+v]", descriptAsignacionn, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", descriptAsignacionn, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, descriptAsignacionn, currentLine)
 }

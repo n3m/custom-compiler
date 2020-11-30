@@ -33,7 +33,7 @@ func main() {
 	}
 
 	name := path
-	namewoext := strings.Split(name, ".")[1]
+	namewoext := strings.Split(name, ".")[0]
 	name = strings.Replace(name, ".", "_", -1)
 
 	/*Remove previous logs*/
@@ -103,7 +103,7 @@ func main() {
 		generalLogger.Printf("Created Lexical Analyzer")
 	}
 
-	debugMode := true
+	debugMode := false
 	err = lex.Analyze(debugMode)
 	if err != nil {
 		generalLogger.Printf("Error while analyzing! (%+v)", err.Error())
@@ -121,6 +121,9 @@ func main() {
 	if (errors - 3 - lex.WarningsCount) > 0 {
 		generalLogger.Printf("The source code has errors! Fix them for object code generation")
 		panic("The source code has errors! Fix them for object code generation")
+	} else {
+		generalLogger.Printf(">> Code has compiled successfuly!")
+		log.Printf(">> Code has compiled successfuly!")
 	}
 
 	/*Object Code*/

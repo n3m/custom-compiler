@@ -155,7 +155,7 @@ func (r *RegexConditionSi) StartsWithSiNoCheck(str string) bool {
 //LogError ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (r *RegexConditionSi) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	//log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 }

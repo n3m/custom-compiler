@@ -1,7 +1,18 @@
-variables i:entero;
+variables val1, val2, operationResult:Entero;
+
+Funcion LeeValor(id:Alfabetico):Entero
+    variables res:Entero;
+    Inicio
+        imprimenl(id, "-> Ingresa un entero:");
+        Lee(res);
+        regresa(res);
+    Fin de Funcion
 
 Programa
-    Lee(i);
-    i:=i%2;
-    imprimenl("Resultado: ", i);
+    imprimenl("===== RANDOM GENERATOR =====");
+    val1:=LeeValor("A");
+    val2:=LeeValor("B");
+
+    operationResult:=val1 % val2 + 10 * 6;
+    imprimenl("Tu valor random es: ", operationResult);
 Fin de Programa

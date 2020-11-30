@@ -1,7 +1,6 @@
 package lexyc
 
 import (
-	"log"
 	"strings"
 
 	"go-custom-compiler/helpers"
@@ -38,7 +37,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 		if funcType != "" {
 			l.GL.Printf("%+v[FUNC PROTO] %v Funcion Found > %+v", funcName, funcType, currentLine)
 			if debug {
-				log.Printf("[FUNC PROTO] %v Funcion Found > %+v", funcType, currentLine)
+				//log.Printf("[FUNC PROTO] %v Funcion Found > %+v", funcType, currentLine)
 			}
 
 			funcType, funcName, funcParamType, funcParamName := getDataFromFunctionProto(currentLine)
@@ -65,7 +64,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if l.R.RegexFunctionProtoAlfabetico.MatchFuncAlfabeticoCaseless(currentLine) {
 				l.GL.Printf("%+v[FUNC PROTO] Alfabetico Funcion Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[FUNC PROTO] Alfabetico Funcion Found > %+v", currentLine)
+					//log.Printf("[FUNC PROTO] Alfabetico Funcion Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexFunctionProtoAlfabetico.Keyword, "")
@@ -75,7 +74,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 							if string(char) != keyData[i] {
 								foundTypo = true
 
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
+								//log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoAlfabetico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoAlfabetico.Keyword, currentLine)
@@ -89,7 +88,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if l.R.RegexFunctionProtoEntero.MatchFuncEnteroCaseless(currentLine) {
 				l.GL.Printf("%+v[FUNC PROTO] Entero Funcion Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[FUNC PROTO] Entero Funcion Found > %+v", currentLine)
+					//log.Printf("[FUNC PROTO] Entero Funcion Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexFunctionProtoEntero.Keyword, "")
@@ -99,7 +98,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 							if string(char) != keyData[i] {
 								foundTypo = true
 
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
+								//log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoEntero.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoEntero.Keyword, currentLine)
@@ -113,7 +112,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if l.R.RegexFunctionProtoReal.MatchFuncRealCaseless(currentLine) {
 				l.GL.Printf("%+v[FUNC PROTO] Real Funcion Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[FUNC PROTO] Real Funcion Found > %+v", currentLine)
+					//log.Printf("[FUNC PROTO] Real Funcion Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexFunctionProtoReal.Keyword, "")
@@ -122,7 +121,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
+								//log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoReal.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoReal.Keyword, currentLine)
@@ -136,7 +135,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 			if l.R.RegexFunctionProtoLogico.MatchFuncLogicoCaseless(currentLine) {
 				l.GL.Printf("%+v[FUNC PROTO] Logico Funcion Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[FUNC PROTO] Logico Funcion Found > %+v", currentLine)
+					//log.Printf("[FUNC PROTO] Logico Funcion Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexFunctionProtoLogico.Keyword, "")
@@ -146,7 +145,7 @@ func (l *LexicalAnalyzer) NextFuncionProto(currentLine string, lineIndex int64, 
 							if string(char) != keyData[i] {
 								foundTypo = true
 
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
+								//log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", funcType, i, lineIndex, l.R.RegexFunctionProtoLogico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, funcType, l.R.RegexFunctionProtoLogico.Keyword, currentLine)

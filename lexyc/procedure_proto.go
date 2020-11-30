@@ -3,7 +3,6 @@ package lexyc
 import (
 	"go-custom-compiler/helpers"
 	"go-custom-compiler/models"
-	"log"
 	"regexp"
 	"strings"
 )
@@ -46,7 +45,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[PROCEDURE PROTO] Entero Found > %+v", currentLine)
+				// //log.Printf("[PROCEDURE PROTO] Entero Found > %+v", currentLine)
 			}
 			return
 		}
@@ -69,7 +68,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Logico Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[PROCEDURE PROTO] Logico Found > %+v", currentLine)
+				// //log.Printf("[PROCEDURE PROTO] Logico Found > %+v", currentLine)
 			}
 			return
 		}
@@ -92,7 +91,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Real Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[PROCEDURE PROTO] Real Found > %+v", currentLine)
+				// //log.Printf("[PROCEDURE PROTO] Real Found > %+v", currentLine)
 			}
 			return
 		}
@@ -115,7 +114,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 			l.GL.Printf("%+v[PROCEDURE PROTO] Alfabetico Found > %+v", funcName, currentLine)
 			if debug {
-				log.Printf("[PROCEDURE PROTO] Alfabetico Found > %+v", currentLine)
+				// //log.Printf("[PROCEDURE PROTO] Alfabetico Found > %+v", currentLine)
 			}
 			return
 		}
@@ -131,7 +130,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			if regexEntero.MatchString(procParamType) {
 				l.GL.Printf("%+v[PROCEDURE PROTO] Entero Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[PROCEDURE PROTO] Entero Found > %+v", currentLine)
+					// //log.Printf("[PROCEDURE PROTO] Entero Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexProcedureProtoEntero.Keyword, "")
@@ -140,7 +139,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
+								// //log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoEntero.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoEntero.Keyword, currentLine)
@@ -154,7 +153,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			if regexReal.MatchString(procParamType) {
 				l.GL.Printf("%+v[PROCEDURE PROTO] Real Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[PROCEDURE PROTO] Real Found > %+v", currentLine)
+					// //log.Printf("[PROCEDURE PROTO] Real Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexProcedureProtoReal.Keyword, "")
@@ -163,7 +162,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
+								// //log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoReal.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoReal.Keyword, currentLine)
@@ -177,7 +176,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			if regexLogico.MatchString(procParamType) {
 				l.GL.Printf("%+v[PROCEDURE PROTO] Logico Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[PROCEDURE PROTO] Logico Found > %+v", currentLine)
+					// //log.Printf("[PROCEDURE PROTO] Logico Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexProcedureProtoLogico.Keyword, "")
@@ -186,7 +185,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
+								// //log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoLogico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoLogico.Keyword, currentLine)
@@ -200,7 +199,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 			if regexAlfabetico.MatchString(procParamType) {
 				l.GL.Printf("%+v[PROCEDURE PROTO] Alfabetico Found > %+v", funcName, currentLine)
 				if debug {
-					log.Printf("[PROCEDURE PROTO] Alfabetico Found > %+v", currentLine)
+					// //log.Printf("[PROCEDURE PROTO] Alfabetico Found > %+v", currentLine)
 				}
 				foundTypo := false
 				keyData := strings.Split(l.R.RegexProcedureProtoAlfabetico.Keyword, "")
@@ -209,7 +208,7 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 						if !foundTypo {
 							if string(char) != keyData[i] {
 								foundTypo = true
-								log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
+								// //log.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
 								l.GL.Printf("[ERR] Found typo in '%+v' declaration at [%+v][Line: %+v]. Correct syntax should be '%+v'", procParamType, i, lineIndex, l.R.RegexProcedureProtoAlfabetico.Keyword)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, i, procParamType, l.R.RegexProcedureProtoAlfabetico.Keyword, currentLine)
