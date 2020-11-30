@@ -172,10 +172,10 @@ func getDataFromFunctionProto(currentLine string) (string, string, string, strin
 	funcType := lineData[1]
 
 	funcData := lineData[0]
-	funcDataV2 := strings.Split(funcData, "(")
+	funcDataV2 := splitAtCharRespectingQuotes(funcData, '(')
 	funcName := funcDataV2[0]
 	funcParams := funcDataV2[1]
-	paramsData := strings.Split(funcParams, ":")
+	paramsData := splitAtCharRespectingQuotes(funcParams, ':')
 	funcParamType := paramsData[1]
 	funcParamName := paramsData[0]
 

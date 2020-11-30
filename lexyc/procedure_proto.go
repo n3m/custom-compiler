@@ -229,11 +229,11 @@ func (l *LexicalAnalyzer) NextProcedureProto(currentLine string, lineIndex int64
 
 func getDataFromProcedureProto(currentLine string) (string, string, string) {
 	currentLine = strings.TrimSuffix(currentLine, ";")
-	lineData := strings.Split(currentLine, "(")
+	lineData := splitAtCharRespectingQuotes(currentLine, '(')
 	procedureName := lineData[0]
 	procedureParamsToParse := lineData[1]
 	procedureParamsToParse = strings.TrimSuffix(procedureParamsToParse, ")")
-	paramsData := strings.Split(procedureParamsToParse, ":")
+	paramsData := splitAtCharRespectingQuotes(procedureParamsToParse, ':')
 	procedureParamType := paramsData[1]
 	procedureParamVars := paramsData[0]
 

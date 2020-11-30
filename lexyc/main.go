@@ -209,17 +209,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			params := strings.Join(procedureGroups[2:], "")
-			groups := strings.Split(params, ";")
+			groups := splitAtCharRespectingQuotes(params, ';')
 			for i, group := range groups {
 				if i > 0 {
 					token = append(token, ";", helpers.DELIMITADOR)
 				}
-				groupVars := strings.Split(group, ":")
+				groupVars := splitAtCharRespectingQuotes(group, ':')
 
 				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 
 				// vars := strings.Split(groupVars[0], ",")
-				vars := splitAtCommas(groupVars[0])
+				vars := splitAtCharRespectingQuotes(groupVars[0], ',')
 				if vars[0] != "" {
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
@@ -281,14 +281,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 
 				params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
-				groups := strings.Split(params, ";")
+				groups := splitAtCharRespectingQuotes(params, ';')
 				for i, group := range groups {
 					if i > 0 {
 						token = append(token, ";", helpers.DELIMITADOR)
 					}
-					groupVars := strings.Split(group, ":")
+					groupVars := splitAtCharRespectingQuotes(group, ':')
 					// vars := strings.Split(groupVars[0], ",")
-					vars := splitAtCommas(groupVars[0])
+					vars := splitAtCharRespectingQuotes(groupVars[0], ',')
 
 					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
@@ -575,7 +575,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			// params = strings.Split(params[len(params)-1], ",")
-			params = splitAtCommas(params[len(params)-1])
+			params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -619,7 +619,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
 			// params = strings.Split(params[len(params)-1], ",")
-			params = splitAtCommas(params[len(params)-1])
+			params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -803,7 +803,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
 			// params := strings.Split(seaCases[0], ",")
-			params := splitAtCommas(seaCases[0])
+			params := splitAtCharRespectingQuotes(seaCases[0], ',')
 			tag := l.HashTable.GetNextLabel()
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
@@ -1345,7 +1345,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 			if len(groupsFunction) > 1 {
 				// params := strings.Split(groupsFunction[1], ",")
-				params := splitAtCommas(groupsFunction[1])
+				params := splitAtCharRespectingQuotes(groupsFunction[1], ',')
 				for i, param := range params {
 					token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 					if i < len(params)-1 {
@@ -1878,7 +1878,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		l.OpQueue = append(l.OpQueue, models.CTEENT)
 		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCall(line) {
-		groups := strings.Split(line, "(")
+		groups := splitAtCharRespectingQuotes(line, '(')
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
@@ -1895,7 +1895,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		token = append(token, ")", helpers.DELIMITADOR)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexFunction.MatchFunctionCall2(line) {
-		groups := strings.Split(line, "(")
+		groups := splitAtCharRespectingQuotes(line, '(')
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
@@ -2438,13 +2438,13 @@ func lineCounter(r io.Reader) (int, error) {
 	}
 }
 
-func splitAtCommas(s string) []string {
+func splitAtCharRespectingQuotes(s string, char byte) []string {
 	res := []string{}
 	var beg int
 	var inString bool
 
 	for i := 0; i < len(s); i++ {
-		if s[i] == ',' && !inString {
+		if s[i] == char && !inString {
 			res = append(res, s[beg:i])
 			beg = i + 1
 		} else if s[i] == '"' {
