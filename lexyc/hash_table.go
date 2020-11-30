@@ -20,6 +20,7 @@ type HashTable struct {
 	CurrentBlock string
 	Statements   int
 	IsOneLine    int64
+	IsSino       bool
 }
 
 //NewHashTable ...
@@ -30,6 +31,11 @@ func NewHashTable() (*HashTable, error) {
 //GetLine ...
 func (h *HashTable) GetLine() string {
 	return fmt.Sprintf("%v", h.LineIndex+1)
+}
+
+//GetJumpLine ...
+func (h *HashTable) GetJumpLine() string {
+	return fmt.Sprintf("%v", h.LineIndex+2)
 }
 
 //GetLabel ...
@@ -67,6 +73,11 @@ func (h *HashTable) AddNextLabel(line string) {
 //PopLabelInLine ...
 func (h *HashTable) PopLabelInLine() {
 	h.Labels[h.ActiveLabels.Pop().(string)] = h.GetLine()
+}
+
+//PopLabelInNextLine ...
+func (h *HashTable) PopLabelInNextLine() {
+	h.Labels[h.ActiveLabels.Pop().(string)] = h.GetJumpLine()
 }
 
 //AddLabelInLine ...

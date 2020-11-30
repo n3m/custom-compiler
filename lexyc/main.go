@@ -142,18 +142,24 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
-		// if l.HashTable.IsOneLine {
 		if l.HashTable.IsOneLine != 0 && lineIndex > l.HashTable.IsOneLine+1 {
 			operations := strings.Split(l.HashTable.CurrentBlock, "#")
 			if len(operations) > 1 {
 				for _, op := range operations {
-					l.HashTable.AddNextLine(op)
+					if op != " " {
+						l.HashTable.AddNextLine(op)
+					}
+				}
+				l.HashTable.PopLabelInLine()
+			} else {
+				if l.HashTable.IsSino {
+					l.HashTable.PopLabelInLine()
+					l.HashTable.IsSino = false
+				} else {
+					l.HashTable.PopLabelInNextLine()
 				}
 			}
-
-			l.HashTable.PopLabelInLine()
 			l.HashTable.IsOneLine = 0
-			// l.HashTable.IsOneLine = false
 		}
 
 		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
@@ -772,9 +778,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.AnalyzeObjectCodeQueue()
 			finish := l.HashTable.GetNextLabel()
 			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", finish))
-			l.HashTable.Statements++
 			l.HashTable.ActiveLabels.Push(finish)
-			// l.HashTable.IsOneLine = lineIndex
+			l.HashTable.IsOneLine = lineIndex
 
 			foundSomething = true
 		}
@@ -795,8 +800,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			finish := l.HashTable.GetNextLabel()
 			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", finish))
-			l.HashTable.PopLabelInLine()
+			// l.HashTable.PopLabelInLine()
 			l.HashTable.ActiveLabels.Push(finish)
+			l.HashTable.IsOneLine = lineIndex
+			l.HashTable.IsSino = true
 
 			foundSomething = true
 		}
@@ -911,10 +918,16 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
 			}
 
+			// activeLabel := l.HashTable.ActiveLabels.Peek()
+			// l.HashTable.ActiveLabels.Push(l.HashTable.GetNextLabel())
+			// if activeLabel != nil {
+			// 	l.HashTable.ActiveLabels.Push(activeLabel)
+			// }
 			l.HashTable.CurrentBlock = ""
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
 			l.HashTable.AddNextLine("OPR 0, 1")
+			// l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.ActiveLabels.Peek()))
 			foundSomething = true
 		}
 
