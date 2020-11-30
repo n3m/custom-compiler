@@ -1338,6 +1338,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			if l.Context != "Global" {
+				l.AnalyzeFuncQueue("", 0)
 				l.AnalyzeObjectCodeQueue()
 				l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", varToAssignData))
 			}
