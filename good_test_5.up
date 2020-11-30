@@ -1,9 +1,9 @@
 variables val1, val2, operationResult:Entero;
 
-Funcion LeeValor(id:Alfabetico):Entero
+Funcion LeeValor(input:Alfabetico):Entero
     variables res:Entero;
     Inicio
-        imprimenl(id, "-> Ingresa un entero:");
+        imprimenl(input, "-> Ingresa un entero:");
         Lee(res);
         regresa(res);
     Fin de Funcion
