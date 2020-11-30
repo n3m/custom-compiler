@@ -794,23 +794,27 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			if l.HashTable.Statements > 0 {
 				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+				l.HashTable.PopLabelInLine()
 			}
 
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
 			params := strings.Split(seaCases[0], ",")
-			tag := l.HashTable.GetNextLabel()
+
+			l.HashTable.ActiveLabels.Push(l.HashTable.GetNextLabel())
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 				l.HashTable.AddNextBlock()
 				l.HashTable.AddNextLine(fmt.Sprintf("LIT %v, 0", param))
 				l.HashTable.AddNextLine("OPR 0, 14")
-				l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", tag))
+				l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", l.HashTable.ActiveLabels.Peek()))
 				if i < len(params)-1 {
 					token = append(token, ",", helpers.DELIMITADOR)
 				}
 			}
-			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			l.HashTable.ActiveLabels.Pop()
+			l.HashTable.ActiveLabels.Push(l.HashTable.GetNextLabel())
+			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.ActiveLabels.Peek()))
 			l.HashTable.AddPreviousLabelInLine()
 			l.HashTable.Statements++
 
@@ -841,6 +845,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			if l.HashTable.Statements > 0 {
 				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+				l.HashTable.PopLabelInLine()
+				l.HashTable.Statements = 0
 			}
 			foundSomething = true
 		}

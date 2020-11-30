@@ -63,6 +63,11 @@ func (h *HashTable) AddNextLabel(line string) {
 	h.Labels[h.GetNextLabel()] = line
 }
 
+//PopLabelInLine ...
+func (h *HashTable) PopLabelInLine() {
+	h.Labels[h.ActiveLabels.Pop().(string)] = h.GetLine()
+}
+
 //AddLabelInLine ...
 func (h *HashTable) AddLabelInLine() {
 	h.Labels[h.GetLabel()] = h.GetLine()
