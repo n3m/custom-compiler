@@ -119,8 +119,8 @@ func main() {
 		log.Printf("[CHECK FOR ANY ERRORS] > %+v", err.Error())
 	}
 	if (errors - 3 - lex.WarningsCount) > 0 {
-		generalLogger.Printf("The source code has errors! Fix them before continuing with the compilation")
-		panic("The source code has errors! Fix them before continuing with the compilation")
+		generalLogger.Printf("The source code has errors! Fix them for object code generation")
+		panic("The source code has errors! Fix them for object code generation")
 	}
 
 	/*Object Code*/
