@@ -2,6 +2,6 @@ variables i:entero;
 
 Programa
     Lee(i);
-    i:=i*2;
+    i:=i%2;
     imprimenl("Resultado: ", i);
 Fin de Programa

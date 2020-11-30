@@ -41,12 +41,12 @@ func (r *Recreate) RecreateScan(file *os.File) (*os.File, error) {
 
 		newStrs, err := r._ScanForReservedInitializers(currentLine)
 		if err == nil {
-			logger.Printf(currentLine)
+			logger.Println(currentLine)
 			continue
 		}
 
 		for _, each := range newStrs {
-			logger.Printf(each)
+			logger.Println(each)
 		}
 	}
 

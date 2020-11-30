@@ -1760,16 +1760,21 @@ func (l *LexicalAnalyzer) GetOperationTypeFromInput(str string, currentLine stri
 
 //GetOperationTypeFromAssignment ...
 func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, currentLine string, lineIndex int64) models.TokenType {
+
 	if l.isAValidOperation(AssignStr) {
 
 		curStr := AssignStr
-		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1})`)
+		test := regexp.MustCompile(`((\*){1}|(\+){1}|(\/){1}|(\-){1}|(\%){1}|(\^){1})`)
 		operationParameters := test.Split(curStr, -1)
 		paramTypes := []models.TokenType{}
 
 		t1 := regexp.MustCompile(`(\^|\/)`)
 		if t1.MatchString(curStr) {
 			paramTypes = append(paramTypes, models.REAL)
+		}
+		t2 := regexp.MustCompile(`(\%)`)
+		if t2.MatchString(curStr) {
+			paramTypes = append(paramTypes, models.ENTERO)
 		}
 
 		testCor := regexp.MustCompile(`((\[.*\]$)|((\[.*\])(\s*)(\[.*\])$))`)
@@ -1852,6 +1857,7 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 			valid := true
 			firstMatch := paramTypes[0]
 			for _, each := range paramTypes {
+
 				if each != firstMatch {
 					valid = false
 				}
