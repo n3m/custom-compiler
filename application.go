@@ -42,7 +42,6 @@ func main() {
 	os.Remove(name + "_" + "test_data.test")
 	os.Remove(name + "_" + "process.log")
 	os.Remove(name + "_" + "tmp.up")
-	log.Printf("> %+v", namewoext+".eje")
 	os.Remove(namewoext + ".eje")
 
 	/* Create Loggers */
