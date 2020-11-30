@@ -7,7 +7,7 @@ import (
 
 const (
 	// LEXINDENT ...
-	LEXINDENT int = 20
+	LEXINDENT int = 30
 )
 
 const (

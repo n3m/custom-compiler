@@ -9,7 +9,7 @@ Programa
     ramen := 5;
     ramen := 5.9
 
-    imprimenl("Ingresar una palabra deberia de estar mal, pero si te deja y el programa corre correctamente. Checa, ingresa una palabra:")
+    imprimenl("Ingresar palabras deberia dar error, pero el programa corre correctamente. Checa, ingresa una palabra:")
     Lee(tmp);
-    imprimenl("Se supone que asignaste una variable ALFABETICA en una ENTERA, pero no deberia de dejarte. ¿Como se que te dejo? Aqui esta el contenido de la variable entera: ", tmp);
+    imprimenl("Asignaste una variable ALFABETICA en una ENTERA, no debe dejarte. ¿Como se que te dejo? Valor variable entera: ", tmp);
 Fin de Programa
