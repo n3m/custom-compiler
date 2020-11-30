@@ -142,6 +142,20 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 		currentLine = strings.TrimSpace(currentLine)
 
+		// if l.HashTable.IsOneLine {
+		if l.HashTable.IsOneLine != 0 && lineIndex > l.HashTable.IsOneLine+1 {
+			operations := strings.Split(l.HashTable.CurrentBlock, "#")
+			if len(operations) > 1 {
+				for _, op := range operations {
+					l.HashTable.AddNextLine(op)
+				}
+			}
+
+			l.HashTable.PopLabelInLine()
+			l.HashTable.IsOneLine = 0
+			// l.HashTable.IsOneLine = false
+		}
+
 		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
 		// log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
@@ -397,12 +411,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.HashTable.PopLabelInLine()
 			}
 			l.HashTable.Statements = 0
-			operations := strings.Split(l.HashTable.CurrentBlock, "#")
-			if len(operations) > 1 {
-				for _, op := range operations {
-					l.HashTable.AddNextLine(op)
-				}
-			}
 			l.HashTable.CurrentBlock = ""
 			l.HashTable.AddNextLine("OPR 0, 1")
 			foundSomething = true
@@ -443,12 +451,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.HashTable.PopLabelInLine()
 			}
 			l.HashTable.Statements = 0
-			operations := strings.Split(l.HashTable.CurrentBlock, "#")
-			if len(operations) > 1 {
-				for _, op := range operations {
-					l.HashTable.AddNextLine(op)
-				}
-			}
 			l.HashTable.CurrentBlock = ""
 			l.HashTable.AddNextLine("OPR 0, 1")
 			foundSomething = true
@@ -488,12 +490,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.HashTable.PopLabelInLine()
 			}
 			l.HashTable.Statements = 0
-			operations := strings.Split(l.HashTable.CurrentBlock, "#")
-			if len(operations) > 1 {
-				for _, op := range operations {
-					l.HashTable.AddNextLine(op)
-				}
-			}
 			l.HashTable.CurrentBlock = ""
 			foundSomething = true
 		}
@@ -778,6 +774,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", finish))
 			l.HashTable.Statements++
 			l.HashTable.ActiveLabels.Push(finish)
+			// l.HashTable.IsOneLine = lineIndex
+
 			foundSomething = true
 		}
 
@@ -913,18 +911,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
 			}
 
-			operations := strings.Split(l.HashTable.CurrentBlock, "#")
-			if len(operations) > 1 {
-				for _, op := range operations {
-					l.HashTable.AddNextLine(op)
-				}
-			}
-
-			if l.HashTable.IsOneLine {
-				l.HashTable.PopLabelInLine()
-				l.HashTable.IsOneLine = false
-			}
-
 			l.HashTable.CurrentBlock = ""
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
@@ -994,7 +980,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					finish := l.HashTable.GetNextLabel()
 					l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", finish))
 					l.HashTable.ActiveLabels.Push(finish)
-					l.HashTable.IsOneLine = true
+					l.HashTable.IsOneLine = lineIndex
 
 					l.HashTable.CurrentBlock = fmt.Sprintf("LOD %v, 0#", varToAssignData) + fmt.Sprintf("LIT %v, 0#", diff)
 					if operations[1] == "decr" {
