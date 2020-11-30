@@ -1,0 +1,5 @@
+Funcion Function():Entero;
+
+Programa
+    imprimenl("Llamada a función sin definición", Function());
+Fin de programa;
