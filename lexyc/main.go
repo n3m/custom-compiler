@@ -1034,6 +1034,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OperatorsQueue = []string{}
 
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
+
 			if l.CurrentBlockType != models.CONSTANTBLOCK {
 				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 					varToAssignData, helpers.IDENTIFICADOR,
@@ -1882,6 +1883,10 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 	} else if l.R.RegexConstanteEntera.MatchEnteraConstant(line) {
 		token = append(token, helpers.CONSTANTEENTERA)
 		l.OpQueue = append(l.OpQueue, models.CTEENT)
+		l.NamesQueue = append(l.NamesQueue, line)
+	} else if l.R.RegexConstanteLogica.MatchLogicaConstant(line) {
+		token = append(token, helpers.CONSTANTELOGICA)
+		l.OpQueue = append(l.OpQueue, models.CTELOG)
 		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCall(line) {
 		groups := splitAtCharRespectingQuotes(line, '(')

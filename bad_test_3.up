@@ -1,5 +1,14 @@
 variables tmp:Entero;
+    test:Logico;
+    ramen:Real;
 Programa
+
+    test := verdadero;
+    test := 5.2;
+
+    ramen := 5;
+    ramen := 5.9
+
     imprimenl("Ingresar una palabra deberia de estar mal, pero si te deja y el programa corre correctamente. Checa, ingresa una palabra:")
     Lee(tmp);
     imprimenl("Se supone que asignaste una variable ALFABETICA en una ENTERA, pero no deberia de dejarte. ¿Como se que te dejo? Aqui esta el contenido de la variable entera: ", tmp);
