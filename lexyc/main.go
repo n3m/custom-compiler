@@ -1394,6 +1394,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			currentLine = strings.TrimSuffix(currentLine, ";")
 			groupsFunction := l.R.RegexCustomFunction.GroupsCustomFunction(currentLine)
 
+			l.AnalyzeType(currentLine, lineIndex, groupsFunction[0]+"(")
 			l.OpQueue = []models.TokenComp{models.ID, models.BRACK}
 			l.NamesQueue = []string{groupsFunction[0]}
 			token := []string{

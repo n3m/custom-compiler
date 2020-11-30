@@ -1,3 +1,5 @@
+variables result:real;
+
 Procedimiento Bienvenida():
 variables nombreDelUsuario:Alfabetico;
 Inicio
@@ -24,6 +26,7 @@ Fin de Funcion;
 
 Programa
     Bienvenida();
+    Lee(result);
     Si(result = 0.0) hacer
         imprimenl("Ingresaste algun valor menor o igual a 0.");
     sino

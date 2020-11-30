@@ -1,0 +1,8 @@
+variables id:alfabetica;
+Programa
+    
+    Imprime("Ingresa tu id: ");
+    Leer(id);
+    imprimenl(id);
+
+Fin de Programa
