@@ -209,26 +209,27 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}
 
 			params := strings.Join(procedureGroups[2:], "")
-			groups := strings.Split(params, ";")
+			groups := splitAtCharRespectingQuotes(params, ';')
 			for i, group := range groups {
 				if i > 0 {
 					token = append(token, ";", helpers.DELIMITADOR)
 				}
-				groupVars := strings.Split(group, ":")
+				groupVars := splitAtCharRespectingQuotes(group, ':')
 
 				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 
-				vars := strings.Split(groupVars[0], ",")
+				// vars := strings.Split(groupVars[0], ",")
+				vars := splitAtCharRespectingQuotes(groupVars[0], ',')
 				if vars[0] != "" {
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
 				}
 
 				for _, v := range vars[1:] {
 					token = append(token, ",", helpers.DELIMITADOR)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(v)})
 				}
 				if vars[0] != "" {
 					token = append(token, ":", helpers.DELIMITADOR,
@@ -280,23 +281,24 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				}
 
 				params := strings.Join(funcionGroups[2:len(funcionGroups)-1], "")
-				groups := strings.Split(params, ";")
+				groups := splitAtCharRespectingQuotes(params, ';')
 				for i, group := range groups {
 					if i > 0 {
 						token = append(token, ";", helpers.DELIMITADOR)
 					}
-					groupVars := strings.Split(group, ":")
-					vars := strings.Split(groupVars[0], ",")
+					groupVars := splitAtCharRespectingQuotes(group, ':')
+					// vars := strings.Split(groupVars[0], ",")
+					vars := splitAtCharRespectingQuotes(groupVars[0], ',')
 
 					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
 
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
 					for _, v := range vars[1:] {
 						token = append(token, ",", helpers.DELIMITADOR)
 						token = append(token, l.AnalyzeType("", 0, v)...)
 
-						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(v)})
 					}
 					token = append(token, ":", helpers.DELIMITADOR,
 						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)
@@ -584,7 +586,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
-			params = strings.Split(params[len(params)-1], ",")
+			// params = strings.Split(params[len(params)-1], ",")
+			if len(params) > 0 {
+				params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
+			}
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -627,7 +632,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
-			params = strings.Split(params[len(params)-1], ",")
+			// params = strings.Split(params[len(params)-1], ",")
+			params = splitAtCharRespectingQuotes(params[len(params)-1], ',')
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -819,9 +825,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
-			params := strings.Split(seaCases[0], ",")
 
 			l.HashTable.ActiveLabels.Push(l.HashTable.GetNextLabel())
+			// params := strings.Split(seaCases[0], ",")
+			params := []string{}
+			if len(seaCases) > 0 {
+
+				params = splitAtCharRespectingQuotes(seaCases[0], ',')
+			}
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 				l.HashTable.AddNextBlock()
@@ -1070,6 +1081,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.OperatorsQueue = []string{}
 
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
+
 			if l.CurrentBlockType != models.CONSTANTBLOCK {
 				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
 					varToAssignData, helpers.IDENTIFICADOR,
@@ -1390,7 +1402,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}
 			if len(groupsFunction) > 1 {
-				params := strings.Split(groupsFunction[1], ",")
+				// params := strings.Split(groupsFunction[1], ",")
+				params := splitAtCharRespectingQuotes(groupsFunction[1], ',')
 				for i, param := range params {
 					token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 					if i < len(params)-1 {
@@ -1406,8 +1419,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
-			fmt.Println(l.OpQueue)
-			fmt.Println(l.NamesQueue)
 			l.AnalyzeObjectCodeQueue()
 			foundSomething = true
 		}
@@ -1445,7 +1456,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if !foundSomething {
 			switch l.CurrentBlockType {
 			case models.NULLBLOCK:
-				l.LogTest(lineIndex, "", "", "Didn't find anything", currentLine)
+				l.LogError(lineIndex, "", "", "Didn't find anything", currentLine)
 			}
 		}
 		lineIndex++
@@ -1682,7 +1693,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(AssignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((\s*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((.*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
 	return regCheck.MatchString(AssignStr)
 }
 
@@ -1855,6 +1866,8 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 				return firstMatch
 			}
 		}
+	} else {
+		log.Printf("[GetOperationTypeFromAssignment] > Not a valid operation")
 	}
 
 	return models.INDEFINIDO
@@ -1922,8 +1935,12 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		token = append(token, helpers.CONSTANTEENTERA)
 		l.OpQueue = append(l.OpQueue, models.CTEENT)
 		l.NamesQueue = append(l.NamesQueue, line)
+	} else if l.R.RegexConstanteLogica.MatchLogicaConstant(line) {
+		token = append(token, helpers.CONSTANTELOGICA)
+		l.OpQueue = append(l.OpQueue, models.CTELOG)
+		l.NamesQueue = append(l.NamesQueue, line)
 	} else if l.R.RegexFunction.MatchFunctionCall(line) {
-		groups := strings.Split(line, "(")
+		groups := splitAtCharRespectingQuotes(line, '(')
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
@@ -1940,7 +1957,7 @@ func (l *LexicalAnalyzer) AnalyzeType(currentLine string, lineIndex int64, line 
 		token = append(token, ")", helpers.DELIMITADOR)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 	} else if l.R.RegexFunction.MatchFunctionCall2(line) {
-		groups := strings.Split(line, "(")
+		groups := splitAtCharRespectingQuotes(line, '(')
 		l.OpQueue = append(l.OpQueue, models.ID)
 		l.OpQueue = append(l.OpQueue, models.BRACK)
 		token = []string{
@@ -2483,4 +2500,27 @@ func lineCounter(r io.Reader) (int, error) {
 			return count, err
 		}
 	}
+}
+
+func splitAtCharRespectingQuotes(s string, char byte) []string {
+	if len(s) == 0 {
+		return []string{}
+	}
+	res := []string{}
+	var beg int
+	var inString bool
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == char && !inString {
+			res = append(res, s[beg:i])
+			beg = i + 1
+		} else if s[i] == '"' {
+			if !inString {
+				inString = true
+			} else if i > 0 && s[i-1] != '\\' {
+				inString = false
+			}
+		}
+	}
+	return append(res, s[beg:])
 }

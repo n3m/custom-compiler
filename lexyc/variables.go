@@ -534,10 +534,11 @@ func (l *LexicalAnalyzer) NextVariable(currentLine string, lineIndex int64, debu
 func getVariablesFromString(currentLine string) (string, []string) {
 	currentLine = strings.TrimSuffix(currentLine, ";")
 	currentLine = strings.TrimSuffix(currentLine, " ")
-	lineData := strings.Split(currentLine, ":")
+	lineData := splitAtCharRespectingQuotes(currentLine, ':')
 	varType := lineData[1]
 	variables := lineData[0]
-	variableData := strings.Split(variables, ",")
+	// variableData := strings.Split(variables, ",")
+	variableData := splitAtCharRespectingQuotes(variables, ',')
 	for i := range variableData {
 		variableData[i] = strings.TrimSpace(variableData[i])
 	}

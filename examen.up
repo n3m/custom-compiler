@@ -1,27 +1,26 @@
-constants PI:=3.141592;
+constantes PI:=3.141592;
 	   MAX:=30;
-      TEST1:=verdaDero;
 
-varibles i, j, k, n, vector[MAX], matriz[MAX][MAX]:Entero;
+variables i, j, k, n, vector[MAX], matriz[MAX][MAX]:Entero;
           r, s, t:real;
           Alfa, Beta:Alfabetico;
           Log1, Log2:Logico;
 
-Funcon FacRec(n:Entero):Entero;
-Funcin FacIter(n:Entero):entero;
+Funcion FacRec(n:Entero):Entero;
+Funcion FacIter(n:Entero):Entero;
 Procedimiento LeeVec(k:Entero);
 Procedimiento LeeMat(K:Entero);
 Procedimiento OrdVec(k:Entero);
-Procedimiento ImpMat(K:entero);
+Procedimiento ImpMat(K:Entero);
 Procedimiento MulMat(k, v:Entero);
 //Procedimiento ImpMat(K:Entero);
 
 Procedimiento Selecciona()
-Iniio
+variables opc:Alfabetico;
+Inicio
    Repetir
       Imprime("Dame un numero: ");
       lee(n);
-      
       Imprime("Factorial R]recursivo I]interactivo S]salir: ");
       Lee(opc);
       Cuando el valor de opc 
@@ -31,6 +30,7 @@ Iniio
          Otro: Si (opc <> "S" y opc <> "s") hacer 
                   Imprimenl("Opcion Invalida!!!")
       Fin;
+
    hasta que (opc = "S" o opc = "s");
 Fin de Procedimiento;
 

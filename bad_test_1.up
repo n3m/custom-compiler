@@ -1,15 +1,18 @@
-Funcion Suma(a, b:Entero):Entero
-variables res:Entero
+variables integer, counter, res1, res2:Entero;
+
+Funcion Test1():Entero
 Inicio
+    regresa(1)
 Fin de Funcion
 
-Funcion Resta(a, b:Entero):Entero
-variables res:Entero
+Funcion Test2():Alfabetico
 Inicio
+    regresa("1")
 Fin de Funcion
 
 Programa
-
-
+    
+Si ( Test1() <> Test2() ) hacer:
+    imprimenl("Esto esta mal, asi que no deberia de imprimirse esto")
 
 Fin de Programa

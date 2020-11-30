@@ -54,7 +54,7 @@ func (r *RegexRegresa) MatchRegresa(str string, lineIndex int64) bool {
 	}
 
 	if r.RegresaV2.MatchString(str) {
-		strData := strings.Split(str, "(")
+		strData := splitAtCharRespectingQuotes(str, '(')
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.Keyword, "")
 		foundTypo := false
@@ -101,4 +101,23 @@ func (r *RegexRegresa) LogError(lineIndex int64, columnIndex interface{}, err st
 	log.Printf("[ERR] %+v [Line: %+v]", descriptRegresan, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", descriptRegresan, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, descriptRegresan, currentLine)
+}
+func splitAtCharRespectingQuotes(s string, char byte) []string {
+	res := []string{}
+	var beg int
+	var inString bool
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == char && !inString {
+			res = append(res, s[beg:i])
+			beg = i + 1
+		} else if s[i] == '"' {
+			if !inString {
+				inString = true
+			} else if i > 0 && s[i-1] != '\\' {
+				inString = false
+			}
+		}
+	}
+	return append(res, s[beg:])
 }

@@ -1,0 +1,6 @@
+variables nombreDelUsuario:Alfabetico;
+
+Programa
+    Lee(nombreDelUsuario);
+    imprimenl("Bienvenido ", nombreDelUsuario, " a la consola de este programa");
+Fin de Programa

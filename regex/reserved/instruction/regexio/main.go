@@ -63,7 +63,7 @@ func (r *RegexIO) MatchImprimenl(str string, lineIndex int64) bool {
 	}
 
 	if r.IMPRIMENLi.MatchString(str) {
-		strData := strings.Split(str, "(")
+		strData := splitAtCharRespectingQuotes(str, '(')
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordImprimenl, "")
 		foundTypo := false
@@ -90,7 +90,7 @@ func (r *RegexIO) MatchImprime(str string, lineIndex int64) bool {
 		return true
 	}
 	if r.IMPRIMEi.MatchString(str) {
-		strData := strings.Split(str, "(")
+		strData := splitAtCharRespectingQuotes(str, '(')
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordImprime, "")
 		foundTypo := false
@@ -117,7 +117,7 @@ func (r *RegexIO) MatchLee(str string, lineIndex int64) bool {
 		return true
 	}
 	if r.LEEi.MatchString(str) {
-		strData := strings.Split(str, "(")
+		strData := splitAtCharRespectingQuotes(str, '(')
 		wrongWord := strData[0]
 		Keyword := strings.Split(r.KeywordLee, "")
 		foundTypo := false
@@ -144,4 +144,24 @@ func (r *RegexIO) LogError(lineIndex int64, columnIndex interface{}, err string,
 	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
+}
+
+func splitAtCharRespectingQuotes(s string, char byte) []string {
+	res := []string{}
+	var beg int
+	var inString bool
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == char && !inString {
+			res = append(res, s[beg:i])
+			beg = i + 1
+		} else if s[i] == '"' {
+			if !inString {
+				inString = true
+			} else if i > 0 && s[i-1] != '\\' {
+				inString = false
+			}
+		}
+	}
+	return append(res, s[beg:])
 }
