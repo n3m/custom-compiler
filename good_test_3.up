@@ -1,13 +1,11 @@
-variables integer, counter, res1, res2:Entero;
+variables integer, counter:Entero;
 
 Funcion Suma(a, b:Entero):Entero
-variables res:Entero
 Inicio
     regresa(a+b)
 Fin de Funcion
 
 Funcion Resta(a, b:Entero):Entero
-variables res:Entero
 Inicio
     regresa(a-b)
 Fin de Funcion
@@ -19,11 +17,10 @@ Programa
 
     Repetir
         counter := counter + 1;
-        res1 := Suma(integer, counter);
-        res2 := Resta(integer, counter);
 
-        imprime("SUM: ", res1);
-        imprimenl("RES: ", res2);
+        imprimenl("SUM: ", Suma(integer, counter));
+        imprimenl("RES: ", Resta(integer, counter));
+
     hasta que (counter > 10);
 
     

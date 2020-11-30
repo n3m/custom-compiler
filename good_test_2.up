@@ -22,13 +22,11 @@ Inicio
     regresa(res);
 Fin de Funcion;
 
-variables result:Real;
 Programa
     Bienvenida();
-    result := ObtenerArea();
-    Si(result >= 1.0) hacer
+    Si(result = 0.0) hacer
         imprimenl("Ingresaste algun valor menor o igual a 0.");
     sino
-        imprimenl("El area del Paralelogramo es: ", result);
+        imprimenl("El area del Paralelogramo es: ", ObtenerArea());
         
 Fin de Programa;
