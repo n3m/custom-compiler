@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -110,7 +111,11 @@ func main() {
 	}
 
 	/*CHECK FOR ANY ERRORS */
-	errors, err := lineCounter(errFile)
+	f, _ := os.Open(errFile.Name())
+	errors, err := lineCounter(f)
+	if err != nil {
+		log.Printf("[CHECK FOR ANY ERRORS] > %+v", err.Error())
+	}
 	if (errors - 3) >= 0 {
 		generalLogger.Printf("The source code has errors! Fix them before continuing with the compilation")
 		panic("The source code has errors! Fix them before continuing with the compilation")

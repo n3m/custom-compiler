@@ -572,7 +572,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
-			params = strings.Split(params[len(params)-1], ",")
+			// params = strings.Split(params[len(params)-1], ",")
+			params = splitAtCommas(params[len(params)-1])
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -2430,4 +2431,24 @@ func lineCounter(r io.Reader) (int, error) {
 			return count, err
 		}
 	}
+}
+
+func splitAtCommas(s string) []string {
+	res := []string{}
+	var beg int
+	var inString bool
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == ',' && !inString {
+			res = append(res, s[beg:i])
+			beg = i + 1
+		} else if s[i] == '"' {
+			if !inString {
+				inString = true
+			} else if i > 0 && s[i-1] != '\\' {
+				inString = false
+			}
+		}
+	}
+	return append(res, s[beg:])
 }
