@@ -218,7 +218,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 				paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 
-				vars := strings.Split(groupVars[0], ",")
+				// vars := strings.Split(groupVars[0], ",")
+				vars := splitAtCommas(groupVars[0])
 				if vars[0] != "" {
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
@@ -286,7 +287,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 						token = append(token, ";", helpers.DELIMITADOR)
 					}
 					groupVars := strings.Split(group, ":")
-					vars := strings.Split(groupVars[0], ",")
+					// vars := strings.Split(groupVars[0], ",")
+					vars := splitAtCommas(groupVars[0])
 
 					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
 					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
@@ -616,7 +618,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			params := l.R.RegexImprime.GroupsImprime(currentLine)
-			params = strings.Split(params[len(params)-1], ",")
+			// params = strings.Split(params[len(params)-1], ",")
+			params = splitAtCommas(params[len(params)-1])
 			l.OpQueue = []models.TokenComp{}
 			l.NamesQueue = []string{}
 			l.OperatorsQueue = []string{}
@@ -799,7 +802,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.OpQueue = []models.TokenComp{}
 			seaCases := l.R.RegexConditionSwitch.GroupsSea(currentLine)
-			params := strings.Split(seaCases[0], ",")
+			// params := strings.Split(seaCases[0], ",")
+			params := splitAtCommas(seaCases[0])
 			tag := l.HashTable.GetNextLabel()
 			for i, param := range params {
 				token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
@@ -1340,7 +1344,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				"(", helpers.DELIMITADOR,
 			}
 			if len(groupsFunction) > 1 {
-				params := strings.Split(groupsFunction[1], ",")
+				// params := strings.Split(groupsFunction[1], ",")
+				params := splitAtCommas(groupsFunction[1])
 				for i, param := range params {
 					token = append(token, l.AnalyzeType(currentLine, lineIndex, param)...)
 					if i < len(params)-1 {

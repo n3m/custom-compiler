@@ -537,7 +537,8 @@ func getVariablesFromString(currentLine string) (string, []string) {
 	lineData := strings.Split(currentLine, ":")
 	varType := lineData[1]
 	variables := lineData[0]
-	variableData := strings.Split(variables, ",")
+	// variableData := strings.Split(variables, ",")
+	variableData := splitAtCommas(variables)
 	for i := range variableData {
 		variableData[i] = strings.TrimSpace(variableData[i])
 	}
