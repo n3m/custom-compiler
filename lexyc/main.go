@@ -1692,7 +1692,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 
 //ValidateOperation ...
 func (l *LexicalAnalyzer) isAValidOperation(AssignStr string) bool {
-	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((.*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*$`)
+	regCheck := regexp.MustCompile(`(\")?([a-zA-Z0-9.]+){1}(\")?(\((.*)\))?((\[.*\]){1,2})?((\*|\+|\/|\-|\%|\^){1}(\")?[a-zA-Z0-9.]+(\")?((\[.*\]){1,2})?)*(;)?$`)
 	return regCheck.MatchString(AssignStr)
 }
 
