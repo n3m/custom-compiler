@@ -1398,7 +1398,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if !foundSomething {
 			switch l.CurrentBlockType {
 			case models.NULLBLOCK:
-				l.LogTest(lineIndex, "", "", "Didn't find anything", currentLine)
+				l.LogError(lineIndex, "", "", "Didn't find anything", currentLine)
 			}
 		}
 		lineIndex++

@@ -13,6 +13,6 @@ Fin de Funcion
 Programa
     
 Si ( Test1() <> Test2() ) hacer:
-    imprimenl("Esto esta mal, porque no deberia de imprimirse esto")
+    imprimenl("Esto esta mal, asi que no deberia de imprimirse esto")
 
 Fin de Programa
