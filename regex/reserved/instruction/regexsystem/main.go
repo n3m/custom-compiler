@@ -212,7 +212,7 @@ func (r *RegexSystem) MatchLimpia(str string, lineIndex int64) bool {
 //LogError ...
 //"# Linea | # Columna | Error | DescripcSystemn | Linea del Error"
 func (r *RegexSystem) LogError(lineIndex int64, columnIndex interface{}, err string, descriptSystemn string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", descriptSystemn, lineIndex)
+	//log.Printf("[ERR] %+v [Line: %+v]", descriptSystemn, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", descriptSystemn, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, descriptSystemn, currentLine)
 }

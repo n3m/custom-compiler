@@ -131,14 +131,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 		if isComment {
 			l.GL.Printf("%+vSkipping Comment at line %+v", funcName, lineIndex)
 			if debug {
-				log.Printf("Skipping Comment at line %+v", lineIndex)
+				// //log.Printf("Skipping Comment at line %+v", lineIndex)
 			}
 			lineIndex++
 
 			continue
 		}
 
-		// log.Printf("> Line: [%+v] CurrentBlock: %+v", lineIndex, l.CurrentBlockType)
+		// // //log.Printf("> Line: [%+v] CurrentBlock: %+v", lineIndex, l.CurrentBlockType)
 
 		currentLine = strings.TrimSpace(currentLine)
 
@@ -162,8 +162,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.HashTable.IsOneLine = 0
 		}
 
-		// log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
-		// log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
+		// // //log.Printf("BLOCK [Line:%+v]['%+v'] > %+v\n", lineIndex, currentLine, l.BlockQueue)
+		// // //log.Printf("BLOCK [Line:%+v] > %+v\n", lineIndex, l.BlockQueue)
 
 		/* StartsWith */
 
@@ -540,7 +540,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.AnalyzeParams(currentLine, lineIndex, params)
 
 				if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
-					log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
@@ -764,7 +764,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			/* CHECK */
 			if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
-				log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				// //log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 				l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
@@ -912,7 +912,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			/* CHECK */
 			if test := l.DoesTheConditionMakesSense(params, currentLine, lineIndex); !test {
-				log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
+				// //log.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 				l.GL.Printf("[ERR] Invalid condition found at [%+v][Line: %+v]", 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONDITION VALIDATION", "Invalid condition found", currentLine)
@@ -1095,7 +1095,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK NO Assign TO CONSTANT*/
 				curToken := &models.Token{Type: models.LOGICO, Key: varToAssignData, Value: AssignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-					log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1105,7 +1105,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/* CHECK IF Assign CORRECT FOR VAR */
 				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 					if curToken.Type != data.Type {
-						log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1116,7 +1116,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				if function != nil {
 					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1124,7 +1124,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
@@ -1139,7 +1139,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK NO Assign TO CONSTANT*/
 				curToken := &models.Token{Type: models.ENTERO, Key: varToAssignData, Value: AssignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-					log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1148,7 +1148,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/* CHECK IF Assign CORRECT FOR VAR */
 				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 					if curToken.Type != data.Type {
-						log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1159,7 +1159,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				if function != nil {
 					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1167,7 +1167,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
@@ -1182,7 +1182,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK NO Assign TO CONSTANT*/
 				curToken := &models.Token{Type: models.ALFABETICO, Key: varToAssignData, Value: AssignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-					log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1191,7 +1191,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/* CHECK IF Assign CORRECT FOR VAR */
 				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 					if curToken.Type != data.Type {
-						log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1202,7 +1202,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				if function != nil {
 					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1210,7 +1210,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
@@ -1226,7 +1226,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/*CHECK NO Assign TO CONSTANT*/
 				curToken := &models.Token{Type: models.REAL, Key: varToAssignData, Value: AssignToAnalyze}
 				if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-					log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1235,7 +1235,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				/* CHECK IF Assign CORRECT FOR VAR */
 				if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 					if curToken.Type != data.Type {
-						log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+						// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1246,7 +1246,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				if function != nil {
 					if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1254,7 +1254,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 					if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
@@ -1272,7 +1272,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					curToken := &models.Token{Type: typeOfAssigment, Key: varToAssignData, Value: AssignToAnalyze}
 
 					if test := l.DoesTheTokenExistsInGlobalConstants(curToken); test {
-						log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
+						// //log.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 						l.GL.Printf("[ERR] Attempted to Assign a value to a constant at [%+v][Line: %+v]", 0, lineIndex)
 						//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 						l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1281,7 +1281,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					/* CHECK IF Assign CORRECT FOR VAR */
 					if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "CONSTANT Assign", "Attempted to Assign a value to a constant", currentLine)
@@ -1291,7 +1291,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					/* CHECK IF Assign CORRECT FOR VAR */
 					if data := l.RetrieveGlobalVarIfExists(curToken); data != nil {
 						if curToken.Type != data.Type {
-							log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+							// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 							//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 							l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1303,7 +1303,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					if function != nil {
 						if data := l.RetrieveLocalVariableIfExists(curToken, function); data != nil {
 							if curToken.Type != data.Type {
-								log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								// //log.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								l.GL.Printf("[ERR] Attempted to Assign a %+v to a defined variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign a value of different type to a defined variable", currentLine)
@@ -1311,7 +1311,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 						}
 						if data := l.RetrieveLocalParameterIfExists(curToken, function); data != nil {
 							if curToken.Type != data.Type {
-								log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
+								// //log.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								l.GL.Printf("[ERR] Attempted to assign a %+v to a defined parameter variable of type %+v at [%+v][Line: %+v]", curToken.Type, data.Type, 0, lineIndex)
 								//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 								l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "PARAMETER VARIABLE ASSIGN", "Attempted to assign a value of different type to a defined variable", currentLine)
@@ -1321,7 +1321,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					/*CHECK END*/
 
 				} else {
-					log.Printf("[ERR] Attempted to Assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
+					// //log.Printf("[ERR] Attempted to Assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
 					l.GL.Printf("[ERR] Attempted to Assign an invalid expression to a defined variable at [%+v][Line: %+v]", 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "VARIABLE Assign", "Attempted to Assign an invalid expression to a defined variable", currentLine)
@@ -1482,7 +1482,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			//DO
 			ttype := l.GetOperationTypeFromAssignment(input, currentLine, lineIndex)
 			if ttype == models.INDEFINIDO {
-				log.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid argument '%+v' at [%+v][Line: %+v]", input, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid argument '"+input+"'", currentLine)
@@ -1508,7 +1508,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t1.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1518,7 +1518,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1533,7 +1533,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t2.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1543,14 +1543,14 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
-					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
 					everythingGood = false
 				}
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1565,7 +1565,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t3.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1575,7 +1575,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
-					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
@@ -1583,7 +1583,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 				}
 
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1599,7 +1599,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t4.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1609,7 +1609,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1621,7 +1621,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t5.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1631,14 +1631,14 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
-					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
 					everythingGood = false
 				}
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1650,7 +1650,7 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 			inputs := t6.Split(eachCondition, -1)
 			opTypes := process(inputs)
 			if len(opTypes) < 2 {
-				log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+				// //log.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				l.GL.Printf("[ERR] Found an invalid relation operation '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 				//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 				l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation '"+eachCondition+"'", currentLine)
@@ -1660,14 +1660,14 @@ func (l *LexicalAnalyzer) DoesTheConditionMakesSense(params string, currentLine 
 					continue
 				}
 				if opTypes[0] == models.ALFABETICO || opTypes[1] == models.ALFABETICO {
-					log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (no oprel for ALFABETICO) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (no oprel for ALFABETICO) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (no oprel for ALFABETICO) [V2] '"+eachCondition+"'", currentLine)
 					everythingGood = false
 				}
 				if opTypes[0] != opTypes[1] {
-					log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
+					// //log.Printf("[ERR] Found an invalid relation operation (type mismatch) [V2] '%+v' at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					l.GL.Printf("[ERR] Found an invalid relation operation '%+v' (type mismatch) [V2] at [%+v][Line: %+v]", eachCondition, 0, lineIndex)
 					//"# Linea | # Columna | Error | Descripcion | Linea del Error"
 					l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, 0, "INVALID CONDITION PARAM", "Found an invalid relation operation (type mismatch) [V2] '"+eachCondition+"'", currentLine)
@@ -1872,7 +1872,7 @@ func (l *LexicalAnalyzer) GetOperationTypeFromAssignment(AssignStr string, curre
 			}
 		}
 	} else {
-		log.Printf("[GetOperationTypeFromAssignment] > Not a valid operation")
+		// //log.Printf("[GetOperationTypeFromAssignment] > Not a valid operation")
 	}
 
 	return models.INDEFINIDO
@@ -2418,7 +2418,7 @@ func (l *LexicalAnalyzer) VerifyFunctions() {
 //LogError ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
+	// //log.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.GL.Printf("[ERR] %+v [Line: %+v]", description, lineIndex)
 	l.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 	l.ErrorsCount++
@@ -2427,7 +2427,7 @@ func (l *LexicalAnalyzer) LogError(lineIndex int64, columnIndex interface{}, err
 //LogWarning ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogWarning(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
+	// //log.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
 	l.GL.Printf("[WARN] %+v [Line: %+v]", description, lineIndex)
 	l.EL.Printf("%+v\t|\t%+v\t|\t[WARN] %+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, description, currentLine)
 	l.WarningsCount++
@@ -2436,14 +2436,14 @@ func (l *LexicalAnalyzer) LogWarning(lineIndex int64, columnIndex interface{}, e
 //LogErrorGeneral ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogErrorGeneral(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
+	// //log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
 	l.GL.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
 }
 
 //LogTest ...
 //"# Linea | # Columna | Error | Descripcion | Linea del Error"
 func (l *LexicalAnalyzer) LogTest(lineIndex int64, columnIndex interface{}, err string, description string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
+	// //log.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
 	l.TEST.Printf("[ERR] %+v [Line: %+v] | '%+v'", description, lineIndex, currentLine)
 }
 
@@ -2452,7 +2452,7 @@ func (l *LexicalAnalyzer) RegisterBlockChange(LastBlockState models.BlockType, d
 	if LastBlockState != l.CurrentBlockType {
 		l.GL.Printf("%+v Switched to %+v [%+v]", funcName, l.CurrentBlockType, lineIndex)
 		if debug {
-			log.Printf("Switched to %+v [%+v]", l.CurrentBlockType, lineIndex)
+			// //log.Printf("Switched to %+v [%+v]", l.CurrentBlockType, lineIndex)
 		}
 	}
 }

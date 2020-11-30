@@ -98,7 +98,7 @@ func (r *RegexRegresa) GroupsRegresa(str string) []string {
 //LogError ...
 //"# Linea | # Columna | Error | DescripcRegresan | Linea del Error"
 func (r *RegexRegresa) LogError(lineIndex int64, columnIndex interface{}, err string, descriptRegresan string, currentLine string) {
-	log.Printf("[ERR] %+v [Line: %+v]", descriptRegresan, lineIndex)
+	//log.Printf("[ERR] %+v [Line: %+v]", descriptRegresan, lineIndex)
 	r.GL.Printf("[ERR] %+v [Line: %+v]", descriptRegresan, lineIndex)
 	r.EL.Printf("%+v\t|\t%+v\t|\t%+v\t|\t%+v\t|\t%+v", lineIndex, columnIndex, err, descriptRegresan, currentLine)
 }

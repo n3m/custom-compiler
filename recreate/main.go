@@ -199,7 +199,7 @@ func (r *Recreate) _ScanForReservedInitializers(str string) ([]string, error) {
 
 	newStrs := []string{}
 	if counter > 1 {
-		// log.Printf("==========\n\tCounter: %v\n\tLine: '%+v'\n\t%+v", counter, str, toLookFor)
+		// //log.Printf("==========\n\tCounter: %v\n\tLine: '%+v'\n\t%+v", counter, str, toLookFor)
 		toSplit := toLookFor[0]
 		for _, each := range toLookFor {
 			if each.pos > toSplit.pos {
@@ -216,7 +216,7 @@ func (r *Recreate) _ScanForReservedInitializers(str string) ([]string, error) {
 		newStrs = append(newStrs, ln1)
 		newStrs = append(newStrs, ln2)
 
-		// log.Printf("===\n\tLine: '%+v'\n\tNew1: '%+v'\n\tNew2: '%+v'", str, ln1, ln2)
+		// //log.Printf("===\n\tLine: '%+v'\n\tNew1: '%+v'\n\tNew2: '%+v'", str, ln1, ln2)
 		return newStrs, fmt.Errorf("Newln")
 	}
 
