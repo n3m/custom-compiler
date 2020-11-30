@@ -47,7 +47,7 @@ Compilador:
         - Error en constantes (ya)
         - Error en variables locales (ya)
         - Función/Procedimiento falta la línea donde empieza (ya)
-        - Acumular parametros con variables globales
+        - Acumular parametros con variables globales (ya)
     Etiquetas
     Obj:
         - Función declaración  
@@ -64,7 +64,7 @@ Compilador:
         - Si (ya)
         - Repetir (ya)
             - Hasta (ya)
-        - Sino (falta)
+        - Sino (ya)
         - Desde (falta)
             - Error al reinciar condición (ya) -> 
             - 92 a 97 -> desde el valor de hasta (ya)
@@ -74,7 +74,7 @@ Compilador:
 
 Revisar 
     - Anotaciones good_test_2_anotaciones.eje
-
+    - good_test_3.eje esta mal el tag de LOD
 Extras:
     Verificar extensión del archivo (DONE)
     Generar los nombres de los loggers a partir del nombre original (DONE)

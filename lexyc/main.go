@@ -1082,14 +1082,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.FindSymbol(currentLine, lineIndex, varToAssignData)
 
-			if l.CurrentBlockType != models.CONSTANTBLOCK {
-				l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
-					varToAssignData, helpers.IDENTIFICADOR,
-					":=", helpers.OPERADORASIGNACION,
-				}))
-				l.AnalyzeParams(currentLine, lineIndex, AssignToAnalyze)
-				l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
-			}
+			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, []string{
+				varToAssignData, helpers.IDENTIFICADOR,
+				":=", helpers.OPERADORASIGNACION,
+			}))
+			l.AnalyzeParams(currentLine, lineIndex, AssignToAnalyze)
+			l.LL.Print(helpers.IndentString(helpers.LEXINDENT, []string{";", helpers.DELIMITADOR}))
 
 			if l.R.RegexCustom.MatchCteLog(AssignToAnalyze, lineIndex) {
 				foundSomething = true
