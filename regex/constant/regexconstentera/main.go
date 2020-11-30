@@ -16,7 +16,7 @@ func NewRegexConstEntera() (*RegexConstEntera, error) {
 
 	return &RegexConstEntera{
 		V1: regexp.MustCompile(`^(\s*)([a-zA-Z]+[a-zA-Z0-9]*)(\s*):=(\s*)([0-9]+|\-[0-9]+)(;)?$`),
-		V2: regexp.MustCompile(`([0-9]+|\-[0-9]+)`),
+		V2: regexp.MustCompile(`^([0-9]+|\-[0-9]+)`),
 	}, nil
 }
 
