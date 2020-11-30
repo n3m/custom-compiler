@@ -221,14 +221,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				vars := strings.Split(groupVars[0], ",")
 				if vars[0] != "" {
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
 				}
 
 				for _, v := range vars[1:] {
 					token = append(token, ",", helpers.DELIMITADOR)
 					token = append(token, l.AnalyzeType("", 0, v)...)
 
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(v)})
 				}
 				if vars[0] != "" {
 					token = append(token, ":", helpers.DELIMITADOR,
@@ -289,14 +289,14 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					vars := strings.Split(groupVars[0], ",")
 
 					paramType := models.VarTypeToTokenType(groupVars[len(groupVars)-1])
-					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: vars[0]})
+					symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(vars[0])})
 
 					token = append(token, vars[0], helpers.IDENTIFICADOR)
 					for _, v := range vars[1:] {
 						token = append(token, ",", helpers.DELIMITADOR)
 						token = append(token, l.AnalyzeType("", 0, v)...)
 
-						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: v})
+						symbol.Params = append(symbol.Params, &models.Token{Type: paramType, Key: strings.TrimSpace(v)})
 					}
 					token = append(token, ":", helpers.DELIMITADOR,
 						strings.TrimSpace(groupVars[len(groupVars)-1]), helpers.PALABRARESERVADA)

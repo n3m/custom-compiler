@@ -1,15 +1,29 @@
 Funcion Suma(a, b:Entero):Entero
 variables res:Entero
 Inicio
+    regresa(a+b)
 Fin de Funcion
 
 Funcion Resta(a, b:Entero):Entero
 variables res:Entero
 Inicio
+    regresa(a-b)
 Fin de Funcion
 
 Programa
+variables integer, counter, res1, res2:Entero;
+    imprimenl("Ingresa un entero:");
+    Lee(integer);
+    counter:=0;
 
+    Repetir
+        counter := counter + 1;
+        res1 := Suma(integer, counter);
+        res2 := Resta(integer, counter);
 
+        imprime("SUM: ", res1);
+        imprimenl("RES: ", res2);
+    hasta que (counter > 10);
 
+    
 Fin de Programa
