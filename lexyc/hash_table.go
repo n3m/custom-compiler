@@ -82,7 +82,9 @@ func (h *HashTable) PopLabelInNextLine() {
 
 //AddLabelInLine ...
 func (h *HashTable) AddLabelInLine() {
-	h.Labels[h.GetLabel()] = h.GetLine()
+	if h.Labels[h.GetLabel()] == "" {
+		h.Labels[h.GetLabel()] = h.GetLine()
+	}
 }
 
 //AddPreviousLabelInLine ...

@@ -90,7 +90,11 @@ func (cG *CodeGenerator) printToken(token *models.Token, tokenType string, conte
 	if cG.Vars[token.Key] != "" {
 		cG.Vars[token.Key] = strings.ReplaceAll(cG.Vars[token.Key], "#,", strings.Join(tokenProp, ","))
 	} else {
-		cG.Vars[token.Key] = strings.Join(tokenProp, ",")
+		name := ""
+		if tokenType == "P" {
+			name = token.Key + ","
+		}
+		cG.Vars[token.Key] = name + strings.Join(tokenProp, ",")
 	}
 	return
 }
