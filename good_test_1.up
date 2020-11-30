@@ -2,6 +2,7 @@
 Procedimiento ImprimirNombre():
 variables nombreDelUsuario:Alfabetico;
 Inicio
+    imprimenl("Ingresa tu nombre:")
     Lee(nombreDelUsuario);
     imprimenl("Bienvenido ", nombreDelUsuario, " a la consola de este programa");
 Fin de Procedimiento;
