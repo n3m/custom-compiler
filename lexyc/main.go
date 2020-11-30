@@ -391,6 +391,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.Context = "Global"
+			for i := 0; i < l.HashTable.Statements; i++ {
+				l.HashTable.PopLabelInLine()
+			}
+			l.HashTable.Statements = 0
 			operations := strings.Split(l.HashTable.CurrentBlock, "#")
 			if len(operations) > 1 {
 				for _, op := range operations {
@@ -433,6 +437,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.Context = "Global"
+			for i := 0; i < l.HashTable.Statements; i++ {
+				l.HashTable.PopLabelInLine()
+			}
+			l.HashTable.Statements = 0
 			operations := strings.Split(l.HashTable.CurrentBlock, "#")
 			if len(operations) > 1 {
 				for _, op := range operations {
@@ -473,6 +481,11 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
+			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			for i := 0; i < l.HashTable.Statements; i++ {
+				l.HashTable.PopLabelInLine()
+			}
+			l.HashTable.Statements = 0
 			operations := strings.Split(l.HashTable.CurrentBlock, "#")
 			if len(operations) > 1 {
 				for _, op := range operations {
@@ -552,7 +565,6 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				";", helpers.DELIMITADOR,
 			}))
 
-			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
 			l.HashTable.AddLabelInLine()
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", l.HashTable.ActiveLabels.Pop()))
@@ -756,7 +768,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			l.AnalyzeObjectCodeQueue()
-			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", l.HashTable.GetNextLabel()))
+			finish := l.HashTable.GetNextLabel()
+			l.HashTable.AddNextLine(fmt.Sprintf("JMC F, %v", finish))
+			l.HashTable.Statements++
+			l.HashTable.ActiveLabels.Push(finish)
 			foundSomething = true
 		}
 
@@ -774,7 +789,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.LL.Println(helpers.IndentString(helpers.LEXINDENT, []string{"sino", helpers.PALABRARESERVADA}))
 
-			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+			finish := l.HashTable.GetNextLabel()
+			l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", finish))
+			l.HashTable.PopLabelInLine()
+			l.HashTable.ActiveLabels.Push(finish)
 
 			foundSomething = true
 		}
@@ -793,8 +811,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			token := []string{"sea", helpers.PALABRARESERVADA}
 
 			if l.HashTable.Statements > 0 {
-				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+				finish := l.HashTable.GetNextLabel()
+				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", finish))
 				l.HashTable.PopLabelInLine()
+				l.HashTable.ActiveLabels.Push(finish)
 			}
 
 			l.OpQueue = []models.TokenComp{}
@@ -844,9 +864,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			}))
 
 			if l.HashTable.Statements > 0 {
-				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel()))
+				finish := l.HashTable.GetNextLabel()
+				l.HashTable.AddNextLine(fmt.Sprintf("JMP 0, %v", finish))
 				l.HashTable.PopLabelInLine()
-				l.HashTable.Statements = 0
+				l.HashTable.ActiveLabels.Push(finish)
 			}
 			foundSomething = true
 		}
@@ -887,6 +908,12 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					l.HashTable.AddNextLine(op)
 				}
 			}
+
+			if l.HashTable.IsOneLine {
+				l.HashTable.PopLabelInLine()
+				l.HashTable.IsOneLine = false
+			}
+
 			l.HashTable.CurrentBlock = ""
 			l.AnalyzeObjectCodeQueue()
 			l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", l.Context))
@@ -927,6 +954,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 				l.NamesQueue = l.NamesQueue[1:]
 				l.AnalyzeObjectCodeQueue()
 				l.HashTable.AddNextLine(fmt.Sprintf("STO 0, %v", varToAssignData))
+				begin := l.HashTable.GetNextLabel()
+				l.HashTable.AddLabelInLine()
 				l.HashTable.AddNextLine(fmt.Sprintf("LOD %v, 0", varToAssignData))
 
 				l.OpQueue = []models.TokenComp{}
@@ -943,6 +972,7 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					diff := l.NamesQueue[len(l.NamesQueue)-1]
 					l.OpQueue = l.OpQueue[:len(l.OpQueue)-1]
 					l.NamesQueue = l.NamesQueue[:len(l.NamesQueue)-1]
+
 					l.AnalyzeObjectCodeQueue()
 					operation := "OPR 0, 10"
 					if operations[1] == "decr" {
@@ -950,14 +980,17 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 					}
 					l.HashTable.AddNextLine(operation)
 
-					l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", l.HashTable.GetNextLabel()))
+					finish := l.HashTable.GetNextLabel()
+					l.HashTable.AddNextLine(fmt.Sprintf("JMC V, %v", finish))
+					l.HashTable.ActiveLabels.Push(finish)
+					l.HashTable.IsOneLine = true
 
 					l.HashTable.CurrentBlock = fmt.Sprintf("LOD %v, 0#", varToAssignData) + fmt.Sprintf("LIT %v, 0#", diff)
 					if operations[1] == "decr" {
 						l.HashTable.CurrentBlock += "OPR 0, 8#"
 					}
 					l.HashTable.CurrentBlock += "OPR 0, 2#" + fmt.Sprintf("STO 0, %v#", varToAssignData) +
-						fmt.Sprintf("JMP 0, %v", l.HashTable.GetNextLabel())
+						fmt.Sprintf("JMP 0, %v", begin)
 				} else {
 					groups[1] = strings.TrimPrefix(groups[1], "(")
 					groups[1] = strings.TrimSuffix(groups[1], ")")
@@ -1337,6 +1370,10 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 
 			l.HashTable.AddNextLine("OPR 0, 0")
 			l.Context = "Global"
+			for i := 0; i < l.HashTable.Statements; i++ {
+				l.HashTable.PopLabelInLine()
+			}
+			l.HashTable.Statements = 0
 			foundSomething = true
 		}
 
@@ -1369,6 +1406,8 @@ func (l *LexicalAnalyzer) Analyze(debug bool) error {
 			l.AnalyzeFuncQueue(currentLine, lineIndex)
 			l.LL.Print(helpers.IndentStringInLines(helpers.LEXINDENT, 2, token))
 
+			fmt.Println(l.OpQueue)
+			fmt.Println(l.NamesQueue)
 			l.AnalyzeObjectCodeQueue()
 			foundSomething = true
 		}
@@ -2118,8 +2157,6 @@ func (l *LexicalAnalyzer) AnalyzeFuncQueue(currentLine string, lineIndex int64) 
 
 //AnalyzeObjectCodeQueue ...
 func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
-	// fmt.Println(l.OpQueue)
-	// fmt.Println(l.NamesQueue)
 	noNames := -1
 	function := ""
 	noBracks := 0
@@ -2168,9 +2205,13 @@ func (l *LexicalAnalyzer) AnalyzeObjectCodeQueue() {
 			if function != "" && noBracks >= 2 {
 				l.HashTable.CurrentOp = localOperation
 				l.HashTable.AddNextLine(fmt.Sprintf("CAL %v, 0", function))
-				if funcDef := l.FindFunction("", 0, function); funcDef != nil && funcDef.Type != "" {
-					l.HashTable.AddLabelInLine()
-					l.HashTable.AddNextLine(fmt.Sprintf("LOD %v, 0", function))
+				if funcDef := l.FindFunction("", 0, function); funcDef != nil {
+					if funcDef.Type != "" {
+						l.HashTable.AddLabelInLine()
+						l.HashTable.AddNextLine(fmt.Sprintf("LOD %v, 0", function))
+					} else {
+						l.HashTable.AddLabelInLine()
+					}
 				}
 				if l.HashTable.CurrentOp != "" {
 					l.HashTable.AddNextOp()

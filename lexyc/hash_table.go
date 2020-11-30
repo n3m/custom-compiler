@@ -19,6 +19,7 @@ type HashTable struct {
 	CurrentOp    string
 	CurrentBlock string
 	Statements   int
+	IsOneLine    bool
 }
 
 //NewHashTable ...

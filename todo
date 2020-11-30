@@ -38,7 +38,6 @@ TODO:
         Verificar las llamadas a función en una línea (ya)
         Verificar si se le trata de dar un nombre reservado a una variable (ya)
         Falta en mientras toda la sentencia 
-        Falta en sea validación de casos como constantes
         Verificar si se le trata de dar un nombre reservado a una variable (ya)
         No contar Warnings en error count (DONE)
 
