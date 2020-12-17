@@ -1,7 +1,15 @@
-# Custom Compiler
+# Custom Programming Language Compiler
+
 ## Description
-This project is a custom compiler for a custom made programming language.
-It includes a lexycal analyzer, a sintax analyzer, logging system, and much more.
+Made in Golang, this project aimed to create from scratch a compiler for a custom made non-released programming language.
+Project was submitted as a finished product on our "Compilers" class at Universidad Panamericana. 
+
+## Features
+- Lexycal Analizer
+- Syntax Analizer
+- Semantic Analizer
+- Object Code Generator
+- Logging System
 
 ## Programming Language
 Golang
