@@ -12,7 +12,7 @@ Project was submitted as a finished product on our "Compilers" class at Universi
 - Logging System
 
 ## Programming Language
-Golang
+- Golang
 
 ### Authors
 - Alan Enrique Maldonado Navarro
